@@ -661,6 +661,7 @@ def create_app(config_name=None):
 
     # ==================== ROTAS DE CACHE ====================
     @app.route("/carregar-teste", methods=["POST"])
+    @csrf.exempt
     def carregar_teste():
         """Inicia carregamento de teste (10 contas)"""
         import threading
@@ -674,6 +675,7 @@ def create_app(config_name=None):
         })
 
     @app.route("/carregar-completo", methods=["POST"])
+    @csrf.exempt
     def carregar_completo():
         """Inicia carregamento completo de todas as contas"""
         import threading
