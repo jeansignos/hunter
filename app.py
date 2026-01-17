@@ -262,10 +262,10 @@ def create_app(config_name=None):
             if filtros.get("codex_min") and codex < filtros["codex_min"]:
                 continue
             
-            # FILTRO: Itens de comércio (Épicos e Lendários)
-            itens_all = conta.get("inven_all", [])
-            itens_epicos = [i for i in itens_all if i.get("grade", 0) == 4 and i.get("trade", False)]  # Grade 4 = Épico
-            itens_lendarios = [i for i in itens_all if i.get("grade", 0) >= 5 and i.get("trade", False)]  # Grade 5+ = Lendário
+            # FILTRO: Itens de comércio (Épicos e Lendários) - VERIFICAR NOS EQUIPAMENTOS
+            equipamentos = conta.get("equip", [])
+            itens_epicos = [i for i in equipamentos if i.get("grade", 0) == 4 and i.get("trade", False)]  # Grade 4 = Épico
+            itens_lendarios = [i for i in equipamentos if i.get("grade", 0) >= 5 and i.get("trade", False)]  # Grade 5+ = Lendário
             itens_valiosos = itens_epicos + itens_lendarios
             
             # Filtro por mínimo de épicos
