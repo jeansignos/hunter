@@ -475,6 +475,37 @@ def create_app(config_name=None):
 # Criar aplicação
 app = create_app()
 
+# ==================== SCHEDULER AUTOMÁTICO ====================
+# Carrega automaticamente as contas a cada 5 horas
+import threading
+import time
+
+def auto_load_scheduler():
+    """Thread que carrega as contas automaticamente a cada 5 horas"""
+    INTERVALO_HORAS = 5
+    INTERVALO_SEGUNDOS = INTERVALO_HORAS * 60 * 60  # 5 horas em segundos
+    
+    # Aguarda 60 segundos após iniciar para o app estar pronto
+    time.sleep(60)
+    
+    while True:
+        try:
+            print(f"[SCHEDULER] Iniciando carregamento automático de contas...")
+            with app.app_context():
+                from core.loader import carregar_contas_completas
+                carregar_contas_completas()
+            print(f"[SCHEDULER] Carregamento completo. Próximo em {INTERVALO_HORAS} horas.")
+        except Exception as e:
+            print(f"[SCHEDULER] Erro no carregamento automático: {e}")
+        
+        # Aguarda 5 horas para próximo carregamento
+        time.sleep(INTERVALO_SEGUNDOS)
+
+# Inicia o scheduler em uma thread daemon (roda em background)
+scheduler_thread = threading.Thread(target=auto_load_scheduler, daemon=True)
+scheduler_thread.start()
+print("[SCHEDULER] Auto-loader iniciado - carrega contas a cada 5 horas")
+
 
 if __name__ == "__main__":
     print("=" * 60)

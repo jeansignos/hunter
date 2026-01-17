@@ -253,10 +253,12 @@
                     <div class="grupo-filtro">
    <div class="grupo-filtro">
     <h3><i class="fas fa-database"></i> Cache</h3>
+    {% if current_user.is_authenticated and current_user.is_admin %}
     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheTeste()">Carregar 10</button>
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheCompleto()">Carregar Todas</button>
     </div>
+    {% endif %}
     
     <!-- Botões de seleção de cache - AGORA Sempre Full primeiro quando disponível -->
     <div class="cache-type-selector">
