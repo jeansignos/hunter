@@ -8,6 +8,7 @@ import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, current_user, login_required
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -48,6 +49,8 @@ def create_app(config_name=None):
     # Inicializar extensões
     db.init_app(app)
     
+    # Inicializar CSRF protection
+    csrf = CSRFProtect(app)
     # Configurar Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
