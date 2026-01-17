@@ -140,6 +140,16 @@ def create_app(config_name=None):
         # Verificar se usuário tem acesso premium
         is_premium = current_user.has_premium_access() if current_user.is_authenticated else False
         
+        # Carregar lista de itens para o modal de filtro
+        itens_lista = []
+        try:
+            itens_path = os.path.join(app.static_folder, 'itens_lista.json')
+            if os.path.exists(itens_path):
+                with open(itens_path, 'r', encoding='utf-8') as f:
+                    itens_lista = json.load(f)
+        except Exception as e:
+            print(f"Erro ao carregar itens_lista.json: {e}")
+        
         return render_template("index_filtro.html", 
                              classes=CLASSES, 
                              status_importantes=status_importantes,
@@ -150,7 +160,8 @@ def create_app(config_name=None):
                              total_completo=total_completo,
                              total_teste=total_teste,
                              STATUS_MINERACAO=STATUS_MINERACAO,
-                             is_premium=is_premium)
+                             is_premium=is_premium,
+                             itens_lista=itens_lista)
 
     @app.route("/buscar-contas", methods=["GET"])
     def buscar_contas_rota():
@@ -179,7 +190,8 @@ def create_app(config_name=None):
             "itens_comercio_min": request.args.get("itens_comercio_min", type=int),  # NOVO FILTRO
             "regiao": request.args.get("regiao"),
             "servidor": request.args.get("servidor"),
-            "status_filtros": {}
+            "status_filtros": {},
+            "itens_filtros": {}
         }
         
         # Filtros Premium - só aplicar se usuário tiver acesso
@@ -200,6 +212,17 @@ def create_app(config_name=None):
                 valor_min = request.args.get(input_id, type=float)
                 if valor_min is not None:
                     filtros["status_filtros"][status_nome] = valor_min
+            
+            # Coletar filtros de itens
+            for key, value in request.args.items():
+                if key.startswith('item_'):
+                    try:
+                        qtd_min = int(value)
+                        if qtd_min > 0:
+                            item_hash = key.replace('item_', '')
+                            filtros["itens_filtros"][item_hash] = qtd_min
+                    except (ValueError, TypeError):
+                        pass
         
         cache_tipo = request.args.get("cache_tipo", "teste")
         
@@ -324,6 +347,48 @@ def create_app(config_name=None):
                             break
                     
                     if not passa_nos_filtros:
+                        continue
+                
+                # Filtros de itens específicos
+                if filtros["itens_filtros"]:
+                    # Carregar lista de itens para fazer o mapeamento hash -> nome
+                    import os as os_local
+                    itens_lista = []
+                    try:
+                        itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
+                        if os_local.path.exists(itens_path):
+                            with open(itens_path, 'r', encoding='utf-8') as f_itens:
+                                itens_lista = json.load(f_itens)
+                    except:
+                        pass
+                    
+                    # Criar mapeamento hash -> nome
+                    hash_to_nome = {item["hash"]: item["nome"] for item in itens_lista}
+                    
+                    # Obter inventário completo da conta
+                    inventario = conta.get("inven_all", [])
+                    
+                    # Contar itens por nome (usando os campos corretos: name e count)
+                    contagem_itens = {}
+                    for item in inventario:
+                        if isinstance(item, dict):
+                            nome_item = item.get("name", "")
+                            quantidade = item.get("count", 1)
+                            if quantidade == 0:
+                                quantidade = 1
+                            contagem_itens[nome_item] = contagem_itens.get(nome_item, 0) + quantidade
+                    
+                    # Verificar se passa nos filtros de itens
+                    passa_nos_itens = True
+                    for item_hash, qtd_min in filtros["itens_filtros"].items():
+                        nome_item = hash_to_nome.get(item_hash, "")
+                        if nome_item:
+                            qtd_atual = contagem_itens.get(nome_item, 0)
+                            if qtd_atual < qtd_min:
+                                passa_nos_itens = False
+                                break
+                    
+                    if not passa_nos_itens:
                         continue
             
             contas_filtradas.append(conta)
