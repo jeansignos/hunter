@@ -486,12 +486,21 @@
             }, 300);
         }
 
+        // Função para remover acentos de uma string
+        function removerAcentos(str) {
+            return str.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        }
+
         function filtrarStatus() {
-            const busca = document.getElementById('busca-status')?.value.toLowerCase() || '';
+            const buscaOriginal = document.getElementById('busca-status')?.value || '';
+            const busca = removerAcentos(buscaOriginal.toLowerCase());
             const items = document.querySelectorAll('#lista-status .status-item');
             
             items.forEach(item => {
-                const nome = item.getAttribute('data-nome');
+                const nomeOriginal = item.getAttribute('data-nome') || '';
+                const nome = removerAcentos(nomeOriginal);
+                
+                // Verifica se o nome contém a busca (ignora acentos)
                 if (nome.includes(busca)) {
                     item.style.display = 'flex';
                 } else {
