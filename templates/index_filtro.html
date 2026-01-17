@@ -104,6 +104,109 @@
             color: white;
         }
         
+        /* Dropdown colapsável de Filtros */
+        .dropdown-filtro {
+            margin-bottom: 10px;
+        }
+        
+        .dropdown-btn {
+            width: 100%;
+            padding: 10px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-btn:hover {
+            background: #3d4a5c;
+            border-color: #667eea;
+        }
+        
+        .dropdown-btn span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dropdown-count {
+            color: #a0aec0;
+            font-size: 0.75rem;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown-filtro.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-content {
+            padding: 15px;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            margin-top: -5px;
+        }
+        
+        .btn-aplicar-dropdown {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .btn-aplicar-dropdown:hover {
+            background: #3182ce;
+        }
+        
+        /* Botões secundários menores */
+        .botoes-filtro-grupo {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-filtro-secundario {
+            flex: 1;
+            padding: 8px 10px;
+            background: #4a5568;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-filtro-secundario:hover {
+            background: #5a6a7c;
+            border-color: #667eea;
+        }
+        
+        .btn-filtro-secundario i {
+            font-size: 0.7rem;
+        }
+        
         .user-status {
             display: flex;
             align-items: center;
@@ -148,7 +251,9 @@
             <aside class="menu-lateral">
                 <div class="abas-filtros">
                     <button class="aba-filtro active" onclick="mostrarAba('geral')">Filtro</button>
+                    {% if is_premium %}
                     <button class="aba-filtro" onclick="mostrarAba('combate')">Combate</button>
+                    {% endif %}
                 </div>
                 
                 <div id="aba-geral" class="conteudo-aba active">
@@ -220,30 +325,49 @@
                         </div>
                     </div>
 
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-gem"></i> Mineração</h3>
-                        <div class="input-group">
-                            <label>Mina (Nível)</label>
-                            <input type="number" id="mina_min" placeholder="Ex: 15">
-                        </div>
-                        
-                        {% for status in status_importantes %}
-                            {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                    <!-- Dropdown Mineração (colapsável) -->
+                    <div class="dropdown-filtro">
+                        <button type="button" class="dropdown-btn" onclick="toggleDropdown('dropdown-mineracao')">
+                            <span><i class="fas fa-gem"></i> Filtro de Mineração</span>
+                            <span class="dropdown-count" id="count-mineracao">(0)</span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <div id="dropdown-mineracao" class="dropdown-content" style="display: none;">
                             <div class="input-group">
-                                <label style="color: #f6e05e;">Boost Mineração (%)</label>
-                                <input type="number" id="status_aceleramento" placeholder="Ex: 200">
+                                <label>Mina (Nível)</label>
+                                <input type="number" id="mina_min" placeholder="Ex: 15" onchange="atualizarCountMineracao()">
                             </div>
-                            {% endif %}
-                        {% endfor %}
+                            
+                            {% for status in status_importantes %}
+                                {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                                <div class="input-group">
+                                    <label style="color: #f6e05e;">Boost Mineração (%)</label>
+                                    <input type="number" id="status_aceleramento" placeholder="Ex: 200" onchange="atualizarCountMineracao()">
+                                </div>
+                                {% endif %}
+                            {% endfor %}
 
-                        {% for status in status_importantes %}
-                            {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
-                            <div class="input-group">
-                                <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
-                                <input type="number" id="status_aconegro" placeholder="Ex: 150">
-                            </div>
-                            {% endif %}
-                        {% endfor %}
+                            {% for status in status_importantes %}
+                                {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
+                                <div class="input-group">
+                                    <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
+                                    <input type="number" id="status_aconegro" placeholder="Ex: 150" onchange="atualizarCountMineracao()">
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <button type="button" class="btn-aplicar-dropdown" onclick="toggleDropdown('dropdown-mineracao')">
+                                Aplicar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Codex no filtro principal -->
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-book"></i> Codex</h3>
+                        <div class="input-group">
+                            <input type="number" id="codex_min" placeholder="Mín. Codex">
+                        </div>
                     </div>
                     
                     <!-- NOVO FILTRO: Itens Comercializáveis -->
@@ -256,12 +380,14 @@
                         </div>
                     </div>
                     
-					<button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
-                    <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
-                </button>
-                <button class="btn-buscar" onclick="abrirModalItens(event)" style="margin-bottom: 10px; background: #2d4a4a;">
-                    <i class="fas fa-box-open"></i> Filtro de Itens
-                </button>
+					<div class="botoes-filtro-grupo">
+                        <button class="btn-filtro-secundario" onclick="abrirModalStatus(event)">
+                            <i class="fas fa-sliders-h"></i> Status Avançados
+                        </button>
+                        <button class="btn-filtro-secundario" onclick="abrirModalItens(event)">
+                            <i class="fas fa-box-open"></i> Filtro de Itens
+                        </button>
+                    </div>
 					<button class="btn-buscar" onclick="buscarContas()">
                     <i class="fas fa-search"></i> Buscar Contas
                 </button>
@@ -270,20 +396,7 @@
 
                 <div id="aba-combate" class="conteudo-aba">
                     <div class="grupo-filtro">
-                        <h3><i class="fas fa-book"></i> Codex</h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label>Codex</label>
-                                <input type="number" id="codex_min" placeholder="0">
-                            </div>
-                            <div class="input-group">
-                                                          </div>
-                        </div>
-                    </div>
-                    
-                    <div class="grupo-filtro">
-   <div class="grupo-filtro">
-    <h3><i class="fas fa-database"></i> Cache</h3>
+                        <h3><i class="fas fa-database"></i> Cache</h3>
     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheTeste()">Carregar 10</button>
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheCompleto()">Carregar Todas</button>
@@ -1592,6 +1705,36 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
 
         // --- UI FUNCTIONS ---
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const parent = dropdown.closest('.dropdown-filtro');
+            
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+                parent.classList.add('open');
+            } else {
+                dropdown.style.display = 'none';
+                parent.classList.remove('open');
+            }
+        }
+        
+        function atualizarCountMineracao() {
+            let count = 0;
+            const mina = document.getElementById('mina_min')?.value;
+            const boost = document.getElementById('status_aceleramento')?.value;
+            const acoNegro = document.getElementById('status_aconegro')?.value;
+            
+            if (mina && mina > 0) count++;
+            if (boost && boost > 0) count++;
+            if (acoNegro && acoNegro > 0) count++;
+            
+            const countEl = document.getElementById('count-mineracao');
+            if (countEl) {
+                countEl.textContent = `(${count})`;
+                countEl.style.color = count > 0 ? '#48bb78' : '#a0aec0';
+            }
+        }
+        
         function mostrarAba(id) {
             document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.aba-filtro').forEach(el => el.classList.remove('active'));
