@@ -4,6 +4,7 @@ Versão refatorada com sistema de login e Premium
 """
 
 import os
+import json
 import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, current_user, login_required
@@ -149,9 +150,32 @@ def create_app(config_name=None):
         # Verificar se usuário tem acesso premium
         is_premium = current_user.has_premium_access() if current_user.is_authenticated else False
         
+        # Carregar lista de itens para o filtro
+        itens_lista = []
+        try:
+            import os as os_local
+            itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
+            if os_local.path.exists(itens_path):
+                with open(itens_path, 'r', encoding='utf-8') as f_itens:
+                    itens_lista = json.load(f_itens)
+        except Exception as e:
+            print(f"Erro ao carregar lista de itens: {e}")
+        
+        # Carregar lista de itens para o filtro
+        itens_lista = []
+        try:
+            import os as os_local
+            itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
+            if os_local.path.exists(itens_path):
+                with open(itens_path, 'r', encoding='utf-8') as f_itens:
+                    itens_lista = json.load(f_itens)
+        except Exception as e:
+            print(f"Erro ao carregar lista de itens: {e}")
+        
         return render_template("index_filtro.html", 
                              classes=CLASSES, 
                              status_importantes=status_importantes,
+                             itens_lista=itens_lista,
                              cache_status=cache_status,
                              tem_cache_completo=tem_cache_completo,
                              tem_cache_teste=tem_cache_teste,
@@ -188,7 +212,8 @@ def create_app(config_name=None):
             "itens_comercio_min": request.args.get("itens_comercio_min", type=int),
             "itens_epicos_min": request.args.get("itens_epicos_min", type=int),
             "itens_lendarios_min": request.args.get("itens_lendarios_min", type=int),
-            "status_filtros": {}
+            "status_filtros": {},
+            "itens_filtros": {}
         }
         
         # Filtros Premium - só aplicar se usuário tiver acesso
@@ -209,6 +234,18 @@ def create_app(config_name=None):
                 valor_min = request.args.get(input_id, type=float)
                 if valor_min is not None:
                     filtros["status_filtros"][status_nome] = valor_min
+            
+            # Coletar filtros de itens
+            for key, value in request.args.items():
+                if key.startswith('item_'):
+                    try:
+                        qtd_min = int(value)
+                        if qtd_min > 0:
+                            # Extrair o nome do item do hash
+                            item_hash = key.replace('item_', '')
+                            filtros["itens_filtros"][item_hash] = qtd_min
+                    except (ValueError, TypeError):
+                        pass
         
         cache_tipo = request.args.get("cache_tipo", "teste")
         
@@ -319,6 +356,48 @@ def create_app(config_name=None):
                             break
                     
                     if not passa_nos_filtros:
+                        continue
+                
+                # Filtros de itens - verificar se a conta tem os itens com quantidade mínima
+                if filtros["itens_filtros"]:
+                    # Carregar lista de itens para fazer o mapeamento hash -> nome
+                    import os as os_local
+                    itens_lista = []
+                    try:
+                        itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
+                        if os_local.path.exists(itens_path):
+                            with open(itens_path, 'r', encoding='utf-8') as f_itens:
+                                itens_lista = json.load(f_itens)
+                    except:
+                        pass
+                    
+                    # Criar mapeamento hash -> nome
+                    hash_to_nome = {item["hash"]: item["nome"] for item in itens_lista}
+                    
+                    # Obter inventário completo da conta
+                    inventario = conta.get("inven_all", [])
+                    
+                    # Contar itens por nome
+                    contagem_itens = {}
+                    for item in inventario:
+                        if isinstance(item, dict):
+                            nome_item = item.get("itemName", "")
+                            stack = item.get("stack", 1)
+                            # stack 0 significa 1 item único
+                            quantidade = stack if stack > 0 else 1
+                            contagem_itens[nome_item] = contagem_itens.get(nome_item, 0) + quantidade
+                    
+                    # Verificar se passa nos filtros de itens
+                    passa_nos_itens = True
+                    for item_hash, qtd_min in filtros["itens_filtros"].items():
+                        nome_item = hash_to_nome.get(item_hash, "")
+                        if nome_item:
+                            qtd_atual = contagem_itens.get(nome_item, 0)
+                            if qtd_atual < qtd_min:
+                                passa_nos_itens = False
+                                break
+                    
+                    if not passa_nos_itens:
                         continue
             
             contas_filtradas.append(conta)

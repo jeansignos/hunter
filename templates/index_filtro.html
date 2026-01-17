@@ -255,6 +255,9 @@
 					<button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
                 </button>
+                <button class="btn-buscar" onclick="abrirModalItens(event)" style="margin-bottom: 10px; background: #2d4a4a;">
+                    <i class="fas fa-box-open"></i> Filtro de Itens
+                </button>
 					<button class="btn-buscar" onclick="buscarContas()">
                     <i class="fas fa-search"></i> Buscar Contas
                 </button>
@@ -324,6 +327,10 @@
 
                 <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
+                </button>
+                
+                <button class="btn-buscar" onclick="abrirModalItens(event)" style="margin-bottom: 10px; background: #2d4a4a;">
+                    <i class="fas fa-box-open"></i> Filtro de Itens
                 </button>
 
                 <button class="btn-buscar" onclick="buscarContas()">
@@ -422,6 +429,60 @@
         </div>
     </div>
     
+    <!-- Modal de Filtro de Itens -->
+    <div id="modal-itens" class="modal" onclick="fecharModalItens()">
+        <div class="modal-conteudo" onclick="event.stopPropagation()">
+            <div class="modal-cabecalho">
+                <h2><i class="fas fa-box-open"></i> Filtro de Itens</h2>
+                <span class="fechar-modal" onclick="fecharModalItens()">&times;</span>
+            </div>
+            <div class="modal-corpo">
+                <p style="font-size: 0.9rem; color: #a0aec0; margin-bottom: 15px;">
+                    Busque itens pelo nome e defina a quantidade mínima. Deixe em branco para ignorar.
+                </p>
+                
+                <div class="modal-buscar">
+                    <input type="text" id="busca-item" placeholder="Buscar item..." onkeyup="filtrarItens()" 
+                           style="width: 100%; padding: 10px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 5px;">
+                </div>
+                
+                <div id="itens-selecionados" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
+                    <!-- Itens selecionados aparecem aqui como tags -->
+                </div>
+                
+                <div id="lista-itens" style="max-height: 40vh; overflow-y: auto; padding-right: 10px; margin-top: 15px;">
+                    {% for item in itens_lista %}
+                        <div class="item-filtro-item" data-nome="{{ item.nome|lower }}" data-hash="{{ item.hash }}"
+                             style="display: none; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #4a5568; cursor: pointer;"
+                             onclick="adicionarFiltroItem('{{ item.hash }}', '{{ item.nome }}')">
+                            <div class="item-info" style="flex: 1;">
+                                <label style="font-size: 0.85rem; color: white; cursor: pointer;">{{ item.nome }}</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div id="itens-filtro-ativos" style="margin-top: 15px; border-top: 1px solid #4a5568; padding-top: 15px;">
+                    <h4 style="color: #f6e05e; margin-bottom: 10px;"><i class="fas fa-filter"></i> Filtros Ativos</h4>
+                    <div id="itens-filtro-lista" style="max-height: 25vh; overflow-y: auto;">
+                        <!-- Itens com filtro ativo -->
+                    </div>
+                </div>
+                
+                <div class="modal-controles" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-modal btn-limpar" onclick="limparFiltrosItens()" 
+                            style="flex: 1; padding: 10px; background: #718096; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-trash-alt"></i> Limpar Todos
+                    </button>
+                    <button class="btn-modal btn-aplicar" onclick="fecharModalItens()" 
+                            style="flex: 1; padding: 10px; background: #38a169; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-check"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para Todos os Status -->
     <div id="modal-todos-status" class="modal" onclick="fecharModalTodosStatus()">
         <div class="modal-conteudo" onclick="event.stopPropagation()">
@@ -1265,6 +1326,13 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             document.querySelectorAll('#lista-status input').forEach(input => {
                 if (input.value) params.append(input.id, input.value);
             });
+
+            // Filtros de itens dinâmicos
+            for (const [hash, data] of Object.entries(filtrosItensAtivos)) {
+                if (data.qtd > 0) {
+                    params.append(`item_${hash}`, data.qtd);
+                }
+            }
 
             // Ordenação
             const ordenacao = document.getElementById('ordenacao').value;
