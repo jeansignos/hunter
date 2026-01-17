@@ -320,6 +320,77 @@
             object-fit: cover;
         }
         
+        /* Grid de Skills/Habilidades */
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .skill-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            background: #2d3748;
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+        
+        .skill-item:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .skill-item.epica {
+            border-color: #e53e3e;
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(229, 62, 62, 0.6);
+        }
+        
+        .skill-item.lendaria {
+            border-color: #f6e05e;
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(246, 224, 94, 0.6);
+        }
+        
+        .skill-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .skills-legenda {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .skills-legenda span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legenda-cor {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .legenda-cor.epica { background: #e53e3e; }
+        .legenda-cor.lendaria { background: #f6e05e; }
+        
         /* Badge Bidding */
         .badge-bidding {
             position: absolute;
@@ -797,6 +868,13 @@
                     <i class="fas fa-ghost"></i> Espíritos <span id="count-espiritos" class="mini-dropdown-count">0</span>
                 </button>
                 
+                {% if is_premium %}
+                <!-- Botão Filtro de Habilidades (Premium) -->
+                <button type="button" class="btn-acao-compacto" onclick="abrirModalHabilidades(event)" style="border-color: #f6e05e;">
+                    <i class="fas fa-magic"></i> Skills <span id="count-skills" class="mini-dropdown-count">0</span>
+                </button>
+                {% endif %}
+                
                 <!-- Busca por nome -->
                 <input type="text" id="busca_nome" class="busca-nome" placeholder="Nome do jogador...">
                 
@@ -845,6 +923,52 @@
             </div>
         </main>
         
+        </div>
+    </div>
+
+    <!-- Modal de Habilidades -->
+    <div id="modal-habilidades" class="modal" onclick="fecharModalHabilidades()">
+        <div class="modal-conteudo" onclick="event.stopPropagation()" style="max-width: 750px;">
+            <div class="modal-cabecalho">
+                <h2><i class="fas fa-magic"></i> Filtro de Habilidades</h2>
+                <span class="fechar-modal" onclick="fecharModalHabilidades()">&times;</span>
+            </div>
+            <div class="modal-corpo">
+                <p style="font-size: 0.85rem; color: #a0aec0; margin-bottom: 10px;">
+                    Selecione a classe e clique nas habilidades desejadas.
+                </p>
+                
+                <div class="skills-legenda">
+                    <span><span class="legenda-cor epica"></span> 1 clique = Épica (Nível 8-9)</span>
+                    <span><span class="legenda-cor lendaria"></span> 2 cliques = Lendária (Nível 10)</span>
+                </div>
+                
+                <!-- Seletor de Classe -->
+                <div style="margin-bottom: 15px; text-align: center;">
+                    <label style="color: #a0aec0; margin-right: 10px;">Classe:</label>
+                    <select id="skill-classe" class="select-compacto" onchange="carregarSkillsClasse()" style="min-width: 180px;">
+                        <option value="">Selecione uma classe</option>
+                        <option value="1">Guerreiro</option>
+                        <option value="2">Feiticeira</option>
+                        <option value="3">Taoísta</option>
+                        <option value="4">Lanceiro</option>
+                        <option value="5">Arqueira</option>
+                        <option value="6">Invocador</option>
+                    </select>
+                </div>
+                
+                <!-- Grid de Skills (dinâmico) -->
+                <div id="skills-container" class="skills-grid">
+                    <p style="color: #718096; text-align: center; width: 100%;">
+                        Selecione uma classe acima para ver as habilidades
+                    </p>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" class="btn-aplicar" onclick="limparSkills()" style="background: #4a5568;">Limpar Seleção</button>
+                    <button type="button" class="btn-aplicar" onclick="fecharModalHabilidades()">Aplicar Filtros</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1229,6 +1353,134 @@
                 countEl.textContent = espiritosAtivos.size;
                 countEl.classList.toggle('has-value', espiritosAtivos.size > 0);
             }
+        }
+        
+        // --- MODAL DE HABILIDADES ---
+        // Estrutura: { classe: { skillIdx: 'epica'|'lendaria' } }
+        let skillsAtivas = {};
+        let classeSkillAtual = '';
+        
+        const CLASSE_PARA_PASTA = {
+            "1": "guerreiro",
+            "2": "feiticeira",
+            "3": "taoista",
+            "4": "lanceiro",
+            "5": "arqueira",
+            "6": "invocador"
+        };
+        
+        function abrirModalHabilidades(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const modal = document.getElementById('modal-habilidades');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+        
+        function fecharModalHabilidades() {
+            const modal = document.getElementById('modal-habilidades');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+            atualizarCountSkills();
+        }
+        
+        function carregarSkillsClasse() {
+            const classeId = document.getElementById('skill-classe').value;
+            const container = document.getElementById('skills-container');
+            
+            if (!classeId) {
+                container.innerHTML = '<p style="color: #718096; text-align: center; width: 100%;">Selecione uma classe acima para ver as habilidades</p>';
+                return;
+            }
+            
+            classeSkillAtual = classeId;
+            const pasta = CLASSE_PARA_PASTA[classeId];
+            
+            // Inicializar se não existir
+            if (!skillsAtivas[classeId]) {
+                skillsAtivas[classeId] = {};
+            }
+            
+            let html = '';
+            for (let i = 1; i <= 13; i++) {
+                const estado = skillsAtivas[classeId][i] || '';
+                const classeCSS = estado ? estado : '';
+                html += `
+                    <div class="skill-item ${classeCSS}" data-idx="${i}" onclick="toggleSkill(${i})">
+                        <img src="/static/skills/${pasta}${i}.png" alt="Skill ${i}" title="Habilidade ${i}">
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function toggleSkill(idx) {
+            if (!classeSkillAtual) return;
+            
+            if (!skillsAtivas[classeSkillAtual]) {
+                skillsAtivas[classeSkillAtual] = {};
+            }
+            
+            const atual = skillsAtivas[classeSkillAtual][idx] || '';
+            const skillEl = document.querySelector(`.skill-item[data-idx="${idx}"]`);
+            
+            // Ciclo: nada -> epica -> lendaria -> nada
+            if (atual === '') {
+                skillsAtivas[classeSkillAtual][idx] = 'epica';
+                skillEl.classList.remove('lendaria');
+                skillEl.classList.add('epica');
+            } else if (atual === 'epica') {
+                skillsAtivas[classeSkillAtual][idx] = 'lendaria';
+                skillEl.classList.remove('epica');
+                skillEl.classList.add('lendaria');
+            } else {
+                delete skillsAtivas[classeSkillAtual][idx];
+                skillEl.classList.remove('epica', 'lendaria');
+            }
+            
+            atualizarCountSkills();
+        }
+        
+        function limparSkills() {
+            skillsAtivas = {};
+            classeSkillAtual = '';
+            document.getElementById('skill-classe').value = '';
+            document.getElementById('skills-container').innerHTML = '<p style="color: #718096; text-align: center; width: 100%;">Selecione uma classe acima para ver as habilidades</p>';
+            atualizarCountSkills();
+        }
+        
+        function atualizarCountSkills() {
+            let total = 0;
+            for (const classe in skillsAtivas) {
+                total += Object.keys(skillsAtivas[classe]).length;
+            }
+            
+            const countEl = document.getElementById('count-skills');
+            if (countEl) {
+                countEl.textContent = total;
+                countEl.classList.toggle('has-value', total > 0);
+            }
+        }
+        
+        function getSkillsFiltro() {
+            // Retorna array de { classe, idx, nivel } para enviar ao backend
+            const filtros = [];
+            for (const classe in skillsAtivas) {
+                for (const idx in skillsAtivas[classe]) {
+                    const tipo = skillsAtivas[classe][idx];
+                    // epica = nível 8 ou 9, lendaria = nível 10
+                    const nivelMin = tipo === 'lendaria' ? 10 : 8;
+                    filtros.push({ classe, idx: parseInt(idx), nivelMin, tipo });
+                }
+            }
+            return filtros;
         }
 
         function filtrarStatus() {
@@ -2135,6 +2387,12 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             }
             if (equipEpicTrade && parseInt(equipEpicTrade) > 0) {
                 params.append('equip_epic_trade_min', equipEpicTrade);
+            }
+            
+            // Filtros de Skills/Habilidades
+            const skillsFiltro = getSkillsFiltro();
+            if (skillsFiltro.length > 0) {
+                params.append('skills_filtro', JSON.stringify(skillsFiltro));
             }
             
             // Coleta filtros básicos

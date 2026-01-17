@@ -206,6 +206,8 @@ def create_app(config_name=None):
             # Trade (itens comercializáveis)
             "equip_lend_trade_min": request.args.get("equip_lend_trade_min", type=int),
             "equip_epic_trade_min": request.args.get("equip_epic_trade_min", type=int),
+            # Skills/Habilidades (JSON)
+            "skills_filtro": request.args.get("skills_filtro"),
             "status_filtros": {},
             "itens_filtros": {}
         }
@@ -470,6 +472,41 @@ def create_app(config_name=None):
                     
                     if not tem_todos:
                         continue
+                
+                # Filtro de Skills/Habilidades
+                if filtros.get("skills_filtro"):
+                    try:
+                        skills_requeridas = json.loads(filtros["skills_filtro"])
+                        skills_list = conta.get("skills_list", [])
+                        classe_conta = str(conta.get("class", "1"))
+                        
+                        passa_skills = True
+                        for skill_req in skills_requeridas:
+                            # Verificar se a classe bate
+                            if str(skill_req.get("classe")) != classe_conta:
+                                passa_skills = False
+                                break
+                            
+                            # Buscar a skill pelo índice (1-13)
+                            idx = skill_req.get("idx", 0)
+                            nivel_min = skill_req.get("nivelMin", 8)
+                            
+                            # skills_list é uma lista ordenada de skills
+                            if idx > 0 and idx <= len(skills_list):
+                                skill = skills_list[idx - 1]
+                                # O nível da skill está no campo 'enhance'
+                                nivel_skill = skill.get("enhance", 0) if isinstance(skill, dict) else 0
+                                if nivel_skill < nivel_min:
+                                    passa_skills = False
+                                    break
+                            else:
+                                passa_skills = False
+                                break
+                        
+                        if not passa_skills:
+                            continue
+                    except json.JSONDecodeError:
+                        pass
             
             contas_filtradas.append(conta)
         
