@@ -4,6 +4,7 @@ Versão refatorada com sistema de login e Premium
 """
 
 import os
+import json
 import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, current_user, login_required

@@ -3472,6 +3472,14 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             document.getElementById(abrir).style.display = 'flex';
         }
         
+        function fecharModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
         async function submitLogin(event) {
             event.preventDefault();
             const form = document.getElementById('form-login');
