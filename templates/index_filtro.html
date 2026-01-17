@@ -811,6 +811,226 @@
             color: #f6ad55;
             font-weight: bold;
         }
+/* ===== ESTILOS DOS MODAIS DE AUTENTICAÇÃO ===== */
+.modal-auth {
+    max-width: 420px;
+    width: 95%;
+}
+
+.form-group-modal {
+    margin-bottom: 18px;
+}
+
+.form-group-modal label {
+    display: block;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group-modal input[type="text"],
+.form-group-modal input[type="email"],
+.form-group-modal input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(45, 55, 72, 0.8);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-group-modal input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.form-group-modal input::placeholder {
+    color: #718096;
+}
+
+.checkbox-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-inline label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-modal-submit {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-modal-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modal-submit.btn-register {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.btn-modal-submit.btn-register:hover {
+    box-shadow: 0 10px 30px rgba(72, 187, 120, 0.4);
+}
+
+.modal-error {
+    background: rgba(245, 101, 101, 0.2);
+    border: 1px solid #f56565;
+    color: #f56565;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+.modal-success {
+    background: rgba(72, 187, 120, 0.2);
+    border: 1px solid #48bb78;
+    color: #48bb78;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+.modal-footer-links {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-footer-links p {
+    color: #a0aec0;
+    font-size: 0.9rem;
+}
+
+.modal-footer-links a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.modal-footer-links a:hover {
+    color: #764ba2;
+}
+
+/* Botões de Login/Cadastro na navbar */
+.btn-auth {
+    background: transparent;
+    border: 1px solid rgba(102, 126, 234, 0.5);
+    color: #a0aec0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-auth:hover {
+    background: rgba(102, 126, 234, 0.2);
+    color: #fff;
+    border-color: #667eea;
+}
+
+.btn-auth.btn-cadastrar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: #fff;
+}
+
+.btn-auth.btn-cadastrar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ===== LOG DE CACHE ===== */
+.cache-log-container {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 8px;
+    margin-top: 15px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.cache-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(102, 126, 234, 0.1);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    cursor: pointer;
+}
+
+.cache-log-header h4 {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #a0aec0;
+}
+
+.cache-log-content {
+    padding: 8px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: #48bb78;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.cache-log-content .log-line {
+    margin-bottom: 3px;
+    display: flex;
+    gap: 8px;
+}
+
+.cache-log-content .log-time {
+    color: #718096;
+}
+
+.cache-log-content .log-success {
+    color: #48bb78;
+}
+
+.cache-log-content .log-error {
+    color: #f56565;
+}
+
+.cache-log-content .log-info {
+    color: #667eea;
+}
     </style>
 </head>
 <body>
@@ -834,8 +1054,8 @@
                     <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a>
                 </div>
             {% else %}
-                <a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
-                <a href="{{ url_for('auth.register') }}"><i class="fas fa-user-plus"></i> Cadastrar</a>
+                <button type="button" class="btn-auth" onclick="abrirModalLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button type="button" class="btn-auth btn-cadastrar" onclick="abrirModalRegister()"><i class="fas fa-user-plus"></i> Cadastrar</button>
                 <div class="user-status">
                     <span style="color: #a0aec0;">Visitante</span>
                 </div>
@@ -924,11 +1144,8 @@
                         <option value="codex">Maior Codex</option>
                         <option value="mina">Maior Nível Mina</option>
                     </select>
-                </div>
-            </div>
-            
-            <!-- Linha 2: Dropdowns de filtros avançados -->
-            <div class="filtros-linha-principal" style="width: 100%; margin-top: 10px; justify-content: center;">
+                
+                <!-- Dropdowns de filtros avançados -->
                 
                 {% if is_premium %}
                 <!-- Dropdown Mineração -->
@@ -1124,6 +1341,18 @@
                     <i class="fas fa-database"></i> Cache Full
                 </button>
                 {% endif %}
+                
+                <!-- Log de Cache -->
+                <div class="cache-log-container" id="cache-log-container" style="margin-top: 10px; max-width: 300px;">
+                    <div class="cache-log-header" onclick="toggleCacheLog()">
+                        <h4><i class="fas fa-terminal"></i> Log do Cache</h4>
+                        <i id="cache-log-toggle-icon" class="fas fa-chevron-down"></i>
+                    </div>
+                    <div id="cache-log-content" class="cache-log-content" style="display: none;">
+                        <div class="log-line"><span class="log-info">Aguardando ações...</span></div>
+                    </div>
+                </div>
+
             </div>
         </div>
         
@@ -3016,7 +3245,9 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
 
         function carregarCacheTeste() {
+            addCacheLog("Iniciando carregamento de 10 contas...", "info");
             if(!confirm("Carregar 10 contas de teste?")) return;
+            addCacheLog('Iniciando carregamento de 10 contas...', 'info');
             
             // Mostrar status de carregamento
             document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando 10 contas...</span>";
@@ -3033,6 +3264,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     
                     if (d.success && d.contas_carregadas > 0) {
                         mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas de teste`, 'success');
+                        addCacheLog(`✅ ${d.contas_carregadas} contas carregadas`, 'success');
                         // Atualizar status e selecionar cache teste
                         verificarStatusCache(true); // true = forçar busca após carregar
                     } else {
@@ -3045,12 +3277,15 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     botoesCache.forEach(btn => btn.disabled = false);
                     console.error('Erro:', error);
                     mostrarNotificacao("Erro de conexão ao carregar cache", 'error');
+                    addCacheLog('❌ Erro de conexão', 'error');
                     verificarStatusCache(false);
                 });
         }
 
         function carregarCacheCompleto() {
+            addCacheLog("Iniciando carregamento completo...", "info");
             if (!confirm("Carregar TODAS as contas? Isso pode demorar vários minutos.")) return;
+            addCacheLog('Iniciando carregamento completo...', 'info');
             
             // Mostrar status de carregamento
             document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando todas as contas...</span>";
@@ -3067,6 +3302,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     
                     if (d.success && d.contas_carregadas > 0) {
                         mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas completas`, 'success');
+                        addCacheLog(`✅ ${d.contas_carregadas} contas completas carregadas`, 'success');
                         // Atualizar status e selecionar cache completo
                         verificarStatusCache(true); // true = forçar busca após carregar
                     } else {
@@ -3079,6 +3315,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     botoesCache.forEach(btn => btn.disabled = false);
                     console.error('Erro:', error);
                     mostrarNotificacao("Erro de conexão ao carregar cache completo", 'error');
+                    addCacheLog('❌ Erro de conexão', 'error');
                     verificarStatusCache(false);
                 });
         }
@@ -3116,6 +3353,223 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
                 });
         }
+        // ===== FUNÇÕES DOS MODAIS DE AUTENTICAÇÃO =====
+        function abrirModalLogin() {
+            document.getElementById('modal-login').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('login-error').style.display = 'none';
+        }
+        
+        function abrirModalRegister() {
+            document.getElementById('modal-register').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('register-error').style.display = 'none';
+        }
+        
+        function trocarModal(fechar, abrir) {
+            document.getElementById(fechar).style.display = 'none';
+            document.getElementById(abrir).style.display = 'flex';
+        }
+        
+        async function submitLogin(event) {
+            event.preventDefault();
+            const form = document.getElementById('form-login');
+            const formData = new FormData(form);
+            const errorDiv = document.getElementById('login-error');
+            
+            try {
+                const response = await fetch('/auth/login-ajax', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    errorDiv.style.display = 'none';
+                    // Recarrega a página para atualizar o estado de login
+                    window.location.reload();
+                } else {
+                    errorDiv.textContent = data.message || 'Erro ao fazer login';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erro de conexão. Tente novamente.';
+                errorDiv.style.display = 'block';
+            }
+            return false;
+        }
+        
+        async function submitRegister(event) {
+            event.preventDefault();
+            const form = document.getElementById('form-register');
+            const formData = new FormData(form);
+            const errorDiv = document.getElementById('register-error');
+            
+            // Validar senhas
+            const password = document.getElementById('register-password').value;
+            const password2 = document.getElementById('register-password2').value;
+            
+            if (password !== password2) {
+                errorDiv.textContent = 'As senhas não coincidem';
+                errorDiv.style.display = 'block';
+                return false;
+            }
+            
+            try {
+                const response = await fetch('/auth/register-ajax', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Mostrar sucesso e trocar para login
+                    errorDiv.className = 'modal-success';
+                    errorDiv.textContent = 'Conta criada com sucesso! Fazendo login...';
+                    errorDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    errorDiv.className = 'modal-error';
+                    errorDiv.textContent = data.message || 'Erro ao criar conta';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.className = 'modal-error';
+                errorDiv.textContent = 'Erro de conexão. Tente novamente.';
+                errorDiv.style.display = 'block';
+            }
+            return false;
+        }
+        
+        // ===== FUNÇÕES DO LOG DE CACHE =====
+        let cacheLogMessages = [];
+        
+        function addCacheLog(message, type = 'info') {
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-BR');
+            cacheLogMessages.unshift({ time, message, type });
+            
+            // Mantém apenas as últimas 50 mensagens
+            if (cacheLogMessages.length > 50) {
+                cacheLogMessages.pop();
+            }
+            
+            updateCacheLogDisplay();
+        }
+        
+        function updateCacheLogDisplay() {
+            const container = document.getElementById('cache-log-content');
+            if (!container) return;
+            
+            container.innerHTML = cacheLogMessages.map(log => 
+                `<div class="log-line">
+                    <span class="log-time">[${log.time}]</span>
+                    <span class="log-${log.type}">${log.message}</span>
+                </div>`
+            ).join('');
+        }
+        
+        function toggleCacheLog() {
+            const content = document.getElementById('cache-log-content');
+            const icon = document.getElementById('cache-log-toggle-icon');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                content.style.display = 'none';
+                icon.className = 'fas fa-chevron-down';
+            }
+        }
     </script>
+
+<!-- ===== MODAL DE LOGIN ===== -->
+<div id="modal-login" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-auth">
+        <div class="modal-header">
+            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+            <button class="modal-close" onclick="fecharModal('modal-login')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-login" onsubmit="return submitLogin(event)">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-user"></i> Email ou Usuário</label>
+                    <input type="text" id="login-input" name="login" placeholder="seu@email.com ou seu_nick" required>
+                </div>
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-lock"></i> Senha</label>
+                    <input type="password" id="login-password" name="password" placeholder="Sua senha" required>
+                </div>
+                
+                <div class="form-group-modal checkbox-inline">
+                    <input type="checkbox" id="login-remember" name="remember_me">
+                    <label for="login-remember">Lembrar-me neste dispositivo</label>
+                </div>
+                
+                <div id="login-error" class="modal-error" style="display: none;"></div>
+                
+                <button type="submit" class="btn-modal-submit">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+            
+            <div class="modal-footer-links">
+                <p>Não tem conta? <a href="#" onclick="trocarModal('modal-login', 'modal-register')">Registre-se</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL DE CADASTRO ===== -->
+<div id="modal-register" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-auth">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-plus"></i> Criar Conta</h2>
+            <button class="modal-close" onclick="fecharModal('modal-register')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-register" onsubmit="return submitRegister(event)">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-user"></i> Nome de Usuário</label>
+                    <input type="text" id="register-username" name="username" placeholder="Seu nome de usuário" required minlength="3">
+                </div>
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="register-email" name="email" placeholder="seu@email.com" required>
+                </div>
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-lock"></i> Senha</label>
+                    <input type="password" id="register-password" name="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                
+                <div class="form-group-modal">
+                    <label><i class="fas fa-lock"></i> Confirmar Senha</label>
+                    <input type="password" id="register-password2" name="password2" placeholder="Repita a senha" required>
+                </div>
+                
+                <div id="register-error" class="modal-error" style="display: none;"></div>
+                
+                <button type="submit" class="btn-modal-submit btn-register">
+                    <i class="fas fa-user-plus"></i> Criar Conta
+                </button>
+            </form>
+            
+            <div class="modal-footer-links">
+                <p>Já tem conta? <a href="#" onclick="trocarModal('modal-register', 'modal-login')">Faça login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
