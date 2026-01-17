@@ -454,6 +454,10 @@ def create_app(config_name=None):
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
         elif ordenar_por == "precisao":
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "derrubada":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DA PROBABILIDADE DE SUCESSO DE DERRUBAR"), reverse=ordenar_desc)
+        elif ordenar_por == "evasao_critico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO DE CRÍTICO"), reverse=ordenar_desc)
         elif ordenar_por == "atk_habilidade":
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
         elif ordenar_por == "aceleramento":
@@ -476,6 +480,10 @@ def create_app(config_name=None):
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
         elif ordenar_por == "precisao":
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "derrubada":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DA PROBABILIDADE DE SUCESSO DE DERRUBAR"), reverse=ordenar_desc)
+        elif ordenar_por == "evasao_critico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO DE CRÍTICO"), reverse=ordenar_desc)
         elif ordenar_por == "atk_habilidade":
             contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
         elif ordenar_por == "aceleramento":
