@@ -95,7 +95,8 @@ def create_app(config_name=None):
         """Injeta variáveis úteis em todos os templates"""
         return {
             'current_user': current_user,
-            'is_premium': current_user.has_premium_access() if current_user.is_authenticated else False
+            'is_premium': current_user.has_premium_access() if current_user.is_authenticated else False,
+            'is_admin': current_user.is_admin if current_user.is_authenticated else False
         }
     
     # ==================== ROTAS PRINCIPAIS ====================

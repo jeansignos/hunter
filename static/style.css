@@ -1900,12 +1900,16 @@ h2, h3, h4 {
 /* ===== BOTÕES DE LOGIN/CADASTRAR NA NAVBAR ===== */
 .user-nav {
     display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     gap: 10px !important;
     align-items: center !important;
-    padding: 10px !important;
+    justify-content: flex-start !important;
+    padding: 10px 15px !important;
     background: #2d3748 !important;
     border-radius: 8px !important;
     margin-bottom: 15px !important;
+    width: fit-content !important;
 }
 
 .user-nav .btn-auth {
