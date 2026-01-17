@@ -1070,7 +1070,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 </a>
                 
                 <button class="btn-todos-status" onclick="abrirModalTodosStatus(event)" 
-                        data-stats='${JSON.stringify(conta.stats).replace(/'/g, "&apos;")}'>
+                        data-stats='${JSON.stringify(conta.stats || {}).replace(/'/g, "&apos;")}'>
                     <i class="fas fa-list"></i> Todos os Status
                 </button>
 
