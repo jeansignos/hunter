@@ -336,19 +336,25 @@ def buscar_detalhes_conta(seq, transport_id):
         
         classe = detalhes["classe"]
         
-        # 2. Status
+        # 2. Status - Buscar TODOS os status disponíveis
         url_stats = f"https://webapi.mir4global.com/nft/character/stats?transportID={transport_id}&languageCode=pt"
-        res = session.get(url_stats, timeout=10)
-        if res.ok:
-            data = res.json().get("data", {})
-            if isinstance(data, dict):
-                detalhes["stats"] = data.get("lists", [])
-                
-                for stat in detalhes["stats"]:
-                    if isinstance(stat, dict):
-                        nome_status = stat.get("statName")
-                        if nome_status and nome_status not in STATUS_DISPONIVEIS:
-                            STATUS_DISPONIVEIS.append(nome_status)
+        try:
+            res = session.get(url_stats, timeout=10)
+            if res.ok:
+                data = res.json().get("data", {})
+                if isinstance(data, dict):
+                    stats_list = data.get("lists", [])
+                    detalhes["stats"] = stats_list
+                    
+                    # Coletar TODOS os status para o filtro
+                    for stat in stats_list:
+                        if isinstance(stat, dict):
+                            nome_status = stat.get("statName")
+                            if nome_status and nome_status not in STATUS_DISPONIVEIS:
+                                STATUS_DISPONIVEIS.append(nome_status)
+                                print(f"[STATUS] Novo status coletado: {nome_status} (total: {len(STATUS_DISPONIVEIS)})")
+        except Exception as e:
+            print(f"[ERRO] Falha ao buscar stats: {e}")
 
         # 3. Equipamentos
         equipamentos_raw = buscar_equipamentos_equipados(seq)

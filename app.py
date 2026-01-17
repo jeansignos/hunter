@@ -102,7 +102,11 @@ def create_app(config_name=None):
     @app.route("/")
     def index():
         """Página principal com filtros"""
+        # Usar cache OU lista global de status
         status_cache = read_from_cache("status_disponiveis") or []
+        if not status_cache:
+            # Usar lista global se cache estiver vazio
+            status_cache = list(STATUS_DISPONIVEIS)
         
         status_importantes = []
         for status in STATUS_MINERACAO:
@@ -127,7 +131,8 @@ def create_app(config_name=None):
                 "destaque": False
             })
         
-        outros_status = sorted(outros_status, key=lambda x: x["nome"])[:40]
+        # Ordenar sem limite - mostrar TODOS os status
+        outros_status = sorted(outros_status, key=lambda x: x["nome"])
         status_importantes.extend(outros_status)
         
         cache_completo = read_from_cache("contas_completas")
