@@ -68,18 +68,22 @@ def create_app(config_name=None):
         db.create_all()
         
         # Criar admin padrão se não existir
-        admin = User.query.filter_by(email='admin@mir4market.com').first()
-        if not admin:
-            admin = User(
-                username='admin',
-                email='admin@mir4market.com',
-                is_admin=True,
-                is_premium=True
-            )
-            admin.set_password('admin123')  # MUDAR EM PRODUÇÃO!
-            db.session.add(admin)
-            db.session.commit()
-            print("[SETUP] Admin padrão criado: admin@mir4market.com / admin123")
+        try:
+            admin = User.query.filter_by(email='admin@mir4market.com').first()
+            if not admin:
+                admin = User(
+                    username='admin',
+                    email='admin@mir4market.com',
+                    is_admin=True,
+                    is_premium=True
+                )
+                admin.set_password('admin123')  # MUDAR EM PRODUÇÃO!
+                db.session.add(admin)
+                db.session.commit()
+                print("[SETUP] Admin padrão criado: admin@mir4market.com / admin123")
+        except Exception as e:
+            db.session.rollback()
+            print(f"[SETUP] Admin já existe ou erro: {e}")
     
     # ==================== VARIÁVEIS GLOBAIS ====================
     cache_carregando = False
