@@ -130,12 +130,14 @@ p.subtitle {
 
 /* --- MENU LATERAL (SIDEBAR) --- */
 .menu-lateral {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
     background: rgba(15, 15, 37, 0.7);
     backdrop-filter: blur(10px);
     border: var(--border-glass);
     border-radius: 12px;
     padding: 25px;
-    height: fit-content;
+    /* height: fit-content; */
     position: sticky;
     top: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -1119,7 +1121,9 @@ p.subtitle {
     .filtros-container { 
         grid-template-columns: 1fr; 
     }
-    .menu-lateral { 
+    .menu-lateral {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto; 
         position: static; 
         margin-bottom: 30px; 
     }
@@ -1343,6 +1347,8 @@ p.subtitle {
 
 /* 13. EFEITO DE PROFUNDIDADE NOS PAINÉIS */
 .menu-lateral {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
     box-shadow: 
         0 10px 15px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
@@ -1778,4 +1784,22 @@ h2, h3, h4 {
 
 .carregar-mais-btn i {
     font-size: 0.9rem;
+}
+/* Scrollbar personalizada para o menu lateral */
+.menu-lateral::-webkit-scrollbar {
+    width: 6px;
+}
+
+.menu-lateral::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.menu-lateral::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+}
+
+.menu-lateral::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
