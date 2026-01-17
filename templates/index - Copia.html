@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparador de Contas - MIR4</title>
+	<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #0f1117;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+
+        .form-top {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .form-top input[type="text"] {
+            width: 300px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: none;
+            background-color: #1c1f26;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .form-top input::placeholder {
+            color: #aaa;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7f5eff, #a26fff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .link-xdraco.voltar-alt {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: #5d50ff;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .link-xdraco.voltar-alt:hover {
+            background-color: #4c42d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comparador de Contas MIR4</h1>
+
+        <a href="/compare-alts" class="link-xdraco voltar-alt">Compare ALTS</a>
+
+        <form method="POST" class="form-top">
+            <input type="text" name="link1" placeholder="Cole o link da conta 1" required>
+            <input type="text" name="link2" placeholder="Cole o link da conta 2" required>
+            <button type="submit" class="btn-primary">Comparar</button>
+        </form>
+{% if nome1 and nome2 %}
+<div class="vs-section">
+    <div class="player-info">
+        <div class="personagem-nome-botao">
+            <img src="{{ icone_classe1 }}" alt="Classe de {{ nome1 }}" class="icon-classe-mini">
+            <strong style="font-size: 18px;">{{ nome1 }}</strong>
+            <p style="font-size: 20px; color: #aaa; margin-top: 2px;">
+                Level: {{ level1 }} | Poder: {{ power1 }}
+            </p>
+            <div style="display: flex; align-items: center; gap: 4px; margin: 6px 0;">
+                <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7548.png" alt="WEMIX" style="width: 20px; height: 20px;">
+                <span style="color: white; font-weight: bold; font-size: 38px;">{{ preco1 }}</span>
+            </div>
+            <a class="link-xdraco" href="https://www.xdraco.com/nft/trade/{{ id1 }}" target="_blank">Ver no XDRACO</a>
+        </div>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="player-info">
+        <div class="personagem-nome-botao">
+            <img src="{{ icone_classe2 }}" alt="Classe de {{ nome2 }}" class="icon-classe-mini">
+            <strong style="font-size: 18px;">{{ nome2 }}</strong>
+            <p style="font-size: 20px; color: #aaa; margin-top: 2px;">
+                Level: {{ level2 }} | Poder: {{ power2 }}
+            </p>
+            <div style="display: flex; align-items: center; gap: 4px; margin: 6px 0;">
+                <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7548.png" alt="WEMIX" style="width: 20px; height: 20px;">
+                <span style="color: white; font-weight: bold; font-size: 38px;">{{ preco2 }}</span>
+            </div>
+            <a class="link-xdraco" href="https://www.xdraco.com/nft/trade/{{ id2 }}" target="_blank">Ver no XDRACO</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Atributo</th>
+                    <th>{{ nome1 }}</th>
+                    <th>{{ nome2 }}</th>
+                    <th>Diferença</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="/static/icon_nivel.png" class="icon"> Nível</td>
+                    <td class="{{ 'melhor' if level1 > level2 else 'pior' if level1 < level2 else '' }}">{{ level1 }}</td>
+                    <td class="{{ 'melhor' if level2 > level1 else 'pior' if level2 < level1 else '' }}">{{ level2 }}</td>
+                    <td>{{ dif_level }}</td>
+                </tr>
+                <tr>
+                    <td><img src="/static/icon_power.png" class="icon"> Poder</td>
+                    <td class="{{ 'melhor' if power1 > power2 else 'pior' if power1 < power2 else '' }}">{{ power1 }}</td>
+                    <td class="{{ 'melhor' if power2 > power1 else 'pior' if power2 < power1 else '' }}">{{ power2 }}</td>
+                    <td>{{ dif_power }}</td>
+                </tr>
+                <tr>
+                    <td><img src="/static/icon_nivel.png" class="icon"> Codex</td>
+                    <td class="{{ 'melhor' if codex.vencedor == '1' else 'pior' if codex.vencedor == '2' else '' }}">{{ codex.valor1 }}</td>
+                    <td class="{{ 'melhor' if codex.vencedor == '2' else 'pior' if codex.vencedor == '1' else '' }}">{{ codex.valor2 }}</td>
+                    <td>{{ codex.diferenca }}</td>
+                </tr>
+                <tr>
+                    <td><img src="/static/icon_potencial.png" class="icon"> Potencial</td>
+                    <td class="{{ 'melhor' if potencial.vencedor == '1' else 'pior' if potencial.vencedor == '2' else '' }}">{{ potencial.valor1 }}</td>
+                    <td class="{{ 'melhor' if potencial.vencedor == '2' else 'pior' if potencial.vencedor == '1' else '' }}">{{ potencial.valor2 }}</td>
+                    <td>{{ potencial.diferenca }}</td>
+                </tr>
+                {% for atributo in atributos %}
+                <tr>
+                    <td><img src="{{ atributo.icone }}" class="icon"> {{ atributo.nome }}</td>
+                    <td class="{{ 'melhor' if atributo.vencedor == '1' else 'pior' if atributo.vencedor == '2' else '' }}">{{ atributo.valor1 }}</td>
+                    <td class="{{ 'melhor' if atributo.vencedor == '2' else 'pior' if atributo.vencedor == '1' else '' }}">{{ atributo.valor2 }}</td>
+                    <td>{{ atributo.diferenca }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% if atributos %}
+    <div class="resumo-atributos" style="text-align: center; margin-top: 20px; font-weight: bold; font-size: 20px; color: #c792ea; text-shadow: 1px 1px 2px black;">
+        {% if atributos_vitorias1 > atributos_vitorias2 %}
+            🏆 {{ nome1 }} venceu nos atributos: {{ atributos_vitorias1 }} × {{ atributos_vitorias2 }}
+        {% elif atributos_vitorias2 > atributos_vitorias1 %}
+            🏆 {{ nome2 }} venceu nos atributos: {{ atributos_vitorias2 }} × {{ atributos_vitorias1 }}
+        {% else %}
+            🤝 As duas contas empataram nos atributos: {{ atributos_vitorias1 }} × {{ atributos_vitorias2 }}
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if analise_inteligente %}
+  <div class="analise-inteligente">
+    <h3>📊 Análise Inteligente</h3>
+    <ul>
+      {% for frase in analise_inteligente %}
+        <li>{{ frase|safe }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
+
+<!-- TREINAMENTO -->
+<h2 style="margin-top: 50px;">📘 Treinamento</h2>
+<table class="tabela-atributos">
+    <thead>
+        <tr>
+            <th>Tipo de Treinamento</th>
+            <th>{{ nome1 }}</th>
+            <th>{{ nome2 }}</th>
+            <th>Diferença</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(treino1|length) %}
+        {% set n1 = treino1[i].nivel | int %}
+        {% set n2 = treino2[i].nivel | int %}
+        <tr>
+            <td><strong>{{ treino1[i].nome }}</strong></td>
+            <td style="color: {% if n1 > n2 %}#4caf50{% elif n1 < n2 %}#f44336{% else %}inherit{% endif %};">{{ n1 }}</td>
+            <td style="color: {% if n2 > n1 %}#4caf50{% elif n2 < n1 %}#f44336{% else %}inherit{% endif %};">{{ n2 }}</td>
+            <td style="color: #ccc;">{{ (n1 - n2) | abs }}</td>
+        </tr>
+        {% endfor %}
+
+        {% set n1 = const1.nivel | int %}
+        {% set n2 = const2.nivel | int %}
+        <tr>
+            <td><strong>{{ const1.nome }}</strong></td>
+            <td style="color: {% if n1 > n2 %}#4caf50{% elif n1 < n2 %}#f44336{% else %}inherit{% endif %};">{{ n1 }}</td>
+            <td style="color: {% if n2 > n1 %}#4caf50{% elif n2 < n1 %}#f44336{% else %}inherit{% endif %};">{{ n2 }}</td>
+            <td style="color: #ccc;">{{ (n1 - n2) | abs }}</td>
+        </tr>
+
+        {% set n1 = limbo1.nivel | int %}
+        {% set n2 = limbo2.nivel | int %}
+        <tr>
+            <td><strong>{{ limbo1.nome }}</strong></td>
+            <td style="color: {% if n1 > n2 %}#4caf50{% elif n1 < n2 %}#f44336{% else %}inherit{% endif %};">{{ n1 }}</td>
+            <td style="color: {% if n2 > n1 %}#4caf50{% elif n2 < n1 %}#f44336{% else %}inherit{% endif %};">{{ n2 }}</td>
+            <td style="color: #ccc;">{{ (n1 - n2) | abs }}</td>
+        </tr>
+    </tbody>
+</table>
+
+        <!-- CONQUISTA -->
+        <h2 style="margin-top: 50px;">🏯 Conquista</h2>
+        <table class="tabela-atributos">
+            <thead>
+                <tr>
+                    <th>Constituição</th>
+                    <th>{{ nome1 }}</th>
+                    <th>{{ nome2 }}</th>
+                    <th>Diferença</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in conquistas %}
+                <tr>
+                    <td>{{ c.nome }}</td>
+                    <td class="{% if c.vencedor == '1' %}melhor{% elif c.vencedor == '2' %}pior{% endif %}">{{ c.nivel1 }}</td>
+                    <td class="{% if c.vencedor == '2' %}melhor{% elif c.vencedor == '1' %}pior{% endif %}">{{ c.nivel2 }}</td>
+                    <td>{{ c.diferenca }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- ESPÍRITOS -->
+        <h2>Espíritos Épicos e Lendários</h2>
+        <div class="pets-comparacao">
+            <div class="pets-coluna">
+                <h3>{{ nome1 }}</h3>
+                <p>
+                    <span style="color: #ffd700;">Lendários: {{ lendarios1 }}</span> |
+                    <span style="color: #ff4444;">Épicos: {{ epicos1 }}</span>
+                </p>
+                <div class="pets-container">
+                    {% for pet in pets1 %}
+                        <img src="{{ pet.img }}" alt="Pet" class="pet-img {{ 'lendario' if pet.grade == 5 else 'epico' }}">
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="pets-coluna">
+                <h3>{{ nome2 }}</h3>
+                <p>
+                    <span style="color: #ffd700;">Lendários: {{ lendarios2 }}</span> |
+                    <span style="color: #ff4444;">Épicos: {{ epicos2 }}</span>
+                </p>
+                <div class="pets-container">
+                    {% for pet in pets2 %}
+                        <img src="{{ pet.img }}" alt="Pet" class="pet-img {{ 'lendario' if pet.grade == 5 else 'epico' }}">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+<!-- HABILIDADES -->
+<h2>Habilidades Épicas e Lendárias</h2>
+<div class="skills-comparacao">
+    <div class="skills-coluna">
+        <h3>{{ nome1 }}</h3>
+        <p>
+            <span style="color: #ffd700;">Lendárias: {{ habilidades1 | selectattr('grade', 'equalto', 5) | list | length }}</span> |
+            <span style="color: #ff4444;">Épicas: {{ habilidades1 | selectattr('grade', 'equalto', 4) | list | length }}</span>
+        </p>
+        <div class="skills-container">
+            {% for skill in habilidades1 %}
+                <div class="skill-wrapper">
+                    <div class="skill-img {{ 'lendario' if skill.grade == 5 else 'epico' }}">
+                        <img src="{{ skill.img }}" alt="Skill">
+                    </div>
+                   <div class="skill-nivel">{{ skill.nivel }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="skills-coluna">
+        <h3>{{ nome2 }}</h3>
+        <p>
+            <span style="color: #ffd700;">Lendárias: {{ habilidades2 | selectattr('grade', 'equalto', 5) | list | length }}</span> |
+            <span style="color: #ff4444;">Épicas: {{ habilidades2 | selectattr('grade', 'equalto', 4) | list | length }}</span>
+        </p>
+        <div class="skills-container">
+            {% for skill in habilidades2 %}
+                <div class="skill-wrapper">
+                    <div class="skill-img {{ 'lendario' if skill.grade == 5 else 'epico' }}">
+                        <img src="{{ skill.img }}" alt="Skill">
+                    </div>
+                    <p class="skill-nivel">{{ skill.nivel }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+        <!-- EQUIPAMENTOS -->
+        <h2>Equipamentos Equipados</h2>
+        <div class="equipamentos-comparacao">
+            <div class="equipamentos-coluna">
+                <h3>{{ nome1 }}</h3>
+                <p>Quantidade: {{ equipados1 | length }}</p>
+                <p>
+                    <span style="color: #ffd700;">Lendários: {{ equip_lendarios1 }}</span> |
+                    <span style="color: #ff4444;">Épicos: {{ equip_epicos1 }}</span> |
+                    <span style="color: #007bff;">Raros: {{ equip_raros1 }}</span>
+                </p>
+                <div class="equip-container">
+                    {% for eq in equipados1 %}
+                    <div class="equip-wrapper-img">
+                        {% if eq.trade %}
+                        <img src="/static/icon_trade.png" class="equip-trade-icon animated-bounce" alt="Tradável">
+                        {% endif %}
+                        <div class="equip-img {{ 'lendario' if eq.grade == 5 else 'epico' if eq.grade == 4 else 'raro' }}">
+                            <img src="{{ eq.img }}" alt="Equipamento">
+                        </div>
+                        <span class="equip-tier">T{{ eq.tier }}</span>
+                        <span class="equip-aprimoramento">+{{ eq.aprimoramento }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="equipamentos-coluna">
+                <h3>{{ nome2 }}</h3>
+                <p>Quantidade: {{ equipados2 | length }}</p>
+                <p>
+                    <span style="color: #ffd700;">Lendários: {{ equip_lendarios2 }}</span> |
+                    <span style="color: #ff4444;">Épicos: {{ equip_epicos2 }}</span> |
+                    <span style="color: #007bff;">Raros: {{ equip_raros2 }}</span>
+                </p>
+                <div class="equip-container">
+                    {% for eq in equipados2 %}
+                    <div class="equip-wrapper-img">
+                        {% if eq.trade %}
+                        <img src="/static/icon_trade.png" class="equip-trade-icon animated-bounce" alt="Tradável">
+                        {% endif %}
+                        <div class="equip-img {{ 'lendario' if eq.grade == 5 else 'epico' if eq.grade == 4 else 'raro' }}">
+                            <img src="{{ eq.img }}" alt="Equipamento">
+                        </div>
+                        <span class="equip-tier">T{{ eq.tier }}</span>
+                        <span class="equip-aprimoramento">+{{ eq.aprimoramento }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

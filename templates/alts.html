@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparador de ALTS MIR4</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #f2f2f2;
+            font-family: 'Poppins', sans-serif;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #00ffff;
+        }
+
+        .linha {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tabela-atributos,
+        .tabela-itens {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        .tabela-atributos th, .tabela-atributos td,
+        .tabela-itens th, .tabela-itens td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            text-align: center;
+        }
+
+        .tabela-atributos th,
+        .tabela-itens th {
+            background-color: #111;
+            color: #00ffff;
+        }
+
+        .destaque1 {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .destaque2 {
+            color: #44ff44;
+            font-weight: bold;
+        }
+
+        .img-borda {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 4px;
+            object-fit: cover;
+            background-color: #ffa50033;
+            margin-right: 8px;
+        }
+
+        .incomum {
+            background-color: #28a74533;
+            border: 2px solid #28a745;
+        }
+
+        .raro {
+            background-color: #007bff33;
+            border: 2px solid #007bff;
+        }
+
+        .epico {
+            background-color: #ff444433;
+            border: 2px solid #ff4444;
+        }
+
+        .lendario {
+            background-color: #ffd70033;
+            border: 2px solid #ffd700;
+        }
+
+        .botao-voltar {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background-color: #00ffff20;
+            border: 1px solid #00ffff55;
+            color: #00ffff;
+            font-weight: bold;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .botao-voltar:hover {
+            background-color: #00ffff40;
+            color: #ffffff;
+        }
+		.classe-icone-pequeno {
+        width: 34px !important;
+        height: 34px !important;
+        vertical-align: middle;
+        margin-right: 5px;
+        margin-top: -2px;
+        opacity: 0.9;
+		}
+    </style>
+</head>
+<body>
+
+<a href="/" class="botao-voltar">← Voltar para Comparação Normal</a>
+
+<h1>Comparador de ALTS MIR4</h1>
+
+<div id="loading" style="display: none; margin: 20px 0; color: #00ffff; font-weight: bold;">
+    ⏳ Carregando dados... Por favor, aguarde. Isso pode demorar até dois minutos, depende da API do XDRACO.
+</div>
+
+<form method="POST" style="margin-bottom: 30px;">
+    <input type="text" name="link1" placeholder="Cole o link da conta 1" required>
+    <input type="text" name="link2" placeholder="Cole o link da conta 2" required>
+    <button type="submit">Comparar ALTs</button>
+</form>
+
+{% if nome1 and nome2 %}
+       <div class="vs-section">
+            <div class="player-info">
+                <div class="personagem-nome-botao">
+                     <img src="{{ icone_classe1 }}" alt="Classe de {{ nome1 }}" class="icon-classe-mini">
+                    <strong>{{ nome1 }}</strong>
+                    
+                    <p>
+                        Level: {{ level1 }} | Poder: {{ power1 }}<br>
+						Servidor: {{ servidor1 }}
+                    </p>
+                    
+                    <!-- Container do preço WEMIX - REDESIGN -->
+                    <div class="wemix-container">
+                        <div class="wemix-value">
+                            <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7548.png" alt="WEMIX" class="wemix-icon">
+                            <span class="wemix-amount">{{ preco1 }}</span>
+                        </div>
+                        <div class="wemix-label">Valor em WEMIX</div>
+                    </div>
+                    
+                    <!-- Botão XDRACO - REDESIGN -->
+                    <a class="xdraco-button" href="https://www.xdraco.com/nft/trade/{{ id1 }}" target="_blank">
+                        Ver no XDRACO
+                    </a>
+                </div>
+            </div>
+            
+            <div class="vs-text">VS</div>
+            
+            <div class="player-info">
+                <div class="personagem-nome-botao">
+                     <img src="{{ icone_classe1 }}" alt="Classe de {{ nome1 }}" class="icon-classe-mini">
+                    <strong>{{ nome2 }}</strong>
+                    
+                    <p>
+                        Level: {{ level2 }} | Poder: {{ power2 }}<br>
+						Servidor: {{ servidor2 }}
+                    </p>
+                    
+                    <!-- Container do preço WEMIX - REDESIGN -->
+                    <div class="wemix-container">
+                        <div class="wemix-value">
+                            <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7548.png" alt="WEMIX" class="wemix-icon">
+                            <span class="wemix-amount">{{ preco2 }}</span>
+                        </div>
+                        <div class="wemix-label">Valor em WEMIX</div>
+                    </div>
+                    
+                    <!-- Botão XDRACO - REDESIGN -->
+                    <a class="xdraco-button" href="https://www.xdraco.com/nft/trade/{{ id2 }}" target="_blank">
+                        Ver no XDRACO
+                    </a>
+                </div>
+            </div>
+        </div>
+{% endif %}
+
+{% if atributos %}
+<table class="tabela-atributos">
+    <tr>
+        <th>ATRIBUTO ALT</th>
+        <th>{{ nome1 }}</th>
+        <th>{{ nome2 }}</th>
+        <th>DIFERENÇA</th>
+    </tr>
+    {% for atributo in atributos %}
+    <tr>
+        <td>{{ atributo.nome }}</td>
+        <td class="{% if atributo.vencedor == '1' %}destaque1{% endif %}">{{ atributo.valor1 }}</td>
+        <td class="{% if atributo.vencedor == '2' %}destaque2{% endif %}">{{ atributo.valor2 }}</td>
+        <td>{{ atributo.diferenca }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if recursos %}
+<h2 style="margin-top: 50px;">💰 Recursos</h2>
+<table class="tabela-atributos">
+    <tr>
+        <th>RECURSO</th>
+        <th>{{ nome1 }}</th>
+        <th>{{ nome2 }}</th>
+        <th>DIFERENÇA</th>
+    </tr>
+    {% for r in recursos %}
+    {% set icon_url = 
+        "https://file.mir4global.com/xdraco/img/common/nft-detail/icon-coin.webp" if r.nome == "Cobre" else
+        "https://file.mir4global.com/xdraco/img/common/nft-detail/icon-spirit.webp" if r.nome == "Energia" else
+        "https://file.mir4global.com/xdraco/img/common/nft-detail/icon-blackIron.webp" if r.nome == "Aço Negro" else
+        "https://file.mir4global.com/xdraco/img/common/nft-detail/icon-speedup.webp" if r.nome == "Aceleramento" else
+        "https://file.mir4global.com/xdraco/img/common/nft-detail/icon-guildcoin.webp" if r.nome == "Moeda Ancestral" else "" %}
+    <tr>
+        <td>
+            {% if icon_url %}
+                <img src="{{ icon_url }}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+            {% endif %}
+            {{ r.nome }}
+        </td>
+        <td class="{% if r.vencedor == '1' %}destaque1{% endif %}">{{ r.valor1 }}</td>
+        <td class="{% if r.vencedor == '2' %}destaque2{% endif %}">{{ r.valor2 }}</td>
+        <td>{{ (r.valor1 - r.valor2) | abs }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if itens1 or itens2 %}
+<h2 style="margin-top: 50px;">Itens da mochila:</h2>
+<table class="tabela-itens">
+    <tr>
+        <th>ITEM</th>
+        <th>{{ nome1 }}</th>
+        <th>{{ nome2 }}</th>
+        <th>DIFERENÇA</th>
+    </tr>
+    {% for item in itens1 %}
+        {% set nome = item.nome|lower %}
+        {% set raridade =
+            'lendario' if 'lendário' in nome or 'lendaria' in nome else
+            'epico' if 'épico' in nome or 'épica' in nome else
+            'raro' if 'raro' in nome or 'rara' in nome else
+            'incomum' if 'incomum' in nome or 'incomuma' in nome else '' %}
+        {% set item2 = (itens2 | selectattr("nome", "equalto", item.nome) | list)[0] if (itens2 | selectattr("nome", "equalto", item.nome) | list) else None %}
+        {% set qtd1 = item.qtd %}
+        {% set qtd2 = item2.qtd if item2 else 0 %}
+        <tr>
+            <td><img src="{{ item.img }}" class="img-borda {{ raridade }}">{{ item.nome }}</td>
+            <td class="{% if qtd1 > qtd2 %}destaque1{% endif %}">{{ qtd1 }}</td>
+            <td class="{% if qtd2 > qtd1 %}destaque2{% endif %}">{{ qtd2 }}</td>
+            <td>{{ (qtd1 - qtd2) | abs }}</td>
+        </tr>
+    {% endfor %}
+    {% for item in itens2 %}
+        {% if item.nome not in itens1 | map(attribute='nome') | list %}
+            {% set nome = item.nome|lower %}
+            {% set raridade =
+                'lendario' if 'lendário' in nome or 'lendaria' in nome else
+                'epico' if 'épico' in nome or 'épica' in nome else
+                'raro' if 'raro' in nome or 'rara' in nome else
+                'incomum' if 'incomum' in nome or 'incomuma' in nome else '' %}
+            <tr>
+                <td><img src="{{ item.img }}" class="img-borda {{ raridade }}">{{ item.nome }}</td>
+                <td>0</td>
+                <td class="destaque2">{{ item.qtd }}</td>
+                <td>{{ item.qtd }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if mina1 or mina2 %}
+<h2 style="margin-top: 50px;">⛏️ Nível da Mina</h2>
+<table class="tabela-atributos">
+    <tr>
+        <th>MINA</th>
+        <th>{{ nome1 }}</th>
+        <th>{{ nome2 }}</th>
+    </tr>
+    <tr>
+        <td>Nível</td>
+        <td class="{% if mina1 > mina2 %}destaque1{% endif %}">{{ mina1 }}</td>
+        <td class="{% if mina2 > mina1 %}destaque2{% endif %}">{{ mina2 }}</td>
+    </tr>
+</table>
+{% endif %}
+
+
+<script>
+    document.querySelector('form').addEventListener('submit', () => {
+        document.getElementById('loading').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>

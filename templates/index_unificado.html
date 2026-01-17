@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtro Unificado MIR4 - Status e Mineração</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .filtros-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .menu-lateral {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .abas-filtros {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .aba-filtro {
+            flex: 1;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: none;
+            border-radius: 10px;
+            color: #cbd5e1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .aba-filtro.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .conteudo-aba {
+            display: none;
+        }
+        
+        .conteudo-aba.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .grupo-filtro {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .grupo-filtro:last-child {
+            border-bottom: none;
+        }
+        
+        .grupo-filtro h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .grupo-filtro h3 i {
+            font-size: 18px;
+        }
+        
+        .campo-duplo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+        
+        .status-especial {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid #8b5cf6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .status-especial label {
+            color: #d8b4fe !important;
+            font-weight: 600 !important;
+        }
+        
+        .lista-filtros {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding-right: 5px;
+        }
+        
+        .lista-filtros::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .lista-filtros::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 3px;
+        }
+        
+        .lista-filtros::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 3px;
+        }
+        
+        .lista-filtros::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
+        }
+        
+        .filtro-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            transition: background 0.2s;
+        }
+        
+        .filtro-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .filtro-item input {
+            width: 70px;
+            padding: 5px 8px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 5px;
+            color: white;
+            font-size: 13px;
+        }
+        
+        .btn-buscar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .btn-buscar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .resultados-container {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cabecalho-resultados {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .ordenacao-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .ordenacao-label {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .ordenacao-botoes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-ordenacao {
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ordenacao:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: white;
+        }
+        
+        .btn-ordenacao.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: #6366f1;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .info-cache {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        .cache-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .status-cache {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .status-cache.completo {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-cache.teste {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-cache.vazio {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-recarregar {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-recarregar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-teste {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-teste:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .contas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .conta-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .conta-card:hover {
+            transform: translateY(-5px);
+            border-color: #6366f1;
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2);
+        }
+        
+        .conta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .conta-classe {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .classe-icone {
+            font-size: 24px;
+        }
+        
+        .conta-nome {
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .conta-servidor {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        
+        .conta-preco {
+            text-align: right;
+        }
+        
+        .preco-wemix {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fbbf24;
+        }
+        
+        .preco-brl {
+            font-size: 14px;
+            color: #10b981;
+            margin-top: 2px;
+        }
+        
+        .conta-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        
+        .stat-value {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .status-especiais {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .status-item-especial {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .status-label-especial {
+            font-size: 11px;
+            color: #d8b4fe;
+            margin-bottom: 2px;
+        }
+        
+        .status-value-especial {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .itens-container, .status-container {
+            margin-top: 10px;
+        }
+        
+        .itens-container h4, .status-container h4 {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .itens-lista, .status-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .item-badge, .status-badge {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #c7d2fe;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .quantidade-item {
+            background: #6366f1;
+            color: white;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+        
+        .conta-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-ver-conta {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ver-conta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .sem-resultados {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+            grid-column: 1 / -1;
+        }
+        
+        .sem-resultados i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            grid-column: 1 / -1;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .filtro-item-destaque {
+            background: rgba(139, 92, 246, 0.1) !important;
+            border-left: 3px solid #8b5cf6 !important;
+        }
+        
+        .filtro-item-destaque span {
+            color: #d8b4fe !important;
+            font-weight: 600 !important;
+        }
+        
+        .cache-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .cache-type-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            color: #cbd5e1;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .cache-type-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: white;
+        }
+        
+        .status-vazio-mensagem {
+            text-align: center;
+            padding: 30px 20px;
+            color: #94a3b8;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 10px;
+            border: 1px dashed rgba(99, 102, 241, 0.2);
+            margin: 10px 0;
+        }
+        
+        .status-vazio-mensagem i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+            opacity: 0.5;
+        }
+        
+        .btn-carregar-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-carregar-status:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .status-count {
+            text-align: center;
+            padding: 8px;
+            color: #64748b;
+            font-size: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Filtro Unificado MIR4 - Status e Mineração</h1>
+        <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">
+            Filtre contas por status específicos, conquistas e mineração. Valores padrão já configurados.
+        </p>
+        
+        <div class="filtros-container">
+            <!-- MENU LATERAL COM FILTROS -->
+            <div class="menu-lateral">
+                <div class="abas-filtros">
+                    <button class="aba-filtro active" onclick="mostrarAba('geral')">⚙️ Geral & Mineração</button>
+                    <button class="aba-filtro" onclick="mostrarAba('outros')">📊 Outros Status</button>
+                    <button class="aba-filtro" onclick="mostrarAba('conquistas')">🏆 Conquistas</button>
+                </div>
+                
+                <!-- ABA GERAL (AGORA COM MINERAÇÃO) -->
+                <div id="aba-geral" class="conteudo-aba active">
+                    <div class="grupo-filtro">
+                        <h3><i>🏹</i> Classe</h3>
+                        <div class="input-group">
+                            <select id="classe" name="classe">
+                                <option value="0">Todas as Classes</option>
+                                {% for id, info in classes.items() %}
+                                <option value="{{ id }}">{{ info.icone }} {{ info.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>⚡</i> Poder</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Mínimo</label>
+                                <input type="number" id="power_min" name="power_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Máximo</label>
+                                <input type="number" id="power_max" name="power_max" placeholder="999999">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>⭐</i> Level</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Mínimo</label>
+                                <input type="number" id="level_min" name="level_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Máximo</label>
+                                <input type="number" id="level_max" name="level_max" placeholder="150">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>💰</i> Preço WEMIX</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Mínimo</label>
+                                <input type="number" id="price_min" name="price_min" placeholder="0" step="0.01">
+                            </div>
+                            <div class="input-group">
+                                <label>Máximo</label>
+                                <input type="number" id="price_max" name="price_max" placeholder="10000" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FILTROS DE MINERAÇÃO (AGORA NA ABA GERAL) -->
+                    <div class="grupo-filtro">
+                        <h3><i>⛏️</i> Mineração</h3>
+                        
+                        <!-- Mina -->
+                        <div class="input-group status-especial">
+                            <label>Nível Mínimo da Mina</label>
+                            <input type="number" id="mina_min" name="mina_min" value="17" min="0" max="30">
+                        </div>
+                        
+                        <!-- Aceleramento de Mineração -->
+                        {% for status in status_importantes %}
+                            {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                            <div class="input-group status-especial">
+                                <label>{{ status.nome }}</label>
+                                <input type="number" 
+                                       id="status_{{ status.hash }}" 
+                                       name="status_{{ status.hash }}" 
+                                       value="220"
+                                       placeholder="0" 
+                                       step="0.1">
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Aumento de Ganho de Aço Negro -->
+                        {% for status in status_importantes %}
+                            {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
+                            <div class="input-group status-especial">
+                                <label>{{ status.nome }}</label>
+                                <input type="number" 
+                                       id="status_{{ status.hash }}" 
+                                       name="status_{{ status.hash }}" 
+                                       value="165"
+                                       placeholder="0" 
+                                       step="0.1">
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- SELEÇÃO DO TIPO DE CACHE -->
+                    <div class="grupo-filtro">
+                        <h3><i>💾</i> Tipo de Cache</h3>
+                        <div class="cache-type-selector">
+                            <button type="button" class="cache-type-btn active" onclick="selecionarCache('completas')" id="cache-completas">
+                                Completas
+                            </button>
+                            <button type="button" class="cache-type-btn" onclick="selecionarCache('teste')" id="cache-teste">
+                                Teste (10)
+                            </button>
+                        </div>
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 8px;">
+                            <span id="cache-info">Cache completo: todas as contas</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- ABA OUTROS STATUS (SEM MINERAÇÃO) - CORRIGIDA -->
+                <div id="aba-outros" class="conteudo-aba">
+                    <div class="grupo-filtro">
+                        <h3><i>📊</i> Outros Status</h3>
+                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">
+                            Filtre por outros status disponíveis:
+                        </p>
+                        
+                        {% set outros_status_count = status_importantes|selectattr('destaque', 'false')|list|length %}
+                        
+                        {% if outros_status_count == 0 %}
+                        <div class="status-vazio-mensagem">
+                            <i>📊</i>
+                            <p><strong>Nenhum status disponível no momento.</strong></p>
+                            <p>Os status são coletados automaticamente quando você carrega as contas.</p>
+                            <button class="btn-carregar-status" onclick="carregarCacheTeste()">
+                                🔄 Carregar Contas (Teste)
+                            </button>
+                            <p style="margin-top: 10px; font-size: 11px;">
+                                Dica: Carregue as contas primeiro para ver todos os status disponíveis.
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="lista-filtros" id="lista-status">
+                            {% for status in status_importantes %}
+                                {% if not status.destaque %}
+                                <div class="filtro-item">
+                                    <span style="flex: 1; font-size: 13px; color: #cbd5e1;">{{ status.nome }}</span>
+                                    <input type="number" 
+                                           id="status_{{ status.hash }}" 
+                                           name="status_{{ status.hash }}" 
+                                           placeholder="0" 
+                                           step="0.1"
+                                           style="width: 70px;">
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            <div class="status-count">
+                                Total: {{ outros_status_count }} status disponíveis
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- ABA CONQUISTAS -->
+                <div id="aba-conquistas" class="conteudo-aba">
+                    <div class="grupo-filtro">
+                        <h3><i>📚</i> Codex</h3>
+                        <div class="input-group">
+                            <label>Pontuação Mínima</label>
+                            <input type="number" id="codex_min" name="codex_min" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>✨</i> Potencial</h3>
+                        <div class="input-group">
+                            <label>Valor Mínimo</label>
+                            <input type="number" id="potencial_min" name="potencial_min" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>🐾</i> Pets</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Pets Lendários Mín.</label>
+                                <input type="number" id="pets_lendarios_min" name="pets_lendarios_min" placeholder="0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Pets Místicos Mín.</label>
+                                <input type="number" id="pets_misticos_min" name="pets_misticos_min" placeholder="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>🎯</i> Habilidades</h3>
+                        <div class="input-group">
+                            <label>Habilidades Lendárias Mín.</label>
+                            <input type="number" id="habs_lendarias_min" name="habs_lendarias_min" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+                        <h3><i>💪</i> Treinamento</h3>
+                        <div class="input-group">
+                            <label>Constituição Mínima</label>
+                            <input type="number" id="constituicao_min" name="constituicao_min" placeholder="0" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-buscar" onclick="buscarContas()">
+                    🔍 Buscar Contas
+                </button>
+            </div>
+            
+            <!-- RESULTADOS -->
+            <div class="resultados-container">
+                <div class="cabecalho-resultados">
+                    <h2 style="color: white; margin: 0;">Resultados</h2>
+                    <div class="info-cache">
+                        <span class="status-cache 
+                            {% if cache_status == 'completo' %}completo
+                            {% elif cache_status == 'teste' %}teste
+                            {% else %}vazio{% endif %}">
+                            {% if cache_status == 'completo' %}✅ Cache Completo
+                            {% elif cache_status == 'teste' %}⚠️ Cache de Teste
+                            {% else %}❌ Sem Cache{% endif %}
+                        </span>
+                        
+                        <div class="cache-controls">
+                            <button class="btn-teste" onclick="carregarCacheTeste()">
+                                🔄 Carregar 10 (Teste)
+                            </button>
+                            <button class="btn-recarregar" onclick="recarregarCacheCompleto()">
+                                🚀 Carregar Todas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO DE ORDENAÇÃO -->
+                <div class="ordenacao-container">
+                    <div class="ordenacao-label">Ordenar por:</div>
+                    <div class="ordenacao-botoes">
+                        <button class="btn-ordenacao" onclick="ordenarPor('level')" id="ordenar-level">
+                            ⭐ Maior Level
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('aceleramento')" id="ordenar-aceleramento">
+                            ⏱️ Maior % Mineração
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('aconegro')" id="ordenar-aconegro">
+                            ⚫ Maior Ganho Aço Negro
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('price_desc')" id="ordenar-price-desc">
+                            💰 Menor Preço
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('price_asc')" id="ordenar-price-asc">
+                            💸 Maior Preço
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('mina')" id="ordenar-mina">
+                            ⛏️ Maior Mina
+                        </button>
+                        <button class="btn-ordenacao" onclick="ordenarPor('power')" id="ordenar-power">
+                            ⚡ Maior Poder
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="resultados" class="contas-grid">
+                    <div class="sem-resultados">
+                        <i>🔍</i>
+                        <h3>Nenhuma busca realizada</h3>
+                        <p>Use os filtros ao lado para encontrar contas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Alternar entre abas
+        function mostrarAba(aba) {
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.aba-filtro').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.conteudo-aba').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Adicionar classe active na aba selecionada
+            document.querySelector(`.aba-filtro[onclick*="${aba}"]`).classList.add('active');
+            document.getElementById(`aba-${aba}`).classList.add('active');
+        }
+        
+        // Selecionar tipo de cache
+        let cacheTipo = 'completas';
+        
+        function selecionarCache(tipo) {
+            cacheTipo = tipo;
+            
+            // Atualizar botões
+            document.querySelectorAll('.cache-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`cache-${tipo}`).classList.add('active');
+            
+            // Atualizar info
+            const infoElement = document.getElementById('cache-info');
+            if (tipo === 'completas') {
+                infoElement.textContent = 'Cache completo: todas as contas';
+            } else {
+                infoElement.textContent = 'Cache de teste: 10 contas (rápido)';
+            }
+        }
+        
+        // Variáveis de ordenação
+        let ordenarPorValor = 'power';
+        let ordenarDesc = true;
+        
+        // Função para ordenar
+        function ordenarPor(tipo) {
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.btn-ordenacao').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Definir tipo de ordenação
+            if (tipo === 'level') {
+                ordenarPorValor = 'level';
+                ordenarDesc = true;
+                document.getElementById('ordenar-level').classList.add('active');
+            } else if (tipo === 'aceleramento') {
+                ordenarPorValor = 'aceleramento';
+                ordenarDesc = true;
+                document.getElementById('ordenar-aceleramento').classList.add('active');
+            } else if (tipo === 'aconegro') {
+                ordenarPorValor = 'aconegro';
+                ordenarDesc = true;
+                document.getElementById('ordenar-aconegro').classList.add('active');
+            } else if (tipo === 'mina') {
+                ordenarPorValor = 'mina';
+                ordenarDesc = true;
+                document.getElementById('ordenar-mina').classList.add('active');
+            } else if (tipo === 'power') {
+                ordenarPorValor = 'power';
+                ordenarDesc = true;
+                document.getElementById('ordenar-power').classList.add('active');
+            } else if (tipo === 'price_desc') {
+                ordenarPorValor = 'price';
+                ordenarDesc = true;
+                document.getElementById('ordenar-price-desc').classList.add('active');
+            } else if (tipo === 'price_asc') {
+                ordenarPorValor = 'price';
+                ordenarDesc = false;
+                document.getElementById('ordenar-price-asc').classList.add('active');
+            }
+            
+            // Executar busca se já tiver resultados
+            if (document.querySelector('.conta-card')) {
+                buscarContas();
+            }
+        }
+        
+        // Buscar contas
+        function buscarContas() {
+            const resultados = document.getElementById('resultados');
+            resultados.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Buscando contas...</p>
+                    <p style="font-size: 12px; color: #94a3b8;">Usando cache: ${cacheTipo === 'completas' ? 'completo' : 'teste (10 contas)'}</p>
+                </div>
+            `;
+            
+            // Coletar todos os filtros
+            const params = new URLSearchParams();
+            
+            // Adicionar tipo de cache
+            params.append('cache_tipo', cacheTipo);
+            
+            // Adicionar ordenação
+            params.append('ordenar_por', ordenarPorValor);
+            params.append('ordenar_desc', ordenarDesc);
+            
+            // Filtros gerais
+            params.append('classe', document.getElementById('classe').value);
+            params.append('power_min', document.getElementById('power_min').value || '');
+            params.append('power_max', document.getElementById('power_max').value || '');
+            params.append('level_min', document.getElementById('level_min').value || '');
+            params.append('level_max', document.getElementById('level_max').value || '');
+            params.append('price_min', document.getElementById('price_min').value || '');
+            params.append('price_max', document.getElementById('price_max').value || '');
+            
+            // Filtros de conquistas
+            params.append('codex_min', document.getElementById('codex_min').value || '');
+            params.append('potencial_min', document.getElementById('potencial_min').value || '');
+            params.append('pets_lendarios_min', document.getElementById('pets_lendarios_min').value || '');
+            params.append('pets_misticos_min', document.getElementById('pets_misticos_min').value || '');
+            params.append('habs_lendarias_min', document.getElementById('habs_lendarias_min').value || '');
+            params.append('constituicao_min', document.getElementById('constituicao_min').value || '');
+            params.append('mina_min', document.getElementById('mina_min').value || '');
+            
+            // Status dinâmicos (incluindo mineração)
+            document.querySelectorAll('[id^="status_"]').forEach(input => {
+                if (input.value) {
+                    params.append(input.id, input.value);
+                }
+            });
+            
+            // Fazer requisição
+            fetch(`/buscar-contas?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        exibirResultados(data.contas, data.total, data.wemix_brl, data.total_cache, data.cache_tipo);
+                    } else {
+                        resultados.innerHTML = `
+                            <div class="sem-resultados">
+                                <i>⚠️</i>
+                                <h3>${data.error || 'Erro na busca'}</h3>
+                                <p>${data.cache_carregando ? 'Cache está sendo carregado...' : 'Clique em um dos botões para carregar o cache'}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultados.innerHTML = `
+                        <div class="sem-resultados">
+                            <i>❌</i>
+                            <h3>Erro na conexão</h3>
+                            <p>${error}</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Exibir resultados
+        function exibirResultados(contas, total, wemixBrl, totalCache, cacheTipoResult) {
+            const resultados = document.getElementById('resultados');
+            
+            if (total === 0) {
+                resultados.innerHTML = `
+                    <div class="sem-resultados">
+                        <i>😔</i>
+                        <h3>Nenhuma conta encontrada</h3>
+                        <p>Tente ajustar os filtros</p>
+                        <p style="font-size: 12px; color: #94a3b8;">
+                            Cache usado: ${cacheTipoResult === 'completas' ? 'Completo' : 'Teste'} (${totalCache} contas)
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            contas.forEach(conta => {
+                html += `
+                    <div class="conta-card">
+                        <div class="conta-header">
+                            <div class="conta-classe">
+                                <div class="classe-icone" style="color: ${conta.class.cor}">
+                                    ${conta.class.icone}
+                                </div>
+                                <div>
+                                    <div class="conta-nome">${conta.name}</div>
+                                    <div class="conta-servidor">🌐 ${conta.worldName}</div>
+                                </div>
+                            </div>
+                            <div class="conta-preco">
+    <div class="preco-wemix">${conta.price % 1 === 0 ? conta.price.toFixed(0) : conta.price.toFixed(2)} WEMIX</div>
+    ${conta.price_brl ? `<div class="preco-brl">R$ ${conta.price_brl % 1 === 0 ? conta.price_brl.toFixed(0) : conta.price_brl.toFixed(2)}</div>` : ''}
+</div>
+                        </div>
+                        
+                        <div class="conta-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">⭐ Level</span>
+                                <span class="stat-value">${conta.level}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">⚡ Poder</span>
+                                <span class="stat-value">${conta.powerScore.toLocaleString()}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${conta.class.icone} Classe</span>
+                                <span class="stat-value" style="color: ${conta.class.cor}">${conta.class.nome}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">📚 Codex</span>
+                                <span class="stat-value">${conta.codex}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Status de Mineração -->
+                        <div class="status-especiais">
+                            <div class="status-item-especial">
+                                <div class="status-label-especial">⛏️ Mina</div>
+                                <div class="status-value-especial">${conta.mina}</div>
+                            </div>
+                            <div class="status-item-especial">
+                                <div class="status-label-especial">⏱️ Mineração</div>
+                                <div class="status-value-especial">${conta.aceleramento_mineracao || '0'}%</div>
+                            </div>
+                            <div class="status-item-especial">
+                                <div class="status-label-especial">⚫ Aço Negro</div>
+                                <div class="status-value-especial">${conta.aumento_aconegro || '0'}%</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pets e Habilidades -->
+                        <div class="conta-stats" style="margin-top: 10px;">
+                            <div class="stat-item">
+                                <span class="stat-label">🐾 Pets Lendários</span>
+                                <span class="stat-value">${conta.pets.lendarios}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">🌟 Pets Místicos</span>
+                                <span class="stat-value">${conta.pets.misticos}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">🎯 Habil. Lendárias</span>
+                                <span class="stat-value">${conta.skills.lendarias}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">💪 Constituição</span>
+                                <span class="stat-value">${conta.constituicao}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="conta-footer">
+                            <div>
+                                <span style="color: #94a3b8; font-size: 12px;">
+                                    ✨ Potencial: ${conta.potencial}
+                                </span>
+                            </div>
+                            <a href="${conta.url}" target="_blank" class="btn-ver-conta">
+                                Ver no XDRACO →
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Adicionar info sobre o cache usado
+            html += `
+                <div style="grid-column: 1 / -1; text-align: center; color: #94a3b8; font-size: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    Mostrando ${total} de ${totalCache} contas (Cache: ${cacheTipoResult === 'completas' ? 'Completo' : 'Teste'})
+                    ${wemixBrl ? `• Cotação WEMIX/BRL: R$ ${wemixBrl}` : ''}
+                </div>
+            `;
+            
+            resultados.innerHTML = html;
+        }
+        
+        // Carregar cache de teste
+        function carregarCacheTeste() {
+            if (confirm('Isso irá carregar 10 contas para teste. Continuar?')) {
+                fetch('/carregar-teste', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        setTimeout(verificarStatusCache, 2000);
+                        // Recarregar a página após 3 segundos para atualizar os status
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    }
+                });
+            }
+        }
+        
+        // Recarregar cache completo
+        function recarregarCacheCompleto() {
+            if (confirm('Isso irá recarregar TODAS as contas. Pode levar vários minutos. Continuar?')) {
+                fetch('/recarregar-contas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        setTimeout(verificarStatusCache, 2000);
+                        // Recarregar a página após 5 segundos para atualizar os status
+                        setTimeout(() => {
+                            location.reload();
+                        }, 5000);
+                    }
+                });
+            }
+        }
+        
+        // Verificar status do cache periodicamente
+        function verificarStatusCache() {
+            fetch('/status-carregamento')
+                .then(response => response.json())
+                .then(data => {
+                    const statusElement = document.querySelector('.status-cache');
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    
+                    if (data.carregando) {
+                        statusElement.textContent = '🔄 Carregando...';
+                        statusElement.className = 'status-cache vazio';
+                        cacheInfoElement.textContent = 'Cache está sendo carregado...';
+                    } else if (data.tem_cache_completo) {
+                        statusElement.textContent = '✅ Cache Completo';
+                        statusElement.className = 'status-cache completo';
+                        cacheInfoElement.textContent = 'Cache completo carregado';
+                    } else if (data.tem_cache_teste) {
+                        statusElement.textContent = '⚠️ Cache de Teste';
+                        statusElement.className = 'status-cache teste';
+                        cacheInfoElement.textContent = 'Cache de teste carregado (10 contas)';
+                    } else {
+                        statusElement.textContent = '❌ Sem Cache';
+                        statusElement.className = 'status-cache vazio';
+                        cacheInfoElement.textContent = 'Nenhum cache disponível';
+                    }
+                });
+        }
+        
+        // Verificar a cada 30 segundos
+        setInterval(verificarStatusCache, 30000);
+        
+        // Verificar ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarStatusCache();
+            
+            // Definir ordenação padrão
+            ordenarPor('power');
+            
+            // Preencher valores padrão para os filtros de mineração
+            const minaMin = document.getElementById('mina_min');
+            if (minaMin) {
+                minaMin.value = '17';
+            }
+            
+            // Preencher valores padrão para Aceleramento de Mineração e Aço Negro
+            {% for status in status_importantes %}
+                {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                    const aceleramentoInput = document.getElementById('status_{{ status.hash }}');
+                    if (aceleramentoInput) {
+                        aceleramentoInput.value = '220';
+                    }
+                {% endif %}
+                {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
+                    const acoNegroInput = document.getElementById('status_{{ status.hash }}');
+                    if (acoNegroInput) {
+                        acoNegroInput.value = '165';
+                    }
+                {% endif %}
+            {% endfor %}
+            
+            // Verificar se há status disponíveis na aba "Outros Status"
+            const outrosStatusCount = {{ status_importantes|selectattr('destaque', 'false')|list|length }};
+            console.log(`Status disponíveis na aba Outros: ${outrosStatusCount}`);
+        });
+    </script>
+</body>
+</html>

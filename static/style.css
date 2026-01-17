@@ -1,0 +1,1781 @@
+/* =========================================
+   MIR4 MARKET HUNTER - PREMIUM UI THEME
+   ========================================= */
+
+/* --- RESET & BASICS --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif; /* Fonte para leitura */
+    outline: none;
+    -webkit-font-smoothing: antialiased;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+    outline: none;
+}
+
+:root {
+    /* Paleta de Cores MIR4 */
+    --bg-dark: #050510;
+    --bg-panel: #0f0f25;
+    --card-bg-gradient: linear-gradient(180deg, #151530 0%, #050510 100%);
+    
+    /* Cores de Destaque */
+    --gold-primary: #ffd700;
+    --gold-dim: #c5a000;
+    --blue-neon: #00f0ff;
+    --blue-deep: #3b82f6;
+    --red-danger: #ff4444;
+    
+    /* Textos */
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-gold: #ffeebb;
+    
+    /* Bordas e Vidro */
+    --border-glass: 1px solid rgba(255, 255, 255, 0.1);
+    --border-gold: 1px solid rgba(255, 215, 0, 0.3);
+
+    /* Cores de Raridade (Gradientes e Bordas) */
+    --border-common: #71717a;
+    --border-uncommon: #34d399;
+    --border-rare: #60a5fa;
+    --border-epic: #f87171;
+    --border-legendary: #fbbf24;
+	 /* Ouro mais amarelado e vibrante */
+
+    /* Paleta Ouro Radiante */
+    --gold-light: #FFFACD;    /* Amarelo Creme (o brilho) */
+    --gold-main: #FFD700;     /* Amarelo Ouro (a base) */
+    --gold-vibrant: #FFEA00;  /* Amarelo Vibrante (o destaque) */
+    --gold-shadow: rgba(255, 215, 0, 0.4);
+}
+    
+    /* Outras variáveis permanecem iguais */
+}
+
+/* --- SCROLLBAR CUSTOMIZADA (Visual Moderno) --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #020210;
+}
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-dim);
+}
+
+/* --- BODY & LAYOUT --- */
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 50% 0%, #1a1a40 0%, transparent 60%),
+        linear-gradient(0deg, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px;
+    background-attachment: fixed;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* --- HEADER --- */
+h1 {
+    text-align: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    background: linear-gradient(to bottom, #fff 0%, #a5b4fc 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(66, 108, 245, 0.6));
+}
+
+p.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* --- LAYOUT GRID --- */
+.filtros-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* --- MENU LATERAL (SIDEBAR) --- */
+.menu-lateral {
+    background: rgba(15, 15, 37, 0.7);
+    backdrop-filter: blur(10px);
+    border: var(--border-glass);
+    border-radius: 12px;
+    padding: 25px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Abas de Filtro */
+.abas-filtros {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    padding: 5px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: var(--border-glass);
+}
+
+.aba-filtro {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.aba-filtro:hover { 
+    color: #fff; 
+    background: rgba(255,255,255,0.05);
+}
+
+.aba-filtro.active {
+    background: #1e1e40;
+    color: var(--blue-neon);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Grupos e Inputs */
+.conteudo-aba { 
+    display: none; 
+    animation: fadeIn 0.4s ease; 
+}
+.conteudo-aba.active { 
+    display: block; 
+}
+
+.grupo-filtro {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.grupo-filtro h3 {
+    font-size: 0.85rem;
+    color: var(--text-gold);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.input-group { 
+    margin-bottom: 15px; 
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #2a2a50;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.input-group input:focus, .input-group select:focus {
+    border-color: var(--blue-deep);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.campo-duplo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* Botões Gerais */
+.btn-buscar {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-buscar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    filter: brightness(1.1);
+}
+
+/* Cache Selector */
+.cache-type-selector {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    background: rgba(0,0,0,0.2);
+    padding: 3px;
+    border-radius: 6px;
+}
+
+.cache-type-btn {
+    flex: 1;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.cache-type-btn.active {
+    background: #2d3748;
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* --- RESULTADOS & CARDS --- */
+/* --- RESULTADOS & CARDS --- */
+.contas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 25px;
+    
+    /* O SEGREDO ESTÁ AQUI EMBAIXO: */
+    align-items: start; /* Isso impede que os vizinhos estiquem junto */
+}
+
+.nft-card {
+    background: var(--card-bg-gradient);
+    border-radius: 12px;
+    position: relative;
+    border: 1px solid #2d2d45;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    margin-top: 25px;
+    overflow: hidden;
+}
+
+.nft-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    border-color: #4a4a70;
+}
+
+/* Tipos de Card */
+.nft-card.type-gold {
+    border-top: 3px solid var(--gold-primary);
+}
+.nft-card.type-gold:hover {
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
+    border-color: var(--gold-primary);
+}
+
+.nft-card.type-blue {
+    border-top: 3px solid var(--blue-deep);
+}
+.nft-card.type-blue:hover {
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2);
+    border-color: var(--blue-deep);
+}
+
+/* Card Header */
+.card-top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-status-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+.type-gold .card-status-badge { 
+    background: var(--gold-primary); 
+    color: #000; 
+    box-shadow: 0 0 10px rgba(255,215,0,0.4); 
+}
+.type-blue .card-status-badge { 
+    background: var(--blue-deep); 
+    color: #fff; 
+    box-shadow: 0 0 10px rgba(59,130,246,0.4); 
+}
+
+.card-price-top { 
+    font-weight: 700; 
+    color: #fff; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+}
+
+/* Abas INTERNAS do Card */
+.card-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+    padding: 0 10px;
+}
+
+.card-tab-btn {
+    width: 35px; 
+    height: 35px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-tab-btn:hover { 
+    background: rgba(255, 255, 255, 0.1); 
+    color: #fff; 
+}
+.card-tab-btn.active {
+    background: var(--blue-deep);
+    color: #fff;
+    border-color: var(--blue-neon);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+.type-gold .card-tab-btn.active {
+    background: var(--gold-dim);
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Conteúdo das Abas */
+.tab-content { 
+    display: none; 
+    padding: 0 12px; 
+    animation: fadeIn 0.3s ease; 
+}
+.tab-content.active { 
+    display: block; 
+}
+
+/* Avatar Section (Diamond) */
+.card-avatar-section {
+    position: relative;
+    height: 140px; /* Aumentei de 110px para 140px para caber o novo tamanho */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.class-name-vertical {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    color: rgba(255,255,255,0.15);
+    font-weight: 900;
+    font-size: 1.8rem;
+    height: 100%;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.diamond-shape {
+    width: 76px;
+    height: 76px;
+    transform: rotate(45deg);
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    overflow: visible !important;
+}
+
+.diamond-shape img {
+    /* Força a largura para ser MUITO maior que o losango */
+    width: 220% !important; 
+    height: 220% !important;
+    
+    /* Remove qualquer trava que impeça a imagem de crescer */
+    max-width: none !important; 
+    max-height: none !important;
+    
+    /* Centraliza e ajusta a rotação */
+    transform: rotate(-45deg) translateY(-15px) !important;
+    
+    object-fit: contain;
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,0.6));
+    
+    position: relative;
+    z-index: 2;
+}
+
+/* Garante que o losango permita que a imagem saia para fora dele */
+
+
+/* Info Principal */
+.card-main-info { 
+    text-align: center; 
+    margin-bottom: 15px; 
+    position: relative; 
+    z-index: 2; 
+}
+.card-level { 
+    color: var(--text-muted); 
+    font-size: 1.0rem; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+}
+.card-power { 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    color: #fff; 
+    text-shadow: 0 3px 6px rgba(0,0,0,0.8);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+.card-player-name { 
+    color: var(--blue-neon); 
+    font-size: 0.94rem; 
+    font-weight: 600; 
+}
+.type-gold .card-player-name { 
+    color: var(--gold-primary); 
+}
+
+/* Grid de Status */
+.card-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 5px;
+    padding: 0 5px;
+    margin-bottom: 15px;
+}
+
+.stat-box { 
+    text-align: center; 
+}
+.stat-box label { 
+    display: block; 
+    font-size: 0.74rem; 
+    color: #666; 
+    margin-bottom: 2px; 
+    text-transform: uppercase; 
+}
+.stat-box span { 
+    display: block; 
+    font-size: 0.95rem; 
+    font-weight: 700; 
+    color: #eee; 
+}
+
+.mining-highlight label { 
+    color: var(--gold-dim); 
+}
+.mining-highlight span { 
+    color: var(--gold-primary); 
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.2); 
+}
+
+/* ===== ITENS MODERNIZADOS - VERSÃO FINAL ===== */
+
+/* Grid de 4 colunas para itens */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 15px;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 20px;
+    justify-items: center;
+}
+
+/* Item circular */
+.item-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-size: contain; 
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Removemos a cor fixa daqui para usar a das classes de grade */
+    border: 3px solid; 
+    box-shadow: 
+        0 4px 10px rgba(0,0,0,0.5),
+        inset 0 0 20px rgba(255,255,255,0.1); 
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: visible; 
+    filter: brightness(1.1) contrast(1.1); 
+}
+
+/* Para itens sem imagem */
+.item-circle.no-img {
+    background-color: rgba(0,0,0,0.5);
+    border: 2px dashed rgba(255,255,255,0.3);
+}
+
+.item-circle.no-img i {
+    font-size: 28px;
+    color: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+}
+
+/* === CORES DE FUNDO E BORDAS POR RARIDADE === */
+
+/* Grade 1: Comum/Pobre (Cinza) */
+.grade-1 { 
+    border-color: #9ca3af; 
+    background-color: rgba(156, 163, 175, 0.2); /* Fundo Cinza Transparente */
+    box-shadow: 0 0 8px rgba(156, 163, 175, 0.3);
+}
+
+/* Grade 2: Incomum/Comum (Verde) - Conforme solicitado */
+.grade-2 { 
+    border-color: #10b981; 
+    background-color: rgba(16, 185, 129, 0.2); /* Fundo Verde Transparente */
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    filter: brightness(1.15) contrast(1.15);
+}
+
+/* Grade 3: Raro (Azul) */
+.grade-3 { 
+    border-color: #3b82f6; 
+    background-color: rgba(59, 130, 246, 0.2); /* Fundo Azul Transparente */
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    filter: brightness(1.2) contrast(1.2);
+}
+
+/* Grade 4: Épico (Vermelho) */
+.grade-4 { 
+    border-color: #ef4444; 
+    background-color: rgba(239, 68, 68, 0.2); /* Fundo Vermelho Transparente */
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+    filter: brightness(1.25) contrast(1.25);
+}
+
+/* Grade 5: Lendário (Dourado) */
+.grade-5 { 
+    border-color: #fbbf24; 
+    background-color: rgba(251, 191, 36, 0.2); /* Fundo Dourado Transparente */
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.7);
+    filter: brightness(1.3) contrast(1.3);
+}
+
+/* Grade 6: Mítico (Laranja/Explosivo) */
+.grade-6 { 
+    border-color: #ff8c00; 
+    background-color: rgba(255, 140, 0, 0.25); /* Fundo Laranja */
+    box-shadow: 
+        0 0 25px rgba(255, 140, 0, 0.8),
+        0 0 40px rgba(255, 69, 0, 0.4);
+    filter: brightness(1.35) contrast(1.35);
+}
+
+/* Badges - FORA do círculo */
+.badge-enhance, .badge-tier, .badge-trade, .badge-count {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: white;
+    z-index: 10;
+    min-width: 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 
+        0 2px 6px rgba(0,0,0,0.5),
+        0 0 0 2px rgba(255,255,255,0.2); /* Borda branca sutil */
+    pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Aprimoramento (+7) - canto inferior direito */
+/* Aprimoramento (+7) - MOVIDO PARA O TOPO DIREITO */
+.badge-enhance {
+    top: -8px;          /* Topo */
+    left: -8px;         /* Esquerda */
+    right: auto;        /* Remove da direita */
+    bottom: auto;
+    
+    /* Mantendo o visual padrão */
+    position: absolute;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 4px 7px;
+    border-radius: 6px;
+    color: white;
+    z-index: 10;
+    min-width: 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.2);
+    pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+
+/* Tier (IV) - canto superior esquerdo */
+/* Tier (IV) - POSICIONADO NO CANTO INFERIOR ESQUERDO */
+.badge-tier {
+    top: auto;          /* Solta do topo */
+    bottom: -8px;       /* Fixa embaixo (negativo para sair um pouco) */
+    left: -8px;         /* Fixa na esquerda (negativo para sair um pouco) */
+    right: auto;        /* Solta da direita */
+    
+    /* Mantendo o estilo visual */
+    position: absolute;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: white;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+/* Trade (balança) - canto superior direito */
+/* Trade (balança) - canto superior direito */
+/* Trade (balança) - canto superior direito - ESTILO REDONDO E PULSANTE */
+/* Trade (balança) - canto superior direito - CORRIGIDO */
+.badge-trade {
+    top: -10px;
+    right: -10px;
+    width: 28px;
+    height: 28px;
+    
+    /* AQUI ESTÁ A CORREÇÃO: Ícone na frente, Gradiente atrás */
+    background-image: url("/static/icon_trade.png"), linear-gradient(135deg, #ffba00, #ff5e00);
+    
+    /* Tamanho do ícone (16px) vs Tamanho do gradiente (cobre tudo) */
+    background-size: 16px 16px, cover;
+    
+    /* Centraliza ambos */
+    background-position: center center;
+    background-repeat: no-repeat;
+    
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 15;
+    
+    animation: orangePulse 2s infinite ease-in-out;
+    backface-visibility: hidden; 
+}
+
+/* Quantidade - canto inferior esquerdo */
+.badge-count {
+    bottom: -8px;
+    left: -8px;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    padding: 4px 7px;
+}
+
+/* ===== ANIMAÇÕES ===== */
+
+@keyframes legendaryGlow {
+    0%, 100% { 
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.6),
+                    0 0 25px rgba(251, 191, 36, 0.4),
+                    inset 0 0 20px rgba(255, 255, 255, 0.1); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.8),
+                    0 0 30px rgba(251, 191, 36, 0.6),
+                    inset 0 0 30px rgba(255, 255, 255, 0.15); 
+    }
+}
+
+@keyframes epicGlow {
+    0%, 100% { 
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.5),
+                    0 0 20px rgba(239, 68, 68, 0.3),
+                    inset 0 0 18px rgba(255, 255, 255, 0.1); 
+    }
+    50% { 
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.7),
+                    0 0 25px rgba(239, 68, 68, 0.5),
+                    inset 0 0 25px rgba(255, 255, 255, 0.15); 
+    }
+}
+
+
+
+
+
+/* ===== HOVER EFFECTS ===== */
+
+/* Hover na balança pulsante */
+/* Hover na balança pulsante */
+.item-circle:hover .badge-trade {
+    animation-play-state: paused;
+    transform: scale(1.2);
+    
+    /* Mantemos o ícone e mudamos apenas as cores do gradiente */
+    background-image: url("/static/icon_trade.png"), linear-gradient(135deg, #ffd700, #ff7b00);
+    
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 140, 0, 1);
+    transition: all 0.3s ease;
+}
+
+.item-circle:hover .badge-enhance,
+.item-circle:hover .badge-tier,
+.item-circle:hover .badge-count {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.item-circle:hover .badge-trade {
+    background-color: rgba(34, 197, 94, 1);
+    box-shadow: 
+        0 0 15px rgba(34, 197, 94, 0.8),
+        0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 768px) {
+    .items-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .item-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .badge-enhance, .badge-tier, .badge-trade, .badge-count {
+        font-size: 10px;
+        padding: 2px 5px;
+        min-width: 18px;
+    }
+    
+    .badge-trade {
+        width: 20px;
+        height: 20px;
+        background-size: 14px 14px;
+        top: -6px;
+        right: -6px;
+    }
+    
+    .badge-enhance {
+        bottom: -6px;
+        right: -6px;
+    }
+    
+    .badge-tier {
+        top: -6px;
+        left: -6px;
+    }
+    
+    .badge-count {
+        bottom: -6px;
+        left: -6px;
+    }
+}
+
+/* Treino & Stats Box */
+.training-box {
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.training-val { 
+    font-size: 1.4rem; 
+    font-weight: 800; 
+    color: var(--text-gold); 
+    text-shadow: 0 0 10px rgba(0,0,0,0.5); 
+}
+.training-lbl { 
+    font-size: 0.7rem; 
+    color: #888; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    margin-bottom: 5px; 
+}
+
+/* Botões de Ação do Card */
+.card-action-btn {
+    margin: 15px 15px 10px 15px;
+    background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+    border: 1px solid #475569;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: block;
+    cursor: pointer;
+}
+.card-action-btn:hover {
+    background: linear-gradient(90deg, #334155 0%, #475569 100%);
+    border-color: #94a3b8;
+    transform: translateY(-2px);
+}
+.wemix-display { 
+    color: #fff; 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 8px; 
+}
+.usd-display { 
+    font-size: 0.75rem; 
+    color: #94a3b8; 
+    margin-top: 2px; 
+}
+
+.btn-todos-status {
+    margin: 0 15px 15px 15px;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #888;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: auto;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 6px;
+}
+.btn-todos-status:hover { 
+    border-color: var(--blue-deep); 
+    color: #fff; 
+    background: rgba(59, 130, 246, 0.1); 
+}
+
+/* Footer */
+.card-footer-info {
+    padding: 10px 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; 
+    justify-content: space-between;
+    
+    /* --- ALTERE AQUI --- */
+    font-size: 3.2rem;   /* Aumento leve (aprox. 19px) */
+    /* font-size: 1.5rem;   Aumento grande (aprox. 24px) */
+    /* font-size: 18px;     Tamanho fixo em pixels */
+    
+    color: #555; 
+    background: rgba(0,0,0,0.2);
+}
+.world-name {
+    font-size: 1.0rem;
+    font-weight: bold;
+    color: var(--text-main); /* Usa a cor branca principal que definimos no :root */
+}
+
+/* --- MODAIS (Dark Glass) --- */
+.modal {
+    display: none;
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; 
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    justify-content: center; 
+    align-items: center;
+    animation: fadeIn 0.3s;
+}
+
+.modal-conteudo {
+    background: #0f1020;
+    border: 1px solid #2d2d45;
+    border-radius: 12px;
+    width: 90%; 
+    max-width: 600px; 
+    max-height: 85vh;
+    display: flex; 
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    margin: 0 auto;
+}
+
+#modal-todos-status .modal-conteudo { 
+    max-width: 900px; 
+}
+
+.modal-cabecalho {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px; 
+    border-bottom: 1px solid #2d2d45;
+    background: rgba(0,0,0,0.2);
+}
+.modal-cabecalho h2 { 
+    font-size: 1.2rem; 
+    color: #fff; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+.fechar-modal { 
+    color: #666; 
+    font-size: 24px; 
+    cursor: pointer; 
+    transition: color 0.2s; 
+}
+.fechar-modal:hover { 
+    color: #fff; 
+}
+
+.modal-corpo { 
+    padding: 20px; 
+    overflow-y: auto; 
+}
+
+/* Status List in Modal */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.status-item-modal {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    transition: all 0.2s;
+}
+.status-item-modal:hover { 
+    background: rgba(255,255,255,0.08); 
+    border-color: var(--blue-deep); 
+}
+
+.status-icon-modal {
+    width: 36px; 
+    height: 36px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    flex-shrink: 0;
+}
+.status-value-modal { 
+    color: var(--gold-primary); 
+    font-weight: bold; 
+    font-size: 1rem; 
+}
+
+/* Status Filtros */
+.status-item {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 10px 0; 
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.status-item input {
+    width: 100px; 
+    padding: 6px; 
+    background: #000; 
+    border: 1px solid #333;
+    color: #fff; 
+    border-radius: 4px; 
+    text-align: right;
+}
+
+/* Loading e Notificações */
+.loading, .sem-resultados { 
+    text-align: center; 
+    padding: 40px; 
+    grid-column: 1 / -1; 
+    color: var(--text-muted); 
+}
+.sem-resultados i { 
+    margin-bottom: 15px; 
+    opacity: 0.3; 
+    color: var(--text-muted); 
+}
+
+.notification {
+    position: fixed; 
+    top: 20px; 
+    right: 20px;
+    padding: 15px 20px;
+    background: #1a1a2e;
+    border-left: 4px solid var(--blue-deep);
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 10000;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+}
+.notification.show { 
+    transform: translateX(0); 
+}
+.notification.success { 
+    border-color: #10b981; 
+}
+.notification.error { 
+    border-color: #ef4444; 
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1000px) {
+    .filtros-container { 
+        grid-template-columns: 1fr; 
+    }
+    .menu-lateral { 
+        position: static; 
+        margin-bottom: 30px; 
+    }
+}
+
+@media (max-width: 600px) {
+    .card-stats-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
+    .status-grid { 
+        grid-template-columns: 1fr; 
+    }
+    h1 { 
+        font-size: 2rem; 
+    }
+}
+
+/* Animações */
+@keyframes fadeIn { 
+    from { 
+        opacity: 0; 
+        transform: translateY(5px); 
+    } 
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    } 
+}/* --- REMOVER TIER APENAS EM HABILIDADES --- */
+/* Adicione a classe 'no-tier' junto com 'items-grid' no container das habilidades */
+.items-grid.no-tier .badge-tier {
+    display: none !important;
+}
+/* === ANIMAÇÃO DE PULSO LARANJA PARA O TRADE === */
+@keyframes orangePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 123, 0, 0.7);
+        transform: scale(1);
+    }
+    70% {
+        /* Cria um anel que se expande e desaparece */
+        box-shadow: 0 0 0 10px rgba(255, 123, 0, 0);
+        transform: scale(1.05); /* Pulsa ligeiramente o tamanho */
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 123, 0, 0);
+        transform: scale(1);
+    }
+}
+.carregar-mais-btn {
+    margin: 15px auto;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 90%;
+    min-width: 250px;
+}
+
+.carregar-mais-btn:hover {
+    background: linear-gradient(135deg, #3182ce, #2c5282);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+}
+
+.carregar-mais-btn:disabled {
+    background: #4a5568;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
+}
+/* =========================================
+   APERFEIÇOAMENTOS VISUAIS - MANTENDO TUDO
+   ========================================= */
+
+/* 1. FONTES PROFISSIONAIS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Substitua a regra de font-family global */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+    /* Mantenha todo o resto */
+}
+
+/* 2. MELHORIAS NA HIERARQUIA TIPOGRÁFICA */
+h1 {
+    font-weight: 900 !important; /* Mais peso */
+    letter-spacing: 2px !important;
+    line-height: 1.1;
+    margin-bottom: 10px !important;
+    text-shadow: 
+        0 2px 10px rgba(66, 108, 245, 0.4),
+        0 0 40px rgba(66, 108, 245, 0.2) !important;
+}
+
+p.subtitle {
+    font-weight: 500 !important;
+    letter-spacing: 1.5px !important;
+    opacity: 0.9 !important;
+    font-size: 0.9rem !important;
+}
+
+/* 3. REFINAMENTO DE CABEÇALHOS E LABELS */
+.grupo-filtro h3 {
+    font-weight: 700 !important;
+    letter-spacing: 1.2px !important;
+    font-size: 0.82rem !important;
+}
+
+.input-group label {
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    opacity: 0.9;
+}
+
+/* 4. APRIMORAMENTO DOS BOTÕES */
+.btn-buscar {
+    font-weight: 700 !important;
+    letter-spacing: 1.2px !important;
+    font-size: 0.9rem !important;
+}
+
+.aba-filtro {
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+}
+
+/* 5. MELHORIAS NOS CARDS - ESTRUTURA REFINADA */
+.nft-card {
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.nft-card:hover {
+    box-shadow: 
+        0 20px 25px rgba(0, 0, 0, 0.25),
+        0 10px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 6. TIPOGRAFIA INTERNA DOS CARDS MELHORADA */
+.card-level {
+    font-weight: 700 !important;
+    opacity: 0.9 !important;
+}
+
+.card-power {
+    font-weight: 900 !important;
+    letter-spacing: -0.5px !important;
+}
+
+.card-player-name {
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* 7. ESTATÍSTICAS COM MAIOR LEGIBILIDADE */
+.stat-box label {
+    font-weight: 600 !important;
+    opacity: 0.8;
+}
+
+.stat-box span {
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* 8. REFINAMENTO DOS MODAIS */
+.modal-cabecalho h2 {
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* 9. ESPAÇAMENTOS MAIS CONSISTENTES */
+.grupo-filtro {
+    margin-bottom: 28px !important; /* Um pouco mais de espaço */
+}
+
+.input-group {
+    margin-bottom: 18px !important;
+}
+
+/* 10. CONTORNO SUTIL NOS INPUTS PARA MELHOR DEFINIÇÃO */
+.input-group input, 
+.input-group select {
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    transition: all 0.2s ease !important;
+}
+
+.input-group input:focus, 
+.input-group select:focus {
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 11. MELHOR CONTRASTE NOS TEXTOS MUTED */
+--text-muted: #a0aec0; /* Substitua no :root */
+--text-main: #f8fafc;  /* Branco mais suave */
+
+/* 12. BORDAS ARREDONDADAS MAIS SUAVES */
+.menu-lateral,
+.nft-card,
+.btn-buscar,
+.aba-filtro,
+.input-group input,
+.input-group select {
+    border-radius: 10px !important; /* Consistência */
+}
+
+/* 13. EFEITO DE PROFUNDIDADE NOS PAINÉIS */
+.menu-lateral {
+    box-shadow: 
+        0 10px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 14. BADGES COM TIPOGRAFIA MAIS CLARA */
+.badge-enhance, 
+.badge-tier, 
+.badge-trade, 
+.badge-count {
+    font-weight: 900 !important;
+    letter-spacing: 0.3px !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+}
+
+/* 15. ANIMAÇÕES MAIS SUAVES */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(8px) scale(0.995); 
+    } 
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    } 
+}
+
+/* 16. LINHA DIVISÓRIA SUTIL NOS CARDS */
+.card-top-bar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 17. BOTÕES DE AÇÃO COM MAIOR CLAREZA */
+.card-action-btn {
+    font-weight: 600 !important;
+}
+
+.wemix-display {
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* 18. STATUS DESTACADOS COM MAIOR VISIBILIDADE */
+.mining-highlight label {
+    color: var(--gold-dim) !important;
+    font-weight: 700 !important;
+}
+
+.mining-highlight span {
+    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* 19. SCROLLBAR MAIS REFINADA */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #4a5568, #2d3748) !important;
+    border-radius: 6px !important;
+}
+
+/* 20. RESPONSIVIDADE MELHORADA PARA TIPOGRAFIA */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.2rem !important;
+        letter-spacing: 1.5px !important;
+    }
+    
+    .card-power {
+        font-size: 2rem !important;
+    }
+    
+    .stat-box span {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* 21. HOVER STATES MAIS DEFINIDOS */
+.aba-filtro:hover {
+    transform: translateY(-1px) !important;
+}
+
+.item-circle:hover {
+    transform: scale(1.05) translateY(-2px) !important;
+}
+
+/* 22. FOCO VISUAL MELHORADO PARA ELEMENTOS ATIVOS */
+.aba-filtro.active,
+.cache-type-btn.active {
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 23. SEPARAÇÃO VISUAL MAIS CLARA ENTRO GRUPOS */
+.grupo-filtro {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 24. TEXT SHADOW PARA MELHOR LEGIBILIDADE */
+.card-power,
+.training-val,
+.wemix-display {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 25. REFINAMENTO FINAL - DETALHES DE DESIGN */
+.card-footer-info {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.5px !important;
+    opacity: 0.7;
+}
+
+/* 26. CONTRASTE ADICIONAL PARA TEXTO DOURADO */
+--text-gold: #ffedcc; /* Mais brilhante e legível */
+
+/* 27. PESO CONSISTENTE PARA TODOS OS HEADERS */
+h2, h3, h4 {
+    font-weight: 700 !important;
+}
+
+/* 28. ESPAÇAMENTO ENTRO LETRAS EM TEXTOS IMPORTANTES */
+.card-status-badge {
+    letter-spacing: 0.8px !important;
+}
+
+/* 29. OPACIDADE AJUSTADA PARA MELHOR LEITURA */
+.card-tab-btn:not(.active) {
+    opacity: 0.7 !important;
+}
+
+/* 30. GRADIENTES MAIS SUAVES NOS BOTÕES */
+.btn-buscar {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+}
+
+/* ADICIONE ISSO AO FINAL DO SEU ARQUIVO CSS EXISTENTE */
+/* NÃO REMOVA NADA, APENAS COLE NO FINAL */
+/* --- CATEGORIAS DE CARDS --- */
+
+/* --- FUNDOS COLORIDOS PARA OS CARDS --- */
+
+/* ==================================================================
+   SUBSTITUA O BLOCO DO "CARD DOURADO" POR ESTE
+================================================================== */
+
+/* 1. CARD DOURADO - Estilo "Metal Escuro Texturizado" */
+.nft-card.type-gold {
+    /* Borda fina e elegante em ouro pálido */
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    
+    /* Cor base de fundo (caso as imagens demorem a carregar) */
+    background-color: #08080a;
+
+    /* MÚLTIPLAS CAMADAS DE FUNDO (A ordem importa: de cima para baixo) */
+    background-image: 
+        /* CAMADA 1 (Topo): Textura de Ruído Fino (Granulado)
+           Usa um gradiente radial repetido para simular uma textura tátil sutil */
+        repeating-radial-gradient(circle at 50% 50%, rgba(255, 232, 150, 0.03) 0px, transparent 1px, transparent 4px),
+        
+        /* CAMADA 2 (Meio): Luz Dourada Sutil atrás do Personagem
+           Um dourado pálido (pale gold) bem transparente, focado na área superior */
+        radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.2) 0%, rgba(0,0,0,0) 60%),
+        
+        /* CAMADA 3 (Fundo): Gradiente Linear Escuro Base
+           Cria o ambiente "preto profundo" que escurece nas bordas */
+        linear-gradient(165deg, #1a1a1c 0%, #0a0a0c 60%, #14120a 100%);
+
+    /* Sombras para dar profundidade e um leve brilho externo */
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.7), /* Sombra escura de profundidade */
+        inset 0 0 40px rgba(0,0,0,0.8), /* Sombra interna nas bordas */
+        0 0 15px rgba(212, 175, 55, 0.1); /* Brilho externo dourado muito fraco */
+        
+    position: relative;
+}
+
+/* --- AJUSTES DE TEXTO (Voltamos para tons claros para contraste no fundo escuro) --- */
+
+/* Nome do Jogador e Badges */
+.type-gold .card-player-name {
+    color: #e6c975; /* Cor ouro pálido (pale gold) para o nome */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    font-weight: 700;
+}
+
+/* Power Score */
+.type-gold .card-power {
+    background: linear-gradient(to bottom, #ffffff 20%, #e6c975 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    font-weight: 800;
+}
+
+/* Badge "LISTADO" */
+.type-gold .card-status-badge {
+    background: linear-gradient(135deg, #bfa35f, #8c7334); /* Dourado fosco/envelhecido */
+    color: #000;
+    text-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Stats (Rótulos e Valores) */
+.type-gold .stat-box label,
+.type-gold .card-level,
+.type-gold .usd-display {
+    color: rgba(255, 255, 255, 0.6); /* Branco acinzentado */
+}
+
+.type-gold .stat-box span,
+.type-gold .wemix-display,
+.type-gold .card-price-top {
+    color: #f1f1f1; /* Branco quase puro */
+    text-shadow: 0 1px 2px rgba(0,0,0,1);
+}
+
+/* Destaques de Mineração (Dourado Sutil) */
+.type-gold .mining-highlight span,
+.type-gold .mining-highlight label {
+    color: #e6c975; /* Ouro pálido */
+}
+
+/* Rodapé, Topo e Abas - Fundo preto translúcido para integração */
+.type-gold .card-top-bar,
+.type-gold .card-tabs,
+.type-gold .card-footer-info {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(212, 175, 55, 0.15);
+}
+
+/* Nome do Mundo no Rodapé */
+.type-gold .card-footer-info span:first-child {
+    color: #e6c975;
+}
+
+/* ==================================================================
+   ESTILOS DARK TEXTURED (AZUL, VERMELHO E VERDE)
+================================================================== */
+
+/* --- PADRÃO PARA TODOS OS CARDS (TEXTURA BASE) --- */
+.nft-card.type-red, .nft-card.type-blue, .nft-card.type-green {
+    background-color: #08080a;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0,0,0,0.8);
+}
+
+/* --- 1. CARD VERMELHO (Mid-Tier Poder >= 249.000) --- */
+.nft-card.type-red {
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    background-image: 
+        repeating-radial-gradient(circle at 50% 50%, rgba(248, 113, 113, 0.03) 0px, transparent 1px, transparent 4px),
+        radial-gradient(circle at 50% 30%, rgba(248, 113, 113, 0.15) 0%, rgba(0,0,0,0) 60%),
+        linear-gradient(165deg, #1a1515 0%, #0a0a0c 60%);
+}
+.type-red .card-player-name, .type-red .card-footer-info span:first-child { color: #fca5a5; }
+.type-red .card-status-badge { background: linear-gradient(135deg, #f87171, #991b1b); color: #fff; }
+
+/* --- 2. CARD AZUL (Padrão / Low-Tier) --- */
+.nft-card.type-blue {
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    background-image: 
+        repeating-radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.03) 0px, transparent 1px, transparent 4px),
+        radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.15) 0%, rgba(0,0,0,0) 60%),
+        linear-gradient(165deg, #151a1e 0%, #0a0a0c 60%);
+}
+.type-blue .card-player-name, .type-blue .card-footer-info span:first-child { color: #7dd3fc; }
+.type-blue .card-status-badge { background: linear-gradient(135deg, #38bdf8, #1e40af); color: #fff; }
+
+/* --- 3. CARD VERDE (Extra) --- */
+.nft-card.type-green {
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    background-image: 
+        repeating-radial-gradient(circle at 50% 50%, rgba(52, 211, 153, 0.03) 0px, transparent 1px, transparent 4px),
+        radial-gradient(circle at 50% 30%, rgba(52, 211, 153, 0.15) 0%, rgba(0,0,0,0) 60%),
+        linear-gradient(165deg, #151e19 0%, #0a0a0c 60%);
+}
+.type-green .card-player-name, .type-green .card-footer-info span:first-child { color: #6ee7b7; }
+.type-green .card-status-badge { background: linear-gradient(135deg, #34d399, #065f46); color: #fff; }
+
+/* Ajuste universal de contraste para os textos de apoio */
+.type-red .stat-box label, .type-blue .stat-box label, .type-green .stat-box label { color: rgba(255,255,255,0.5); }
+.type-red .stat-box span, .type-blue .stat-box span, .type-green .stat-box span { color: #eee; }
+
+/* --- RESET DE CORES PARA PODER E NOME EM TODOS OS CARDS --- */
+
+/* Alvos: Card Power e Card Player Name em todas as categorias */
+.type-gold .card-power, 
+.type-red .card-power, 
+.type-blue .card-power, 
+.type-green .card-power,
+.type-gold .card-player-name, 
+.type-red .card-player-name, 
+.type-blue .card-player-name, 
+.type-green .card-player-name {
+    /* Remove gradientes e recortes de texto anteriores */
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    
+    /* Define a cor branca sólida */
+    color: #ffffff !important;
+    
+    /* Mantém uma sombra forte para não sumir nas partes claras da aura */
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+}
+
+/* Garante o peso da fonte para o destaque profissional */
+.card-power {
+    font-weight: 800;
+}
+
+.card-player-name {
+    font-weight: 700;
+    opacity: 1; /* Garante que não haja transparência indesejada */
+}
+/* --- PADRONIZAÇÃO DO RODAPÉ EM BRANCO --- */
+
+/* Alvo: O primeiro span dentro do rodapé (Nome do Mundo) */
+.card-footer-info span:first-child,
+.world-name {
+    /* Remove cores específicas de categorias anteriores */
+    color: #ffffff !important;
+    
+    /* Mantém o destaque visual premium */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    
+    /* Garante que a opacidade seja total */
+    opacity: 1 !important;
+}
+
+/* Opcional: Manter o ID (#seq) levemente cinza para não brigar com o nome do mundo */
+.card-footer-info span:last-child {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.92rem;
+}
+
+.card-player-name {
+    /* Cor dourada vibrante para destacar o personagem */
+    color: #FFD700 !important; 
+    
+    /* Remove gradientes para manter a cor sólida e nítida */
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+    opacity: 1 !important;
+}
+/* --- CORES DOS ÍCONES POR TIPO DE CARD --- */
+
+/* 1. CARD DOURADO (Gold) */
+.type-gold .card-tab-btn.active {
+    background: var(--gold-primary) !important;
+    border-color: #fff !important;
+    color: #000 !important; /* Ícone preto para contraste no fundo amarelado */
+}
+.type-gold .card-stats-grid i, 
+.type-gold .card-action-btn i {
+    color: var(--gold-primary);
+}
+
+/* 2. CARD VERMELHO (Red) */
+.type-red .card-tab-btn.active {
+    background: #ef4444 !important;
+    border-color: #fca5a5 !important;
+    color: #fff !important;
+}
+.type-red .card-stats-grid i, 
+.type-red .card-action-btn i {
+    color: #ef4444;
+}
+
+/* 3. CARD AZUL (Blue) */
+.type-blue .card-tab-btn.active {
+    background: var(--blue-deep) !important;
+    border-color: var(--blue-neon) !important;
+    color: #fff !important;
+}
+.type-blue .card-stats-grid i, 
+.type-blue .card-action-btn i {
+    color: var(--blue-neon);
+}
+
+/* 4. CARD VERDE (Green) */
+.type-green .card-tab-btn.active {
+    background: #34d399 !important;
+    border-color: #6ee7b7 !important;
+    color: #fff !important;
+}
+.type-green .card-stats-grid i, 
+.type-green .card-action-btn i {
+    color: #34d399;
+}
+
+/* --- AJUSTE GERAL DE HOVER --- */
+/* Faz com que o ícone mude de cor suavemente ao passar o mouse */
+.card-tab-btn:hover i {
+    transition: color 0.2s;
+}
+.type-gold .card-tab-btn:hover i { color: var(--gold-primary); }
+.type-red .card-tab-btn:hover i { color: #ef4444; }
+.type-blue .card-tab-btn:hover i { color: var(--blue-neon); }
+.type-green .card-tab-btn:hover i { color: #34d399; }
+.carregar-mais-btn {
+    width: 100%;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.carregar-mais-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.carregar-mais-btn:disabled {
+    background: #4a5568;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.carregar-mais-btn i {
+    font-size: 0.9rem;
+}

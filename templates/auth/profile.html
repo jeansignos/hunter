@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - MIR4 Market Hunter</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .profile-container {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+        
+        .profile-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-header p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .premium-badge.active {
+            background: linear-gradient(135deg, #f6e05e 0%, #ecc94b 100%);
+            color: #1a1a2e;
+        }
+        
+        .premium-badge.free {
+            background: rgba(160, 174, 192, 0.2);
+            color: #a0aec0;
+            border: 1px solid #a0aec0;
+        }
+        
+        .premium-badge.expired {
+            background: rgba(245, 101, 101, 0.2);
+            color: #f56565;
+            border: 1px solid #f56565;
+        }
+        
+        .info-section {
+            margin-top: 30px;
+        }
+        
+        .info-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .premium-info {
+            background: rgba(246, 224, 94, 0.1);
+            border: 1px solid rgba(246, 224, 94, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .premium-info h3 {
+            color: #f6e05e;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .premium-features {
+            list-style: none;
+        }
+        
+        .premium-features li {
+            padding: 8px 0;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .premium-features li i {
+            color: #48bb78;
+        }
+        
+        .free-features li i.locked {
+            color: #f56565;
+        }
+        
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(160, 174, 192, 0.2);
+            color: #e2e8f0;
+            border: 1px solid rgba(160, 174, 192, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(160, 174, 192, 0.3);
+        }
+        
+        .btn-danger {
+            background: rgba(245, 101, 101, 0.2);
+            color: #f56565;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(245, 101, 101, 0.3);
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .flash.success {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid #48bb78;
+            color: #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1>{{ current_user.username }}</h1>
+            <p>{{ current_user.email }}</p>
+            
+            {% if current_user.has_premium_access() %}
+            <span class="premium-badge active">
+                <i class="fas fa-crown"></i> Premium Ativo
+            </span>
+            {% elif current_user.premium_status == 'expired' %}
+            <span class="premium-badge expired">
+                <i class="fas fa-clock"></i> Premium Expirado
+            </span>
+            {% else %}
+            <span class="premium-badge free">
+                <i class="fas fa-user"></i> Conta Gratuita
+            </span>
+            {% endif %}
+        </div>
+        
+        <div class="info-section">
+            <h2><i class="fas fa-info-circle"></i> Informações da Conta</h2>
+            
+            <div class="info-item">
+                <span class="info-label">Membro desde</span>
+                <span class="info-value">{{ current_user.created_at.strftime('%d/%m/%Y') }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">Último login</span>
+                <span class="info-value">
+                    {% if current_user.last_login %}
+                    {{ current_user.last_login.strftime('%d/%m/%Y às %H:%M') }}
+                    {% else %}
+                    Primeiro acesso
+                    {% endif %}
+                </span>
+            </div>
+            
+            {% if current_user.has_premium_access() %}
+            <div class="info-item">
+                <span class="info-label">Premium expira em</span>
+                <span class="info-value" style="color: #f6e05e;">
+                    {% if current_user.is_admin %}
+                    Ilimitado (Admin)
+                    {% else %}
+                    {{ current_user.premium_days_remaining }} dias
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if current_user.has_premium_access() %}
+        <div class="premium-info">
+            <h3><i class="fas fa-star"></i> Seus Benefícios Premium</h3>
+            <ul class="premium-features">
+                <li><i class="fas fa-check"></i> Filtros de mineração avançados</li>
+                <li><i class="fas fa-check"></i> Filtros de status personalizados</li>
+                <li><i class="fas fa-check"></i> Filtros de espíritos e pets</li>
+                <li><i class="fas fa-check"></i> Filtro de habilidades lendárias</li>
+                <li><i class="fas fa-check"></i> Acesso a todas as estatísticas</li>
+                <li><i class="fas fa-check"></i> Sem limitações de busca</li>
+            </ul>
+        </div>
+        {% else %}
+        <div class="premium-info" style="border-color: rgba(160, 174, 192, 0.3); background: rgba(160, 174, 192, 0.1);">
+            <h3 style="color: #a0aec0;"><i class="fas fa-lock"></i> Funcionalidades Premium</h3>
+            <ul class="premium-features free-features">
+                <li><i class="fas fa-times locked"></i> Filtros de mineração avançados</li>
+                <li><i class="fas fa-times locked"></i> Filtros de status personalizados</li>
+                <li><i class="fas fa-times locked"></i> Filtros de espíritos e pets</li>
+                <li><i class="fas fa-times locked"></i> Filtro de habilidades lendárias</li>
+            </ul>
+            <p style="color: #48bb78; font-size: 0.85rem; margin-top: 15px;">
+                ✓ Filtro de itens comercializáveis (1+) disponível para todos!
+            </p>
+            <p style="color: #a0aec0; font-size: 0.85rem; margin-top: 10px;">
+                Entre em contato para ativar o Premium!
+            </p>
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-search"></i> Buscar Contas
+            </a>
+            
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-cog"></i> Painel Admin
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
+        </div>
+    </div>
+</body>
+</html>

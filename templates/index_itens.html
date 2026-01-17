@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro de Itens - XDraco</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style_itens.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <h1><i class="fas fa-box"></i> Filtro de Itens XDraco</h1>
+            <p>Encontre contas que possuem itens específicos no inventário</p>
+            <div id="cache-status" class="cache-info">
+                <i class="fas fa-sync-alt fa-spin"></i> Carregando cache...
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Painel de Filtros -->
+            <aside class="filters-panel">
+                <h2 class="filters-title"><i class="fas fa-filter"></i> Filtros</h2>
+                
+                <!-- Filtros Básicos -->
+                <div class="filter-group">
+                    <label class="filter-label">Poder (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="power-min" class="filter-input" placeholder="0" min="0">
+                        <input type="number" id="power-max" class="filter-input" placeholder="999999" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Level (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="level-min" class="filter-input" placeholder="0" min="0">
+                        <input type="number" id="level-max" class="filter-input" placeholder="200" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Preço WEMIX (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="price-min" class="filter-input" placeholder="0" min="0" step="0.1">
+                        <input type="number" id="price-max" class="filter-input" placeholder="10000" min="0" step="0.1">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Servidor (opcional)</label>
+                    <input type="text" id="server" class="filter-input" placeholder="Ex: EU021">
+                </div>
+
+                <!-- Classe -->
+                <div class="filter-group">
+                    <label class="filter-label">Classe</label>
+                    <div class="class-buttons">
+                        <button class="class-btn all active" data-class="0">Todas</button>
+                        <button class="class-btn guerreiro" data-class="1">Guerreiro</button>
+                        <button class="class-btn maga" data-class="2">Maga</button>
+                        <button class="class-btn taoista" data-class="3">Taoísta</button>
+                        <button class="class-btn arqueira" data-class="4">Arqueira</button>
+                        <button class="class-btn lanceiro" data-class="5">Lanceiro</button>
+                        <button class="class-btn soturna" data-class="6">Soturna</button>
+                        <button class="class-btn coracao-de-leao" data-class="7">C. Leão</button>
+                    </div>
+                </div>
+
+                <!-- Itens -->
+                <div class="filter-group">
+                    <label class="filter-label">Filtros de Itens</label>
+                    <button id="btn-abrir-itens" class="btn btn-secondary btn-block mb-2">
+                        <i class="fas fa-box-open"></i> Selecionar Itens
+                    </button>
+                    <div id="itens-selecionados">
+                        <div class="itens-tags-container" id="itens-tags-container"></div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="action-buttons">
+                    <button id="btn-filter" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <button id="btn-reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+
+                <button id="btn-recarregar" class="btn btn-danger btn-block mt-4">
+                    <i class="fas fa-sync-alt"></i> Recarregar Contas
+                </button>
+            </aside>
+
+            <!-- Painel de Resultados -->
+            <section class="results-panel">
+                <!-- Cabeçalho dos Resultados -->
+                <div class="results-header">
+                    <div>
+                        <h2 class="results-title"><i class="fas fa-list-alt"></i> Contas Encontradas</h2>
+                    </div>
+                    
+                    <div class="results-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span id="stats-count">0 contas</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="stats-time">0.0s</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-database"></i>
+                            <span id="cache-info">Cache: 0</span>
+                        </span>
+                    </div>
+
+                    <div class="sort-controls">
+                        <select id="sort-by" class="sort-select">
+                            <option value="power">Maior Poder</option>
+                            <option value="level">Maior Level</option>
+                            <option value="price">Menor Preço</option>
+                        </select>
+                        <button id="btn-sort-desc" class="btn btn-secondary">
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Resultados -->
+                <div class="accounts-table-container">
+                    <table class="accounts-table">
+                        <thead>
+                            <tr>
+                                <th>Conta</th>
+                                <th>Classe</th>
+                                <th>Level</th>
+                                <th>Poder</th>
+                                <th>Itens Encontrados</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accounts-table-body">
+                            <!-- Contas serão inseridas aqui -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Estados -->
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-3">Buscando contas com itens...</p>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3 class="mt-3">Nenhuma conta encontrada</h3>
+                    <p class="mt-2">Ajuste os filtros para ver resultados</p>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination-controls">
+                    <div class="visible-count">
+                        <i class="fas fa-eye"></i>
+                        <span>Mostrando <strong id="visible-count">0</strong> de <strong id="total-count">0</strong> contas</span>
+                    </div>
+                    <button id="btn-load-more" class="load-more-btn" style="display: none;">
+                        <i class="fas fa-plus"></i> Carregar mais
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Itens -->
+    <div id="modal-itens" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-box-open"></i> Selecionar Itens</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <input type="text" id="search-item" class="filter-input mb-3" placeholder="Buscar item pelo nome...">
+                
+                <div id="itens-container" class="itens-grid">
+                    <!-- Itens serão carregados aqui -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="mb-3">
+                    <label class="filter-label mb-2">Itens selecionados:</label>
+                    <div id="selected-itens-tags" class="itens-tags-container"></div>
+                </div>
+                <button id="btn-aplicar-itens" class="btn btn-primary btn-block">
+                    <i class="fas fa-check"></i> Aplicar Filtros
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM
+            const btnFilter = document.getElementById('btn-filter');
+            const btnReset = document.getElementById('btn-reset');
+            const btnRecarregar = document.getElementById('btn-recarregar');
+            const btnSortDesc = document.getElementById('btn-sort-desc');
+            const btnAbrirItens = document.getElementById('btn-abrir-itens');
+            const btnAplicarItens = document.getElementById('btn-aplicar-itens');
+            const btnLoadMore = document.getElementById('btn-load-more');
+            const closeModal = document.getElementById('close-modal');
+            const sortBy = document.getElementById('sort-by');
+            const tableBody = document.getElementById('accounts-table-body');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const statsCount = document.getElementById('stats-count');
+            const statsTime = document.getElementById('stats-time');
+            const cacheInfo = document.getElementById('cache-info');
+            const cacheStatus = document.getElementById('cache-status');
+            const modalItens = document.getElementById('modal-itens');
+            const searchItem = document.getElementById('search-item');
+            const itensContainer = document.getElementById('itens-container');
+            const selectedItensTags = document.getElementById('selected-itens-tags');
+            const itensTagsContainer = document.getElementById('itens-tags-container');
+            const visibleCount = document.getElementById('visible-count');
+            const totalCount = document.getElementById('total-count');
+
+            // Estado da aplicação
+            let currentSortDesc = true;
+            let currentContas = [];
+            let displayedContas = [];
+            let wemixBRLPrice = null;
+            let todosItens = [];
+            let itensSelecionados = {};
+            let carregandoCache = true;
+            let contasPorPagina = 10;
+            let paginaAtual = 1;
+
+            // Função para verificar status do cache
+            async function verificarStatusCache() {
+                try {
+                    const response = await fetch('/status-carregamento');
+                    const data = await response.json();
+                    
+                    if (data.tem_cache) {
+                        cacheStatus.innerHTML = '<i class="fas fa-check-circle"></i> Cache pronto';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = false;
+                    } else if (data.carregando) {
+                        cacheStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Carregando...';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = true;
+                        setTimeout(verificarStatusCache, 5000);
+                    } else {
+                        cacheStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Cache vazio';
+                        cacheStatus.className = 'cache-info erro';
+                        carregandoCache = false;
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar status:', error);
+                    cacheStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro';
+                    cacheStatus.className = 'cache-info erro';
+                }
+            }
+
+            // Iniciar verificação do cache
+            verificarStatusCache();
+
+            // Função de hash (MD5)
+            function hashString(str) {
+                if (typeof CryptoJS !== 'undefined') {
+                    return CryptoJS.MD5(str).toString().substring(0, 8);
+                }
+                // Fallback simple hash
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return Math.abs(hash).toString(16).substring(0, 8);
+            }
+
+            // Event Listeners
+            btnFilter.addEventListener('click', buscarContasComItens);
+            btnReset.addEventListener('click', resetarFiltros);
+            btnRecarregar.addEventListener('click', recarregarCache);
+            btnSortDesc.addEventListener('click', toggleSortOrder);
+            btnAbrirItens.addEventListener('click', abrirModalItens);
+            btnAplicarItens.addEventListener('click', aplicarItensModal);
+            btnLoadMore.addEventListener('click', carregarMaisContas);
+            closeModal.addEventListener('click', fecharModalItens);
+            sortBy.addEventListener('change', aplicarOrdenacao);
+            searchItem.addEventListener('input', filtrarItensModal);
+
+            // Fechar modal ao clicar fora
+            modalItens.addEventListener('click', function(e) {
+                if (e.target === modalItens) {
+                    fecharModalItens();
+                }
+            });
+
+            // Botões de classe
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Função para buscar contas com itens
+            async function buscarContasComItens() {
+                if (carregandoCache) {
+                    mostrarNotificacao('Aguarde o cache carregar', 'warning');
+                    return;
+                }
+                
+                loading.style.display = 'block';
+                emptyState.style.display = 'none';
+                tableBody.innerHTML = '';
+                btnLoadMore.style.display = 'none';
+                paginaAtual = 1;
+                
+                // Coletar filtros básicos
+                const filtros = {
+                    classe: document.querySelector('.class-btn.active').dataset.class,
+                    power_min: document.getElementById('power-min').value || null,
+                    power_max: document.getElementById('power-max').value || null,
+                    level_min: document.getElementById('level-min').value || null,
+                    level_max: document.getElementById('level-max').value || null,
+                    price_min: document.getElementById('price-min').value || null,
+                    price_max: document.getElementById('price-max').value || null,
+                    server: document.getElementById('server').value || '',
+                    ordenar_por: sortBy.value,
+                    ordenar_desc: currentSortDesc.toString()
+                };
+                
+                // Adicionar filtros de itens selecionados
+                Object.keys(itensSelecionados).forEach(hash => {
+                    if (itensSelecionados[hash].quantidade) {
+                        filtros[`item_${hash}`] = itensSelecionados[hash].quantidade;
+                    }
+                });
+                
+                // Construir URL de busca
+                const params = new URLSearchParams();
+                for (const [key, value] of Object.entries(filtros)) {
+                    if (value !== null && value !== '' && value !== undefined) {
+                        params.append(key, value);
+                    }
+                }
+                
+                try {
+                    const response = await fetch(`/buscar-contas-itens?${params.toString()}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        currentContas = data.contas;
+                        wemixBRLPrice = data.wemix_brl;
+                        
+                        // Atualizar stats
+                        statsCount.textContent = `${data.total} conta${data.total !== 1 ? 's' : ''}`;
+                        statsTime.textContent = `${data.tempo}s`;
+                        cacheInfo.textContent = `Cache: ${data.total_cache || 0}`;
+                        
+                        // Mostrar contas
+                        mostrarContasPagina(1);
+                        
+                    } else {
+                        throw new Error(data.error || 'Erro desconhecido');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar contas:', error);
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px 20px;">
+                                <i class="fas fa-exclamation-triangle" style="margin-bottom: 10px; color: #ef4444;"></i>
+                                <p>${error.message}</p>
+                            </td>
+                        </tr>
+                    `;
+                    mostrarNotificacao(`Erro: ${error.message}`, 'error');
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+            
+            // Função para mostrar contas da página atual
+            function mostrarContasPagina(pagina) {
+                paginaAtual = pagina;
+                const inicio = (pagina - 1) * contasPorPagina;
+                const fim = inicio + contasPorPagina;
+                displayedContas = currentContas.slice(inicio, fim);
+                
+                atualizarTabela(displayedContas);
+                atualizarContadorContas();
+                
+                // Mostrar ou esconder botão "Carregar mais"
+                if (currentContas.length > fim) {
+                    btnLoadMore.style.display = 'inline-flex';
+                } else {
+                    btnLoadMore.style.display = 'none';
+                }
+            }
+            
+            // Função para carregar mais contas
+            function carregarMaisContas() {
+                mostrarContasPagina(paginaAtual + 1);
+            }
+            
+            // Função para atualizar o contador de contas
+            function atualizarContadorContas() {
+                const totalExibidas = Math.min(paginaAtual * contasPorPagina, currentContas.length);
+                visibleCount.textContent = totalExibidas;
+                totalCount.textContent = currentContas.length;
+            }
+            
+            // Função para atualizar a tabela
+            function atualizarTabela(contas) {
+                if (paginaAtual === 1) {
+                    tableBody.innerHTML = '';
+                }
+                
+                if (contas.length === 0 && paginaAtual === 1) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                contas.forEach(conta => {
+                    const row = document.createElement('tr');
+                    const classColor = conta.class.cor || '#3b82f6';
+                    
+                    // Preparar display de itens
+                    let itensHTML = '';
+                    if (conta.itens && conta.itens.length > 0) {
+                        conta.itens.forEach(item => {
+                            itensHTML += `
+                                <div class="item-display">
+                                    ${item.imagem ? `<img src="${item.imagem}" alt="${item.nome}" class="item-image">` : ''}
+                                    <div class="item-info">
+                                        <div class="item-name">${item.nome}</div>
+                                        <div class="item-quantity">Quantidade: ${item.quantidade}</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        itensHTML = '<span style="color: var(--text-secondary);">Nenhum item correspondente</span>';
+                    }
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="account-name">${conta.name}</div>
+                            <div class="account-server">${conta.worldName}</div>
+                        </td>
+                        <td>
+                            <span class="class-badge" style="color: ${classColor};">
+                                ${conta.class.icone} ${conta.class.nome}
+                            </span>
+                        </td>
+                        <td class="numeric-cell">${conta.level}</td>
+                        <td class="numeric-cell">${conta.powerScore.toLocaleString('pt-BR')}</td>
+                        <td class="itens-cell">
+                            ${itensHTML}
+                        </td>
+                        <td class="price-cell">
+                            <div class="wemix-price">${conta.price.toLocaleString('pt-BR')} WEMIX</div>
+                            ${conta.price_brl ? `<div class="brl-price">R$ ${conta.price_brl.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>` : ''}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="${conta.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px;">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Função para resetar filtros
+            function resetarFiltros() {
+                document.querySelectorAll('.filter-input').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.class-btn.all').classList.add('active');
+                
+                itensSelecionados = {};
+                atualizarItensSelecionadosUI();
+                
+                sortBy.value = 'power';
+                currentSortDesc = true;
+                btnSortDesc.innerHTML = '<i class="fas fa-arrow-down"></i>';
+                
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                statsCount.textContent = '0 contas';
+                statsTime.textContent = '0.0s';
+                visibleCount.textContent = '0';
+                totalCount.textContent = '0';
+                btnLoadMore.style.display = 'none';
+                
+                mostrarNotificacao('Filtros resetados', 'info');
+            }
+            
+            // Função para recarregar cache
+            async function recarregarCache() {
+                if (!confirm('Recarregar todas as contas? Isso pode levar alguns minutos.')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/recarregar-contas', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        mostrarNotificacao(data.message, 'info');
+                        cacheStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Recarregando...';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = true;
+                        
+                        const interval = setInterval(async () => {
+                            const statusResponse = await fetch('/status-carregamento');
+                            const statusData = await statusResponse.json();
+                            
+                            if (!statusData.carregando) {
+                                clearInterval(interval);
+                                verificarStatusCache();
+                                buscarContasComItens();
+                                mostrarNotificacao('Cache recarregado', 'success');
+                            }
+                        }, 10000);
+                    } else {
+                        mostrarNotificacao(data.message || 'Erro', 'error');
+                    }
+                } catch (error) {
+                    mostrarNotificacao('Erro: ' + error.message, 'error');
+                }
+            }
+            
+            // Função para alternar ordem
+            function toggleSortOrder() {
+                currentSortDesc = !currentSortDesc;
+                btnSortDesc.innerHTML = currentSortDesc ? 
+                    '<i class="fas fa-arrow-down"></i>' : 
+                    '<i class="fas fa-arrow-up"></i>';
+                
+                if (currentContas.length > 0) {
+                    aplicarOrdenacao();
+                }
+            }
+            
+            // Função para aplicar ordenação
+            function aplicarOrdenacao() {
+                if (currentContas.length === 0) return;
+                
+                const sortField = sortBy.value;
+                
+                currentContas.sort((a, b) => {
+                    let aVal = a[sortField] || 0;
+                    let bVal = b[sortField] || 0;
+                    
+                    if (sortField === 'price') {
+                        return currentSortDesc ? aVal - bVal : bVal - aVal;
+                    }
+                    
+                    return currentSortDesc ? bVal - aVal : aVal - bVal;
+                });
+                
+                paginaAtual = 1;
+                mostrarContasPagina(1);
+            }
+            
+            // Funções do modal de itens
+            async function abrirModalItens() {
+                try {
+                    const response = await fetch('/todos-itens');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        todosItens = data.itens;
+                        renderizarItensModal();
+                        modalItens.style.display = 'block';
+                    } else {
+                        mostrarNotificacao('Erro ao carregar itens', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao abrir modal:', error);
+                    mostrarNotificacao('Erro ao carregar itens', 'error');
+                }
+            }
+            
+            function fecharModalItens() {
+                modalItens.style.display = 'none';
+            }
+            
+            function renderizarItensModal() {
+                itensContainer.innerHTML = '';
+                
+                if (todosItens.length === 0) {
+                    itensContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Busque contas primeiro para carregar os itens.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                todosItens.forEach(item => {
+                    const itemHash = item.hash;
+                    const quantidadeAtual = itensSelecionados[itemHash] ? itensSelecionados[itemHash].quantidade : '';
+                    
+                    const div = document.createElement('div');
+                    div.className = 'item-modal';
+                    div.innerHTML = `
+                        <div class="item-name-modal">${item.nome}</div>
+                        <input type="number" 
+                               class="filter-input"
+                               placeholder="Quantidade mínima"
+                               min="0"
+                               step="1"
+                               data-hash="${itemHash}"
+                               data-nome="${item.nome}"
+                               value="${quantidadeAtual}">
+                    `;
+                    
+                    itensContainer.appendChild(div);
+                });
+                
+                atualizarTagsItensSelecionados();
+            }
+            
+            function filtrarItensModal() {
+                const searchTerm = searchItem.value.toLowerCase();
+                const items = itensContainer.querySelectorAll('.item-modal');
+                
+                items.forEach(item => {
+                    const nome = item.querySelector('.item-name-modal').textContent.toLowerCase();
+                    if (nome.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+            
+            function aplicarItensModal() {
+                const inputs = itensContainer.querySelectorAll('.filter-input');
+                itensSelecionados = {};
+                
+                inputs.forEach(input => {
+                    if (input.value && parseInt(input.value) > 0) {
+                        const hash = input.dataset.hash;
+                        const nome = input.dataset.nome;
+                        const quantidade = parseInt(input.value);
+                        
+                        itensSelecionados[hash] = {
+                            nome: nome,
+                            quantidade: quantidade
+                        };
+                    }
+                });
+                
+                atualizarItensSelecionadosUI();
+                fecharModalItens();
+                buscarContasComItens();
+            }
+            
+            function atualizarItensSelecionadosUI() {
+                itensTagsContainer.innerHTML = '';
+                
+                if (Object.keys(itensSelecionados).length === 0) {
+                    itensTagsContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">Nenhum item selecionado</span>';
+                    return;
+                }
+                
+                Object.entries(itensSelecionados).forEach(([hash, item]) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'item-tag';
+                    tag.innerHTML = `
+                        <span>${item.nome}: ${item.quantidade}</span>
+                        <i class="fas fa-times" data-hash="${hash}"></i>
+                    `;
+                    
+                    tag.querySelector('i').addEventListener('click', function() {
+                        const hashToRemove = this.dataset.hash;
+                        delete itensSelecionados[hashToRemove];
+                        atualizarItensSelecionadosUI();
+                    });
+                    
+                    itensTagsContainer.appendChild(tag);
+                });
+                
+                atualizarTagsItensSelecionados();
+            }
+            
+            function atualizarTagsItensSelecionados() {
+                selectedItensTags.innerHTML = '';
+                
+                if (Object.keys(itensSelecionados).length === 0) {
+                    selectedItensTags.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">Nenhum item</span>';
+                    return;
+                }
+                
+                Object.entries(itensSelecionados).forEach(([hash, item]) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'item-tag';
+                    tag.innerHTML = `
+                        <span>${item.nome}: ${item.quantidade}</span>
+                        <i class="fas fa-times" data-hash="${hash}"></i>
+                    `;
+                    
+                    tag.querySelector('i').addEventListener('click', function() {
+                        const hashToRemove = this.dataset.hash;
+                        delete itensSelecionados[hashToRemove];
+                        atualizarItensSelecionadosUI();
+                    });
+                    
+                    selectedItensTags.appendChild(tag);
+                });
+            }
+            
+            // Função para mostrar notificações
+            function mostrarNotificacao(mensagem, tipo = 'info') {
+                const notifAnterior = document.querySelector('.notification');
+                if (notifAnterior) {
+                    notifAnterior.remove();
+                }
+                
+                const notificacao = document.createElement('div');
+                notificacao.className = `notification ${tipo}`;
+                
+                let icone = 'info-circle';
+                if (tipo === 'success') icone = 'check-circle';
+                if (tipo === 'error') icone = 'exclamation-circle';
+                if (tipo === 'warning') icone = 'exclamation-triangle';
+                
+                notificacao.innerHTML = `
+                    <i class="fas fa-${icone}"></i>
+                    <span>${mensagem}</span>
+                `;
+                
+                document.body.appendChild(notificacao);
+                
+                setTimeout(() => {
+                    notificacao.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    notificacao.classList.remove('show');
+                    setTimeout(() => {
+                        if (notificacao.parentNode) {
+                            notificacao.remove();
+                        }
+                    }, 300);
+                }, 4000);
+            }
+            
+            // Buscar contas ao carregar a página (se cache estiver pronto)
+            setTimeout(() => {
+                if (!carregandoCache) {
+                    buscarContasComItens();
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro Completo - XDraco</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style_completo.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <h1><i class="fas fa-search"></i> Filtro Completo XDraco</h1>
+            <p>Busque contas por status, mineração e itens no inventário</p>
+            <div id="cache-status" class="cache-info">
+                <i class="fas fa-sync-alt fa-spin"></i> Carregando cache...
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Painel de Filtros -->
+            <aside class="filters-panel">
+                <h2 class="filters-title"><i class="fas fa-filter"></i> Filtros</h2>
+                
+                <!-- Filtros Básicos -->
+                <div class="filter-group">
+                    <label class="filter-label">Poder (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="power-min" class="filter-input" placeholder="0" min="0">
+                        <input type="number" id="power-max" class="filter-input" placeholder="999999" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Level (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="level-min" class="filter-input" placeholder="0" min="0">
+                        <input type="number" id="level-max" class="filter-input" placeholder="200" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Preço WEMIX (Mín - Máx)</label>
+                    <div class="filter-row">
+                        <input type="number" id="price-min" class="filter-input" placeholder="0" min="0" step="0.1">
+                        <input type="number" id="price-max" class="filter-input" placeholder="10000" min="0" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Classe -->
+                <div class="filter-group">
+                    <label class="filter-label">Classe</label>
+                    <div class="class-buttons">
+                        <button class="class-btn all active" data-class="0">Todas</button>
+                        <button class="class-btn guerreiro" data-class="1">Guerreiro</button>
+                        <button class="class-btn maga" data-class="2">Maga</button>
+                        <button class="class-btn taoista" data-class="3">Taoísta</button>
+                        <button class="class-btn arqueira" data-class="4">Arqueira</button>
+                        <button class="class-btn lanceiro" data-class="5">Lanceiro</button>
+                        <button class="class-btn soturna" data-class="6">Soturna</button>
+                        <button class="class-btn coracao-de-leao" data-class="7">C. Leão</button>
+                    </div>
+                </div>
+
+              <!-- Status de Mineração (Foco Principal) -->
+<div class="mining-filter-group">
+    <h3 class="filter-label" style="color: #3b82f6; margin-bottom: 1rem;">
+        <i class="fas fa-mountain"></i> Filtros de Mineração
+    </h3>
+    
+    <div class="mining-input-group">
+        <label>Aceleração de Mineração (%)</label>
+        <input type="number" 
+               id="aceleramento-mineracao" 
+               class="filter-input" 
+               placeholder="Ex: 20" 
+               min="0" 
+               step="0.1">
+    </div>
+    
+    <div class="mining-input-group">
+        <label>Aumento de Aço Negro (%)</label>
+        <input type="number" 
+               id="aumento-aconegro" 
+               class="filter-input" 
+               placeholder="Ex: 15" 
+               min="0" 
+               step="0.1">
+    </div>
+    
+    <div class="mining-input-group">
+        <label>Nível da Mina</label>
+        <input type="number" 
+               id="mina-level" 
+               class="filter-input" 
+               placeholder="Ex: 10" 
+               min="0">
+    </div>
+    
+    <div class="mining-input-group">
+      
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            
+           
+        </div>
+    </div>
+</div>
+
+<!-- Outros Status (Escondido por padrão, acessível através de "Mostrar mais") -->
+<div class="filter-group">
+    <details>
+        <summary class="filter-label" style="cursor: pointer;">
+            <i class="fas fa-chevron-down"></i> Outros Status (Opcional)
+        </summary>
+        <div class="mt-2">
+            <input type="text" id="search-status" class="filter-input mb-2" placeholder="Buscar status...">
+            <div id="status-container" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem; background: var(--light);">
+                <!-- Outros status serão carregados aqui -->
+            </div>
+        </div>
+    </details>
+    
+    <!-- Botão para abrir modal de itens -->
+    <button id="btn-abrir-itens" class="btn btn-secondary btn-block mt-3">
+        <i class="fas fa-box-open"></i> Filtrar por Itens no Inventário
+    </button>
+    
+    <div id="status-selecionados" class="mt-2">
+        <div class="status-tags-container" id="status-tags-container"></div>
+    </div>
+</div>
+
+                <!-- Outros Status -->
+                <div class="filter-group">
+                    <label class="filter-label">Outros Status/Itens</label>
+                    <div class="mb-3">
+                        <input type="text" id="search-status" class="filter-input mb-2" placeholder="Buscar status...">
+                        <div id="status-container" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem;">
+                            <!-- Status serão preenchidos via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Botão para abrir modal de itens -->
+                    <button id="btn-abrir-itens" class="btn btn-secondary btn-block mb-2">
+                        <i class="fas fa-box-open"></i> Filtrar por Itens
+                    </button>
+                    
+                    <div id="status-selecionados">
+                        <div class="status-tags-container" id="status-tags-container"></div>
+                    </div>
+                </div>
+
+                <!-- Filtros Avançados -->
+                <div class="filter-group">
+                    <details>
+                        <summary class="filter-label" style="cursor: pointer;">Filtros Avançados</summary>
+                        <div class="mt-2">
+                            <div class="filter-row mb-2">
+                                <input type="number" id="codex-min" class="filter-input" placeholder="Codex Mín" min="0">
+                                <input type="number" id="potencial-min" class="filter-input" placeholder="Potencial Mín" min="0">
+                            </div>
+                            <div class="filter-row mb-2">
+                                <input type="number" id="pets-lendarios-min" class="filter-input" placeholder="Pets Lendários Mín" min="0">
+                                <input type="number" id="pets-misticos-min" class="filter-input" placeholder="Pets Místicos Mín" min="0">
+                            </div>
+                            <div class="filter-row mb-2">
+                                <input type="number" id="habs-lendarias-min" class="filter-input" placeholder="Habs Lendárias Mín" min="0">
+                                <input type="number" id="constituicao-min" class="filter-input" placeholder="Constituição Mín" min="0">
+                            </div>
+                            <div class="filter-row">
+                                <input type="number" id="mina-min" class="filter-input" placeholder="Nível Mina Mín" min="0">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="action-buttons">
+                    <button id="btn-filter-status" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar por Status
+                    </button>
+                    <button id="btn-filter-itens" class="btn btn-primary">
+                        <i class="fas fa-box"></i> Buscar por Itens
+                    </button>
+                    <button id="btn-reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <button id="btn-carregar-teste" class="btn btn-secondary btn-block mb-2">
+                        <i class="fas fa-vial"></i> Carregar 10 contas (Teste)
+                    </button>
+                    <button id="btn-recarregar" class="btn btn-danger btn-block">
+                        <i class="fas fa-sync-alt"></i> Carregar todas as contas
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Painel de Resultados -->
+            <section class="results-panel">
+                <!-- Cabeçalho dos Resultados -->
+                <div class="results-header">
+                    <div>
+                        <h2 class="results-title"><i class="fas fa-list-alt"></i> Contas Encontradas</h2>
+                        <div class="search-mode-indicator">
+                            <span id="search-mode">Modo: Status</span>
+                        </div>
+                    </div>
+                    
+                    <div class="results-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span id="stats-count">0 contas</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="stats-time">0.0s</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-database"></i>
+                            <span id="cache-info">Cache: 0</span>
+                        </span>
+                    </div>
+
+                    <div class="sort-controls">
+                        <select id="sort-by" class="sort-select">
+                            <option value="power">Maior Poder</option>
+                            <option value="level">Maior Level</option>
+                            <option value="price">Menor Preço</option>
+                            <option value="codex">Maior Codex</option>
+                            <option value="mina">Maior Mina</option>
+                            <option value="aceleramento">Maior Aceleração</option>
+                            <option value="aconegro">Maior Aço Negro</option>
+                        </select>
+                        <button id="btn-sort-desc" class="btn btn-secondary">
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Resultados -->
+                <div class="accounts-table-container">
+                    <table class="accounts-table">
+                        <thead>
+                            <tr>
+                                <th>Conta</th>
+                                <th>Classe</th>
+                                <th>Level</th>
+                                <th>Poder</th>
+                                <th>Status/Itens</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accounts-table-body">
+                            <!-- Contas serão inseridas aqui -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Estados -->
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-3">Buscando contas...</p>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3 class="mt-3">Nenhuma conta encontrada</h3>
+                    <p class="mt-2">Ajuste os filtros para ver resultados</p>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination-controls">
+                    <div class="visible-count">
+                        <i class="fas fa-eye"></i>
+                        <span>Mostrando <strong id="visible-count">0</strong> de <strong id="total-count">0</strong> contas</span>
+                    </div>
+                    <button id="btn-load-more" class="load-more-btn" style="display: none;">
+                        <i class="fas fa-plus"></i> Carregar mais
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Itens -->
+    <div id="modal-itens" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-box-open"></i> Selecionar Itens</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <input type="text" id="search-item" class="filter-input mb-3" placeholder="Buscar item pelo nome...">
+                
+                <div id="itens-container" class="itens-grid">
+                    <!-- Itens serão carregados aqui -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="mb-3">
+                    <label class="filter-label mb-2">Itens selecionados:</label>
+                    <div id="selected-itens-tags" class="itens-tags-container"></div>
+                </div>
+                <button id="btn-aplicar-itens" class="btn btn-primary btn-block">
+                    <i class="fas fa-check"></i> Aplicar Filtros de Itens
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM principais
+            const btnFilterStatus = document.getElementById('btn-filter-status');
+            const btnFilterItens = document.getElementById('btn-filter-itens');
+            const btnReset = document.getElementById('btn-reset');
+            const btnRecarregar = document.getElementById('btn-recarregar');
+            const btnCarregarTeste = document.getElementById('btn-carregar-teste');
+            const btnSortDesc = document.getElementById('btn-sort-desc');
+            const btnAbrirItens = document.getElementById('btn-abrir-itens');
+            const btnAplicarItens = document.getElementById('btn-aplicar-itens');
+            const btnLoadMore = document.getElementById('btn-load-more');
+            const closeModal = document.getElementById('close-modal');
+            const sortBy = document.getElementById('sort-by');
+            const tableBody = document.getElementById('accounts-table-body');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const statsCount = document.getElementById('stats-count');
+            const statsTime = document.getElementById('stats-time');
+            const cacheInfo = document.getElementById('cache-info');
+            const cacheStatus = document.getElementById('cache-status');
+            const modalItens = document.getElementById('modal-itens');
+            const searchItem = document.getElementById('search-item');
+            const searchStatus = document.getElementById('search-status');
+            const itensContainer = document.getElementById('itens-container');
+            const statusContainer = document.getElementById('status-container');
+            const statusMineracaoContainer = document.getElementById('status-mineracao-container');
+            const selectedItensTags = document.getElementById('selected-itens-tags');
+            const statusTagsContainer = document.getElementById('status-tags-container');
+            const visibleCount = document.getElementById('visible-count');
+            const totalCount = document.getElementById('total-count');
+            const searchModeIndicator = document.getElementById('search-mode');
+
+            // Estado da aplicação
+            let currentSortDesc = true;
+            let currentContas = [];
+            let displayedContas = [];
+            let wemixBRLPrice = null;
+            let todosStatus = [];
+            let todosItens = [];
+            let statusSelecionados = {};
+            let itensSelecionados = {};
+            let carregandoCache = true;
+            let contasPorPagina = 10;
+            let paginaAtual = 1;
+            let modoBuscaAtual = 'status'; // 'status' ou 'itens'
+
+            // Função para verificar status do cache
+            async function verificarStatusCache() {
+                try {
+                    const response = await fetch('/status-carregamento');
+                    const data = await response.json();
+                    
+                    if (data.tem_cache_completo) {
+                        cacheStatus.innerHTML = '<i class="fas fa-check-circle"></i> Cache completo carregado';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = false;
+                    } else if (data.tem_cache_teste) {
+                        cacheStatus.innerHTML = '<i class="fas fa-check-circle"></i> Cache de teste carregado';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = false;
+                    } else if (data.carregando) {
+                        cacheStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Carregando...';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = true;
+                        setTimeout(verificarStatusCache, 5000);
+                    } else {
+                        cacheStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Cache vazio';
+                        cacheStatus.className = 'cache-info erro';
+                        carregandoCache = false;
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar status:', error);
+                    cacheStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro';
+                    cacheStatus.className = 'cache-info erro';
+                }
+            }
+
+            // Iniciar verificação do cache
+            verificarStatusCache();
+
+            // Funções de hash (simplificadas)
+            function hashString(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return Math.abs(hash).toString(16).substring(0, 8);
+            }
+
+            // Event Listeners
+            btnFilterStatus.addEventListener('click', () => {
+                modoBuscaAtual = 'status';
+                searchModeIndicator.textContent = 'Modo: Status';
+                buscarContas();
+            });
+            
+            btnFilterItens.addEventListener('click', () => {
+                modoBuscaAtual = 'itens';
+                searchModeIndicator.textContent = 'Modo: Itens';
+                buscarContas();
+            });
+            
+            btnReset.addEventListener('click', resetarFiltros);
+            btnRecarregar.addEventListener('click', recarregarCache);
+            btnCarregarTeste.addEventListener('click', carregarTeste);
+            btnSortDesc.addEventListener('click', toggleSortOrder);
+            btnAbrirItens.addEventListener('click', abrirModalItens);
+            btnAplicarItens.addEventListener('click', aplicarItensModal);
+            btnLoadMore.addEventListener('click', carregarMaisContas);
+            closeModal.addEventListener('click', fecharModalItens);
+            sortBy.addEventListener('change', aplicarOrdenacao);
+            searchItem.addEventListener('input', filtrarItensModal);
+            searchStatus.addEventListener('input', filtrarStatus);
+
+            // Fechar modal ao clicar fora
+            modalItens.addEventListener('click', function(e) {
+                if (e.target === modalItens) {
+                    fecharModalItens();
+                }
+            });
+
+            // Botões de classe
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Carregar status disponíveis
+            async function carregarStatusDisponiveis() {
+                try {
+                    const response = await fetch('/todos-status');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        todosStatus = data.status;
+                        renderizarStatus();
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar status:', error);
+                }
+            }
+
+            // Carregar itens disponíveis
+            async function carregarItensDisponiveis() {
+                try {
+                    const response = await fetch('/todos-itens');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        todosItens = data.itens;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar itens:', error);
+                }
+            }
+
+            // Renderizar status na interface
+            function renderizarStatus() {
+                // Separar status de mineração
+                const statusMineracao = [];
+                const outrosStatus = [];
+                
+                todosStatus.forEach(status => {
+                    const nomeLower = status.nome.toLowerCase();
+                    if (nomeLower.includes('mineração') || nomeLower.includes('mina') || 
+                        nomeLower.includes('aço negro') || nomeLower.includes('aceleramento')) {
+                        statusMineracao.push(status);
+                    } else {
+                        outrosStatus.push(status);
+                    }
+                });
+                
+                // Renderizar status de mineração
+                statusMineracaoContainer.innerHTML = '';
+                statusMineracao.forEach(status => {
+                    const div = document.createElement('div');
+                    div.className = 'status-input-group';
+                    div.innerHTML = `
+                        <label class="filter-label-sm">${status.nome}</label>
+                        <input type="number" 
+                               class="filter-input status-input" 
+                               placeholder="0" 
+                               min="0" 
+                               step="0.1"
+                               data-hash="${status.hash}"
+                               data-nome="${status.nome}">
+                    `;
+                    statusMineracaoContainer.appendChild(div);
+                });
+                
+                // Renderizar outros status
+                statusContainer.innerHTML = '';
+                outrosStatus.forEach(status => {
+                    const div = document.createElement('div');
+                    div.className = 'status-input-group';
+                    div.innerHTML = `
+                        <label class="filter-label-sm">${status.nome}</label>
+                        <input type="number" 
+                               class="filter-input status-input" 
+                               placeholder="0" 
+                               min="0" 
+                               step="0.1"
+                               data-hash="${status.hash}"
+                               data-nome="${status.nome}">
+                    `;
+                    statusContainer.appendChild(div);
+                });
+                
+                // Adicionar eventos aos inputs de status
+                document.querySelectorAll('.status-input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const hash = this.dataset.hash;
+                        const nome = this.dataset.nome;
+                        const valor = parseFloat(this.value) || 0;
+                        
+                        if (valor > 0) {
+                            statusSelecionados[hash] = {
+                                nome: nome,
+                                valor: valor
+                            };
+                        } else {
+                            delete statusSelecionados[hash];
+                        }
+                        
+                        atualizarStatusSelecionadosUI();
+                    });
+                });
+            }
+
+            // Função para filtrar status na busca
+            function filtrarStatus() {
+                const searchTerm = searchStatus.value.toLowerCase();
+                const grupos = statusContainer.querySelectorAll('.status-input-group');
+                
+                grupos.forEach(grupo => {
+                    const label = grupo.querySelector('.filter-label-sm');
+                    const nome = label.textContent.toLowerCase();
+                    
+                    if (nome.includes(searchTerm)) {
+                        grupo.style.display = 'block';
+                    } else {
+                        grupo.style.display = 'none';
+                    }
+                });
+            }
+
+            // Atualizar UI de status selecionados
+            function atualizarStatusSelecionadosUI() {
+                statusTagsContainer.innerHTML = '';
+                
+                if (Object.keys(statusSelecionados).length === 0) {
+                    statusTagsContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">Nenhum status selecionado</span>';
+                    return;
+                }
+                
+                Object.entries(statusSelecionados).forEach(([hash, status]) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'status-tag';
+                    tag.innerHTML = `
+                        <span>${status.nome}: ${status.valor}</span>
+                        <i class="fas fa-times" data-hash="${hash}"></i>
+                    `;
+                    
+                    tag.querySelector('i').addEventListener('click', function() {
+                        const hashToRemove = this.dataset.hash;
+                        delete statusSelecionados[hashToRemove];
+                        
+                        // Limpar o input correspondente
+                        const input = document.querySelector(`.status-input[data-hash="${hashToRemove}"]`);
+                        if (input) input.value = '';
+                        
+                        atualizarStatusSelecionadosUI();
+                    });
+                    
+                    statusTagsContainer.appendChild(tag);
+                });
+            }
+
+            // Função para buscar contas
+            async function buscarContas() {
+                if (carregandoCache) {
+                    mostrarNotificacao('Aguarde o cache carregar', 'warning');
+                    return;
+                }
+                
+                loading.style.display = 'block';
+                emptyState.style.display = 'none';
+                tableBody.innerHTML = '';
+                btnLoadMore.style.display = 'none';
+                paginaAtual = 1;
+                
+                // Coletar filtros básicos
+                const filtros = {
+                    classe: document.querySelector('.class-btn.active').dataset.class,
+                    power_min: document.getElementById('power-min').value || null,
+                    power_max: document.getElementById('power-max').value || null,
+                    level_min: document.getElementById('level-min').value || null,
+                    level_max: document.getElementById('level-max').value || null,
+                    price_min: document.getElementById('price-min').value || null,
+                    price_max: document.getElementById('price-max').value || null,
+                    codex_min: document.getElementById('codex-min').value || null,
+                    potencial_min: document.getElementById('potencial-min').value || null,
+                    pets_lendarios_min: document.getElementById('pets-lendarios-min').value || null,
+                    pets_misticos_min: document.getElementById('pets-misticos-min').value || null,
+                    habs_lendarias_min: document.getElementById('habs-lendarias-min').value || null,
+                    constituicao_min: document.getElementById('constituicao-min').value || null,
+                    mina_min: document.getElementById('mina-min').value || null,
+                    ordenar_por: sortBy.value,
+                    ordenar_desc: currentSortDesc.toString(),
+                    cache_tipo: 'completas'
+                };
+                
+                let endpoint, params;
+                
+                if (modoBuscaAtual === 'status') {
+                    // Adicionar filtros de status
+                    Object.keys(statusSelecionados).forEach(hash => {
+                        if (statusSelecionados[hash].valor) {
+                            filtros[`status_${hash}`] = statusSelecionados[hash].valor;
+                        }
+                    });
+                    
+                    endpoint = '/buscar-contas-status';
+                } else {
+                    // Modo itens
+                    endpoint = '/buscar-contas-itens';
+                    
+                    // Adicionar filtros de itens
+                    Object.keys(itensSelecionados).forEach(hash => {
+                        if (itensSelecionados[hash].quantidade) {
+                            filtros[`item_${hash}`] = itensSelecionados[hash].quantidade;
+                        }
+                    });
+                }
+                
+                // Construir URL de busca
+                params = new URLSearchParams();
+                for (const [key, value] of Object.entries(filtros)) {
+                    if (value !== null && value !== '' && value !== undefined) {
+                        params.append(key, value);
+                    }
+                }
+                
+                try {
+                    const response = await fetch(`${endpoint}?${params.toString()}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        currentContas = data.contas;
+                        wemixBRLPrice = data.wemix_brl;
+                        
+                        // Atualizar stats
+                        statsCount.textContent = `${data.total} conta${data.total !== 1 ? 's' : ''}`;
+                        statsTime.textContent = `${data.tempo}s`;
+                        cacheInfo.textContent = `Cache: ${data.total_cache || 0}`;
+                        
+                        // Mostrar contas
+                        mostrarContasPagina(1);
+                        
+                    } else {
+                        throw new Error(data.error || 'Erro desconhecido');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar contas:', error);
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px 20px;">
+                                <i class="fas fa-exclamation-triangle" style="margin-bottom: 10px; color: #ef4444;"></i>
+                                <p>${error.message}</p>
+                            </td>
+                        </tr>
+                    `;
+                    mostrarNotificacao(`Erro: ${error.message}`, 'error');
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+            
+            // Função para mostrar contas da página atual
+            function mostrarContasPagina(pagina) {
+                paginaAtual = pagina;
+                const inicio = (pagina - 1) * contasPorPagina;
+                const fim = inicio + contasPorPagina;
+                displayedContas = currentContas.slice(inicio, fim);
+                
+                atualizarTabela(displayedContas);
+                atualizarContadorContas();
+                
+                // Mostrar ou esconder botão "Carregar mais"
+                if (currentContas.length > fim) {
+                    btnLoadMore.style.display = 'inline-flex';
+                } else {
+                    btnLoadMore.style.display = 'none';
+                }
+            }
+            
+            // Função para carregar mais contas
+            function carregarMaisContas() {
+                mostrarContasPagina(paginaAtual + 1);
+            }
+            
+            // Função para atualizar o contador de contas
+            function atualizarContadorContas() {
+                const totalExibidas = Math.min(paginaAtual * contasPorPagina, currentContas.length);
+                visibleCount.textContent = totalExibidas;
+                totalCount.textContent = currentContas.length;
+            }
+            
+            // Função para atualizar a tabela
+            function atualizarTabela(contas) {
+                if (paginaAtual === 1) {
+                    tableBody.innerHTML = '';
+                }
+                
+                if (contas.length === 0 && paginaAtual === 1) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                contas.forEach(conta => {
+                    const row = document.createElement('tr');
+                    const classColor = conta.class.cor || '#3b82f6';
+                    
+                    // Preparar display de status/itens
+                    let infoHTML = '';
+                    
+                    if (modoBuscaAtual === 'status') {
+                        // Mostrar status de mineração
+                        if (conta.aceleramento_mineracao > 0) {
+                            infoHTML += `
+                                <div class="item-display">
+                                    <div class="item-info">
+                                        <div class="item-name">Aceleração de Mineração</div>
+                                        <div class="item-quantity">${conta.aceleramento_mineracao}%</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        if (conta.aumento_aconegro > 0) {
+                            infoHTML += `
+                                <div class="item-display">
+                                    <div class="item-info">
+                                        <div class="item-name">Aumento de Aço Negro</div>
+                                        <div class="item-quantity">${conta.aumento_aconegro}%</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        if (conta.mina > 0) {
+                            infoHTML += `
+                                <div class="item-display">
+                                    <div class="item-info">
+                                        <div class="item-name">Mina</div>
+                                        <div class="item-quantity">Nível ${conta.mina}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Outros status filtrados
+                        Object.keys(statusSelecionados).forEach(hash => {
+                            // Aqui você poderia mostrar os outros status filtrados
+                            // Mas precisaria extrair esses valores da conta
+                        });
+                        
+                    } else {
+                        // Modo itens
+                        if (conta.itens && conta.itens.length > 0) {
+                            conta.itens.forEach(item => {
+                                infoHTML += `
+                                    <div class="item-display">
+                                        ${item.imagem ? `<img src="${item.imagem}" alt="${item.nome}" class="item-image">` : ''}
+                                        <div class="item-info">
+                                            <div class="item-name">${item.nome}</div>
+                                            <div class="item-quantity">Quantidade: ${item.quantidade}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            infoHTML = '<span style="color: var(--text-secondary);">Nenhum item correspondente</span>';
+                        }
+                    }
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="account-name">${conta.name}</div>
+                            <div class="account-server">${conta.worldName}</div>
+                        </td>
+                        <td>
+                            <span class="class-badge" style="color: ${classColor};">
+                                ${conta.class.icone} ${conta.class.nome}
+                            </span>
+                        </td>
+                        <td class="numeric-cell">${conta.level}</td>
+                        <td class="numeric-cell">${conta.powerScore.toLocaleString('pt-BR')}</td>
+                        <td class="itens-cell">
+                            ${infoHTML}
+                        </td>
+                        <td class="price-cell">
+                            <div class="wemix-price">${conta.price.toLocaleString('pt-BR')} WEMIX</div>
+                            ${conta.price_brl ? `<div class="brl-price">R$ ${conta.price_brl.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>` : ''}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="${conta.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px;">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Função para resetar filtros
+            function resetarFiltros() {
+                document.querySelectorAll('.filter-input').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.class-btn.all').classList.add('active');
+                
+                statusSelecionados = {};
+                itensSelecionados = {};
+                atualizarStatusSelecionadosUI();
+                atualizarItensSelecionadosUI();
+                
+                sortBy.value = 'power';
+                currentSortDesc = true;
+                btnSortDesc.innerHTML = '<i class="fas fa-arrow-down"></i>';
+                
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                statsCount.textContent = '0 contas';
+                statsTime.textContent = '0.0s';
+                visibleCount.textContent = '0';
+                totalCount.textContent = '0';
+                btnLoadMore.style.display = 'none';
+                modoBuscaAtual = 'status';
+                searchModeIndicator.textContent = 'Modo: Status';
+                
+                mostrarNotificacao('Filtros resetados', 'info');
+            }
+            
+            // Função para recarregar cache
+            async function recarregarCache() {
+                if (!confirm('Recarregar todas as contas? Isso pode levar vários minutos.')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/recarregar-contas', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        mostrarNotificacao(data.message, 'info');
+                        cacheStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Recarregando...';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = true;
+                        
+                        const interval = setInterval(async () => {
+                            const statusResponse = await fetch('/status-carregamento');
+                            const statusData = await statusResponse.json();
+                            
+                            if (!statusData.carregando) {
+                                clearInterval(interval);
+                                verificarStatusCache();
+                                carregarStatusDisponiveis();
+                                carregarItensDisponiveis();
+                                mostrarNotificacao('Cache recarregado', 'success');
+                            }
+                        }, 10000);
+                    } else {
+                        mostrarNotificacao(data.message || 'Erro', 'error');
+                    }
+                } catch (error) {
+                    mostrarNotificacao('Erro: ' + error.message, 'error');
+                }
+            }
+            
+            // Função para carregar teste
+            async function carregarTeste() {
+                try {
+                    const response = await fetch('/carregar-teste', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        mostrarNotificacao(data.message, 'info');
+                        cacheStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Carregando teste...';
+                        cacheStatus.className = 'cache-info';
+                        carregandoCache = true;
+                        
+                        const interval = setInterval(async () => {
+                            const statusResponse = await fetch('/status-carregamento');
+                            const statusData = await statusResponse.json();
+                            
+                            if (!statusData.carregando) {
+                                clearInterval(interval);
+                                verificarStatusCache();
+                                carregarStatusDisponiveis();
+                                carregarItensDisponiveis();
+                                mostrarNotificacao('Teste carregado', 'success');
+                            }
+                        }, 5000);
+                    } else {
+                        mostrarNotificacao(data.message || 'Erro', 'error');
+                    }
+                } catch (error) {
+                    mostrarNotificacao('Erro: ' + error.message, 'error');
+                }
+            }
+            
+            // Função para alternar ordem
+            function toggleSortOrder() {
+                currentSortDesc = !currentSortDesc;
+                btnSortDesc.innerHTML = currentSortDesc ? 
+                    '<i class="fas fa-arrow-down"></i>' : 
+                    '<i class="fas fa-arrow-up"></i>';
+                
+                if (currentContas.length > 0) {
+                    aplicarOrdenacao();
+                }
+            }
+            
+            // Função para aplicar ordenação
+            function aplicarOrdenacao() {
+                if (currentContas.length === 0) return;
+                
+                const sortField = sortBy.value;
+                
+                currentContas.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    if (sortField === 'power') {
+                        aVal = a.powerScore || 0;
+                        bVal = b.powerScore || 0;
+                    } else if (sortField === 'level') {
+                        aVal = a.level || 0;
+                        bVal = b.level || 0;
+                    } else if (sortField === 'price') {
+                        aVal = a.price || 0;
+                        bVal = b.price || 0;
+                        return currentSortDesc ? aVal - bVal : bVal - aVal;
+                    } else if (sortField === 'codex') {
+                        aVal = a.codex || 0;
+                        bVal = b.codex || 0;
+                    } else if (sortField === 'mina') {
+                        aVal = a.mina || 0;
+                        bVal = b.mina || 0;
+                    } else if (sortField === 'aceleramento') {
+                        aVal = a.aceleramento_mineracao || 0;
+                        bVal = b.aceleramento_mineracao || 0;
+                    } else if (sortField === 'aconegro') {
+                        aVal = a.aumento_aconegro || 0;
+                        bVal = b.aumento_aconegro || 0;
+                    }
+                    
+                    return currentSortDesc ? bVal - aVal : aVal - bVal;
+                });
+                
+                paginaAtual = 1;
+                mostrarContasPagina(1);
+            }
+            
+            // Funções do modal de itens
+            async function abrirModalItens() {
+                try {
+                    if (todosItens.length === 0) {
+                        await carregarItensDisponiveis();
+                    }
+                    
+                    renderizarItensModal();
+                    modalItens.style.display = 'block';
+                } catch (error) {
+                    console.error('Erro ao abrir modal:', error);
+                    mostrarNotificacao('Erro ao carregar itens', 'error');
+                }
+            }
+            
+            function fecharModalItens() {
+                modalItens.style.display = 'none';
+            }
+            
+            function renderizarItensModal() {
+                itensContainer.innerHTML = '';
+                
+                if (todosItens.length === 0) {
+                    itensContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Busque contas primeiro para carregar os itens.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Limitar a 100 itens para performance
+                const itensExibir = todosItens.slice(0, 100);
+                
+                itensExibir.forEach(item => {
+                    const itemHash = item.hash;
+                    const quantidadeAtual = itensSelecionados[itemHash] ? itensSelecionados[itemHash].quantidade : '';
+                    
+                    const div = document.createElement('div');
+                    div.className = 'item-modal';
+                    div.innerHTML = `
+                        <div class="item-name-modal">${item.nome}</div>
+                        <input type="number" 
+                               class="filter-input"
+                               placeholder="Quantidade mínima"
+                               min="0"
+                               step="1"
+                               data-hash="${itemHash}"
+                               data-nome="${item.nome}"
+                               value="${quantidadeAtual}">
+                    `;
+                    
+                    itensContainer.appendChild(div);
+                });
+                
+                // Adicionar eventos aos inputs
+                itensContainer.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const hash = this.dataset.hash;
+                        const nome = this.dataset.nome;
+                        const quantidade = parseInt(this.value) || 0;
+                        
+                        if (quantidade > 0) {
+                            itensSelecionados[hash] = {
+                                nome: nome,
+                                quantidade: quantidade
+                            };
+                        } else {
+                            delete itensSelecionados[hash];
+                        }
+                        
+                        atualizarTagsItensSelecionados();
+                    });
+                });
+                
+                atualizarTagsItensSelecionados();
+            }
+            
+            function filtrarItensModal() {
+                const searchTerm = searchItem.value.toLowerCase();
+                const items = itensContainer.querySelectorAll('.item-modal');
+                
+                items.forEach(item => {
+                    const nome = item.querySelector('.item-name-modal').textContent.toLowerCase();
+                    if (nome.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+            
+            function aplicarItensModal() {
+                atualizarItensSelecionadosUI();
+                fecharModalItens();
+                
+                // Mudar para modo de busca por itens
+                modoBuscaAtual = 'itens';
+                searchModeIndicator.textContent = 'Modo: Itens';
+                buscarContas();
+            }
+            
+            function atualizarItensSelecionadosUI() {
+                statusTagsContainer.innerHTML = '';
+                
+                if (Object.keys(itensSelecionados).length === 0) {
+                    statusTagsContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">Nenhum item selecionado</span>';
+                    return;
+                }
+                
+                Object.entries(itensSelecionados).forEach(([hash, item]) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'item-tag';
+                    tag.innerHTML = `
+                        <span>${item.nome}: ${item.quantidade}</span>
+                        <i class="fas fa-times" data-hash="${hash}"></i>
+                    `;
+                    
+                    tag.querySelector('i').addEventListener('click', function() {
+                        const hashToRemove = this.dataset.hash;
+                        delete itensSelecionados[hashToRemove];
+                        atualizarItensSelecionadosUI();
+                        
+                        // Limpar input no modal
+                        const input = document.querySelector(`input[data-hash="${hashToRemove}"]`);
+                        if (input) input.value = '';
+                    });
+                    
+                    statusTagsContainer.appendChild(tag);
+                });
+            }
+            
+            function atualizarTagsItensSelecionados() {
+                selectedItensTags.innerHTML = '';
+                
+                if (Object.keys(itensSelecionados).length === 0) {
+                    selectedItensTags.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">Nenhum item</span>';
+                    return;
+                }
+                
+                Object.entries(itensSelecionados).forEach(([hash, item]) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'item-tag';
+                    tag.innerHTML = `
+                        <span>${item.nome}: ${item.quantidade}</span>
+                        <i class="fas fa-times" data-hash="${hash}"></i>
+                    `;
+                    
+                    tag.querySelector('i').addEventListener('click', function() {
+                        const hashToRemove = this.dataset.hash;
+                        delete itensSelecionados[hashToRemove];
+                        atualizarItensSelecionadosUI();
+                        atualizarTagsItensSelecionados();
+                    });
+                    
+                    selectedItensTags.appendChild(tag);
+                });
+            }
+            
+            // Função para mostrar notificações
+            function mostrarNotificacao(mensagem, tipo = 'info') {
+                const notifAnterior = document.querySelector('.notification');
+                if (notifAnterior) {
+                    notifAnterior.remove();
+                }
+                
+                const notificacao = document.createElement('div');
+                notificacao.className = `notification ${tipo}`;
+                
+                let icone = 'info-circle';
+                if (tipo === 'success') icone = 'check-circle';
+                if (tipo === 'error') icone = 'exclamation-circle';
+                if (tipo === 'warning') icone = 'exclamation-triangle';
+                
+                notificacao.innerHTML = `
+                    <i class="fas fa-${icone}"></i>
+                    <span>${mensagem}</span>
+                `;
+                
+                document.body.appendChild(notificacao);
+                
+                setTimeout(() => {
+                    notificacao.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    notificacao.classList.remove('show');
+                    setTimeout(() => {
+                        if (notificacao.parentNode) {
+                            notificacao.remove();
+                        }
+                    }, 300);
+                }, 4000);
+            }
+            
+            // Inicializar
+            carregarStatusDisponiveis();
+            carregarItensDisponiveis();
+            
+            // Buscar contas ao carregar a página (se cache estiver pronto)
+            setTimeout(() => {
+                if (!carregandoCache) {
+                    buscarContas();
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Extensão dos requirements base
+-r requirements.txt
+
+# PostgreSQL para produção (Railway)
+psycopg2-binary==2.9.9

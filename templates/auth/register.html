@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar - MIR4 Market Hunter</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        
+        .register-container {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .form-group input::placeholder {
+            color: #718096;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .links a:hover {
+            color: #764ba2;
+        }
+        
+        .links p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .flash.success {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid #48bb78;
+            color: #48bb78;
+        }
+        
+        .flash.error {
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid #f56565;
+            color: #f56565;
+        }
+        
+        .error-text {
+            color: #f56565;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            color: #667eea;
+        }
+        
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1><i class="fas fa-dragon"></i> MIR4 Market Hunter</h1>
+            <p>Crie sua conta gratuita</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Nome de Usuário</label>
+                {{ form.username(placeholder="Seu nome de usuário", class="form-control") }}
+                {% for error in form.username.errors %}
+                <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                {{ form.email(placeholder="seu@email.com", class="form-control") }}
+                {% for error in form.email.errors %}
+                <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Senha</label>
+                {{ form.password(placeholder="Crie uma senha segura", class="form-control") }}
+                <p class="password-requirements">Mínimo de 6 caracteres</p>
+                {% for error in form.password.errors %}
+                <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password2"><i class="fas fa-lock"></i> Confirmar Senha</label>
+                {{ form.password2(placeholder="Repita a senha", class="form-control") }}
+                {% for error in form.password2.errors %}
+                <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-user-plus"></i> Criar Conta
+            </button>
+        </form>
+        
+        <div class="links">
+            <p>Já tem uma conta? <a href="{{ url_for('auth.login') }}">Faça login</a></p>
+        </div>
+        
+        <a href="{{ url_for('index') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Voltar para o site
+        </a>
+    </div>
+</body>
+</html>

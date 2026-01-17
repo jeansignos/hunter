@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIR4 Market Hunter - Pro</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilo para o botão Carregar Mais Itens */
+        .carregar-mais-btn {
+            width: 100%;
+            padding: 10px 15px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .carregar-mais-btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .carregar-mais-btn:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .carregar-mais-btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* Estilos Premium */
+        .premium-badge {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            color: #1a202c;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .premium-filter {
+            position: relative;
+        }
+        
+        .premium-filter.locked::after {
+            content: "🔒 Premium";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f6ad55;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            cursor: not-allowed;
+        }
+        
+        .premium-filter.locked input,
+        .premium-filter.locked select {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        
+        .user-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: #2d3748;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .user-nav a {
+            color: #a0aec0;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-nav a:hover {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .user-status .premium-user {
+            color: #f6ad55;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- Barra de usuário -->
+        <div class="user-nav">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('auth.profile') }}"><i class="fas fa-user"></i> {{ current_user.username }}</a>
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-cog"></i> Admin</a>
+                {% endif %}
+                <div class="user-status">
+                    {% if is_premium %}
+                        <span class="premium-user"><i class="fas fa-crown"></i> Premium</span>
+                    {% else %}
+                        <span style="color: #a0aec0;">Conta Gratuita</span>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{{ url_for('auth.register') }}"><i class="fas fa-user-plus"></i> Cadastrar</a>
+                <div class="user-status">
+                    <span style="color: #a0aec0;">Visitante</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="filtros-container">
+            <aside class="menu-lateral">
+                <div class="abas-filtros">
+                    <button class="aba-filtro active" onclick="mostrarAba('geral')">Filtro</button>
+                    <button class="aba-filtro" onclick="mostrarAba('combate')">Combate</button>
+                </div>
+                
+                <div id="aba-geral" class="conteudo-aba active">
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-users"></i> Classe</h3>
+                        <div class="input-group">
+                            <select id="classe" name="classe">
+                                <option value="0">Todas as Classes</option>
+                                {% for id, info in classes.items() %}
+                                <option value="{{ id }}">{{ info.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-bolt"></i> Poder & Level</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Level Mín.</label>
+                                <input type="number" id="level_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Poder Mín.</label>
+                                <input type="number" id="power_min" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-coins"></i> Preço WEMIX</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Mínimo</label>
+                                <input type="number" id="price_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Máximo</label>
+                                <input type="number" id="price_max" placeholder="10000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-gem"></i> Mineração</h3>
+                        <div class="input-group">
+                            <label>Mina (Nível)</label>
+                            <input type="number" id="mina_min" placeholder="Ex: 15">
+                        </div>
+                        
+                        {% for status in status_importantes %}
+                            {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                            <div class="input-group">
+                                <label style="color: #f6e05e;">Boost Mineração (%)</label>
+                                <input type="number" id="status_aceleramento" placeholder="Ex: 200">
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% for status in status_importantes %}
+                            {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
+                            <div class="input-group">
+                                <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
+                                <input type="number" id="status_aconegro" placeholder="Ex: 150">
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- NOVO FILTRO: Itens Comercializáveis -->
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-exchange-alt"></i> Itens Comercializáveis <span class="premium-badge">NOVO</span></h3>
+                        <div class="input-group">
+                            <label>Mín. Itens Épicos/Lendários</label>
+                            <input type="number" id="itens_comercio_min" placeholder="Ex: 1" min="0" value="1">
+                            <small style="color: #a0aec0; font-size: 0.75rem;">Filtrar contas com 1+ itens de comércio valiosos</small>
+                        </div>
+                    </div>
+                    
+					<button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
+                    <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
+                </button>
+					<button class="btn-buscar" onclick="buscarContas()">
+                    <i class="fas fa-search"></i> Buscar Contas
+                </button>
+					
+                </div>
+
+                <div id="aba-combate" class="conteudo-aba">
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-book"></i> Codex</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Codex</label>
+                                <input type="number" id="codex_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                                          </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grupo-filtro">
+   <div class="grupo-filtro">
+    <h3><i class="fas fa-database"></i> Cache</h3>
+    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+        <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheTeste()">Carregar 10</button>
+        <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheCompleto()">Carregar Todas</button>
+    </div>
+    
+    <!-- Botões de seleção de cache - AGORA Sempre Full primeiro quando disponível -->
+    <div class="cache-type-selector">
+        <button type="button" 
+                class="cache-type-btn 
+                    {% if tem_cache_completo and cache_padrao == 'completas' %}active{% endif %}
+                    {% if not tem_cache_completo %}disabled{% endif %}" 
+                onclick="selecionarCache('completas')" 
+                id="cache-completas"
+                {% if not tem_cache_completo %}disabled title="Cache completo não disponível"{% endif %}>
+            Usar Full {% if cache_padrao == 'completas' %}(Padrão){% endif %}
+        </button>
+        <button type="button" 
+                class="cache-type-btn 
+                    {% if not tem_cache_completo and tem_cache_teste and cache_padrao == 'teste' %}active{% endif %}
+                    {% if not tem_cache_teste %}disabled{% endif %}" 
+                onclick="selecionarCache('teste')" 
+                id="cache-teste"
+                {% if not tem_cache_teste %}disabled title="Cache teste não disponível"{% endif %}>
+            Usar Teste {% if not tem_cache_completo and cache_padrao == 'teste' %}(Padrão){% endif %}
+        </button>
+    </div>
+    
+    <!-- Informações do cache -->
+    <div id="cache-info" style="margin-top: 10px;">
+        {% if cache_status == 'completo' %}
+        <span style="color: #48bb78; font-size: 0.8rem;">
+            ✅ Cache Full ({{ total_completo }} contas) - Selecionado por padrão
+        </span>
+        {% elif cache_status == 'teste' %}
+        <span style="color: #ed8936; font-size: 0.8rem;">
+            ⚠️ Cache Teste ({{ total_teste }} contas) - Full não disponível
+        </span>
+        {% else %}
+        <span style="color: #f56565; font-size: 0.8rem;">
+            ❌ Sem cache - Carregue dados primeiro
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+                <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
+                    <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
+                </button>
+
+                <button class="btn-buscar" onclick="buscarContas()">
+                    <i class="fas fa-search"></i> Buscar Contas
+                </button>
+            </aside>
+
+            <main>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;">
+                    <h2 style="font-size: 1.2rem; color: #fff;">Resultados Disponíveis</h2>
+                    <div class="input-group" style="width: 200px; margin-bottom: 0;">
+                        <select id="ordenacao" onchange="mudarOrdenacao()">
+                            <option value="power">Maior Poder</option>
+                            <option value="level">Maior Level</option>
+							<option value="critico">Maior Crítico</option>
+							<option value="evasao">Maior Evasão</option>
+							<option value="ataque_fisico">Maior ATK Físico</option>
+							<option value="ataque_magico">Maior ATK de Feitiço</option>
+                            <option value="price">Menor Preço</option>
+                            <option value="price_desc">Maior Preço</option>
+                            <option value="aceleramento">Maior Mineração</option>
+                            <option value="aconegro">Mais Aço Negro</option>
+                            <option value="codex">Maior Codex</option>
+                            <option value="mina">Maior Nível Mina</option>
+                            <option value="constituicao">Maior Constituição</option>
+							 <option value="atk_habilidade">Maior ATK Habilidade</option>
+							 <option value="precisao">Maior Precisão</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="resultados" class="contas-grid">
+                    <div class="sem-resultados">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <p>Configure os filtros e clique em Buscar</p>
+                    </div>
+                </div>
+                
+                <div class="paginacao-container" id="paginacao-container" style="display: none;">
+                    <button class="btn-buscar" style="width: auto; padding: 10px 30px;" onclick="carregarMaisContas()">
+                        Carregar Mais
+                    </button>
+                    <span id="info-paginacao" style="display: block; margin-top: 10px; color: #888;"></span>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Status Avançados -->
+    <div id="modal-status" class="modal" onclick="fecharModalStatus()">
+        <div class="modal-conteudo" onclick="event.stopPropagation()">
+            <div class="modal-cabecalho">
+                <h2><i class="fas fa-sliders-h"></i> Filtros de Status Avançados</h2>
+                <span class="fechar-modal" onclick="fecharModalStatus()">&times;</span>
+            </div>
+            <div class="modal-corpo">
+                <p style="font-size: 0.9rem; color: #a0aec0; margin-bottom: 15px;">
+                    Defina valores mínimos para os status abaixo. Deixe em branco para ignorar.
+                </p>
+                
+                <div class="modal-buscar">
+                    <input type="text" id="busca-status" placeholder="Buscar status..." onkeyup="filtrarStatus()" 
+                           style="width: 100%; padding: 10px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 5px;">
+                </div>
+                
+                <div id="lista-status" style="max-height: 50vh; overflow-y: auto; padding-right: 10px; margin-top: 15px;">
+                    {% for status in status_importantes %}
+                        {% if not status.destaque %}
+                        <div class="status-item" data-nome="{{ status.nome|lower }}" 
+                             style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #4a5568;">
+                            <div class="status-info">
+                                <label style="font-size: 0.85rem; color: white;">{{ status.nome }}</label>
+                            </div>
+                            <div class="status-input">
+                                <input type="number" id="status_{{ status.hash }}" 
+                                       placeholder="0" 
+                                       style="width: 100px; font-size: 0.9rem; padding: 6px 10px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 5px;"
+                                       value="">
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="modal-controles" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-modal btn-limpar" onclick="limparFiltrosStatus()" 
+                            style="flex: 1; padding: 10px; background: #718096; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-trash-alt"></i> Limpar Todos
+                    </button>
+                    <button class="btn-modal btn-aplicar" onclick="fecharModalStatus()" 
+                            style="flex: 1; padding: 10px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-check"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Todos os Status -->
+    <div id="modal-todos-status" class="modal" onclick="fecharModalTodosStatus()">
+        <div class="modal-conteudo" onclick="event.stopPropagation()">
+            <div class="modal-cabecalho">
+                <h2><i class="fas fa-chart-bar"></i> Todos os Status</h2>
+                <span class="fechar-modal" onclick="fecharModalTodosStatus()">&times;</span>
+            </div>
+            <div class="modal-corpo">
+                <div class="modal-buscar">
+                    <input type="text" id="buscar-status-modal" placeholder="Buscar status..."
+                           style="width: 100%; padding: 10px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 5px;">
+                </div>
+                <div id="status-container" class="status-grid" style="margin-top: 15px;">
+                    <!-- Status serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÕES GLOBAIS ---
+        const ICONS_PATH = "{{ url_for('static', filename='icons/') }}";
+        let cacheTipo = 'completas'; // Começa com teste
+        let paginaAtual = 0;
+        let todasContas = [];
+        let filtrosAtuais = null;
+        const LIMITE_POR_PAGINA = 10;
+        let totalContasFiltradas = 0;
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarStatusCache();
+            
+            // Seleciona cache teste por padrão
+            selecionarCache('completas');
+        });
+
+        // --- FUNÇÕES DO MODAL ---
+        function abrirModalStatus(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            const modal = document.getElementById('modal-status');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+            
+            // Focar no campo de busca
+            setTimeout(() => {
+                document.getElementById('busca-status')?.focus();
+            }, 50);
+        }
+
+        function fecharModalStatus() {
+            const modal = document.getElementById('modal-status');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function filtrarStatus() {
+            const busca = document.getElementById('busca-status')?.value.toLowerCase() || '';
+            const items = document.querySelectorAll('#lista-status .status-item');
+            
+            items.forEach(item => {
+                const nome = item.getAttribute('data-nome');
+                if (nome.includes(busca)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function limparFiltrosStatus() {
+            if (confirm('Limpar todos os filtros de status?')) {
+                document.querySelectorAll('#lista-status input').forEach(input => {
+                    input.value = '';
+                });
+                
+                const aceleramento = document.getElementById('status_aceleramento');
+                const aconegro = document.getElementById('status_aconegro');
+                const minaMin = document.getElementById('mina_min');
+                
+                if (aceleramento) aceleramento.value = '';
+                if (aconegro) aconegro.value = '';
+                if (minaMin) minaMin.value = '';
+            }
+        }
+
+        // --- FUNÇÕES DO MODAL DE TODOS OS STATUS ---
+        function abrirModalTodosStatus(event) {
+            event.stopPropagation();
+            
+            try {
+                const statsStr = event.currentTarget.getAttribute('data-stats');
+                if (!statsStr) return;
+                
+                const stats = JSON.parse(statsStr);
+                preencherModalStatus(stats);
+                
+                const modal = document.getElementById('modal-todos-status');
+                modal.style.display = 'block';
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+                
+                setTimeout(() => {
+                    document.getElementById('buscar-status-modal')?.focus();
+                }, 50);
+                
+            } catch (error) {
+                console.error('Erro ao abrir modal de status:', error);
+                mostrarNotificacao('Erro ao carregar status', 'error');
+            }
+        }
+
+        function fecharModalTodosStatus() {
+            const modal = document.getElementById('modal-todos-status');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.getElementById('buscar-status-modal').value = '';
+            }, 300);
+        }
+
+        function preencherModalStatus(stats) {
+            const container = document.getElementById('status-container');
+            container.innerHTML = '';
+            
+            if (!stats || stats.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: #a0aec0;">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Nenhum status disponível para esta conta.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ordenar por nome
+            const statsOrdenados = [...stats].sort((a, b) => 
+                a.statName?.localeCompare(b.statName || '') || 0
+            );
+            
+            statsOrdenados.forEach(stat => {
+                const div = document.createElement('div');
+                div.className = 'status-item-modal';
+                div.style.cssText = 'display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #4a5568;';
+                
+                const valorFormatado = formatarValorStatus(stat.statValue || '0');
+                
+                div.innerHTML = `
+                    <div class="status-icon-modal" style="margin-right: 15px;">
+                        ${stat.iconPath ? 
+                            `<img src="${stat.iconPath}" alt="${stat.statName}" style="width: 32px; height: 32px;">` : 
+                            `<i class="fas fa-chart-line" style="font-size: 24px; color: #4299e1;"></i>`
+                        }
+                    </div>
+                    <div class="status-info-modal" style="flex: 1;">
+                        <div class="status-name-modal" title="${stat.statName || ''}" style="color: white; font-size: 0.9rem;">
+                            ${stat.statName || 'Status'}
+                        </div>
+                        <div class="status-value-modal" style="color: #f6e05e; font-weight: bold; font-size: 1rem;">
+                            ${valorFormatado}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function formatarValorStatus(valor) {
+            if (!valor || valor === 'null' || valor === 'undefined' || valor === '') {
+                return '0';
+            }
+            
+            if (valor.toString().includes('%')) {
+                return valor.toString();
+            }
+            
+            let numero = valor.toString().replace(/,/g, '');
+            if (numero.includes(',') && !numero.includes('.')) {
+                numero = numero.replace(',', '.');
+            }
+            
+            const num = parseFloat(numero);
+            if (isNaN(num)) {
+                return valor.toString();
+            }
+            
+            if (num % 1 === 0) {
+                return Math.round(num).toLocaleString('pt-BR');
+            }
+            
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(2) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            
+            return num.toFixed(2);
+        }
+
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const notifAnterior = document.querySelector('.notification');
+            if (notifAnterior) {
+                notifAnterior.remove();
+            }
+            
+            const notificacao = document.createElement('div');
+            notificacao.className = `notification ${tipo}`;
+            
+            let icone = 'info-circle';
+            if (tipo === 'success') icone = 'check-circle';
+            if (tipo === 'error') icone = 'exclamation-circle';
+            if (tipo === 'warning') icone = 'exclamation-triangle';
+            
+            notificacao.innerHTML = `
+                <i class="fas fa-${icone}"></i>
+                <span>${mensagem}</span>
+            `;
+            
+            document.body.appendChild(notificacao);
+            
+            setTimeout(() => {
+                notificacao.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notificacao.classList.remove('show');
+                setTimeout(() => {
+                    if (notificacao.parentNode) {
+                        notificacao.remove();
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // --- FUNÇÕES DE FORMATAÇÃO ---
+        function formatarNumero(num) {
+            if (num === undefined || num === null) return "0";
+            if (typeof num === 'string') {
+                num = parseFloat(num.replace(/,/g, ''));
+            }
+            if (isNaN(num)) return "0";
+            
+            if (num >= 1000) {
+                return num.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+            
+            if (num % 1 !== 0) {
+                return num.toFixed(1).replace('.', ',');
+            }
+            
+            return num.toString();
+        }
+
+        function formatarPorcentagem(num) {
+            if (num === undefined || num === null) return "0%";
+            if (typeof num === 'string') {
+                num = parseFloat(num.replace(/,/g, ''));
+            }
+            if (isNaN(num)) return "0%";
+            return num.toFixed(1) + "%";
+        }
+
+        // --- FUNÇÃO AUXILIAR PARA RENDERIZAR ITENS ---
+        function renderItemIcon(item) {
+            if (!item) {
+                return '<div class="item-circle" style="border-style: dashed; border-color: #444; background: rgba(0,0,0,0.3);"><i class="fas fa-question"></i></div>';
+            }
+            
+            const gradeClass = `grade-${item.grade || 1}`;
+            const enhanceHtml = item.enhance > 0 ? `<div class="badge-enhance">+${item.enhance}</div>` : '';
+            
+            // Tier em Romano
+            const tiers = ["", "T1", "T2", "T3", "T4", "T5"];
+            const tierHtml = item.tier > 0 ? `<div class="badge-tier">${tiers[item.tier] || 'I'}</div>` : '';
+            
+            // Trade - Agora usando imagem personalizada
+            const tradeHtml = item.trade ? `<div class="badge-trade" title="Item Negociável"></div>` : '';
+            
+            // Quantidade
+            const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
+
+            // Se não tiver imagem, usar ícone com fundo da raridade
+            if (!item.img || item.img === '') {
+                return `
+                <div class="item-circle ${gradeClass} no-img" title="${item.name || ''}">
+                    <i class="fas fa-box" style="color: rgba(255,255,255,0.8);"></i>
+                    ${enhanceHtml}
+                    ${tierHtml}
+                    ${tradeHtml}
+                    ${countHtml}
+                </div>
+                `;
+            }
+            
+
+            // Com imagem - background da imagem com overlay da raridade
+            return `
+            <div class="item-circle ${gradeClass}" 
+                 style="background-image: url('${item.img}');" 
+                 title="${item.name || ''}">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: inherit; border-radius: 10px;"></div>
+                ${enhanceHtml}
+                ${tierHtml}
+                ${tradeHtml}
+                ${countHtml}
+            </div>
+            `;
+        }
+
+        // --- FUNÇÃO PARA RENDERIZAR ITENS ESPECIAIS (BILHETES, CRISTAIS, FRAGMENTOS) ---
+        function renderSpecialItem(item) {
+            if (!item) {
+                return '<div class="item-circle" style="border-style: dashed; border-color: #444; background: rgba(0,0,0,0.3);"><i class="fas fa-question"></i></div>';
+            }
+            
+            const gradeClass = `grade-${item.grade || 1}`;
+            const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
+            
+            // Se não tiver imagem, usar ícone com fundo da raridade
+            if (!item.img || item.img === '') {
+                return `
+                <div class="item-circle ${gradeClass} no-img" title="${item.name || ''}">
+                    <i class="fas fa-box" style="color: rgba(255,255,255,0.8);"></i>
+                    ${countHtml}
+                </div>
+                `;
+            }
+            
+            // Com imagem
+            return `
+            <div class="item-circle ${gradeClass}" 
+                 style="background-image: url('${item.img}');" 
+                 title="${item.name || ''}">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: inherit; border-radius: 10px;"></div>
+                ${countHtml}
+            </div>
+            `;
+        }
+
+        // Função para ordenar itens especiais por raridade (Épico > Raro > Incomum) e depois por nome
+        function ordenarItensEspeciais(itens) {
+            if (!itens || itens.length === 0) {
+                return itens;
+            }
+            
+            // Pesos de raridade
+            const pesosRaridade = {
+                'Épico': 3,
+                'Raro': 2,
+                'Incomum': 1
+            };
+            
+            return itens.sort((a, b) => {
+                const nomeA = a.name || '';
+                const nomeB = b.name || '';
+                
+                // Extrai a raridade da última palavra do nome
+                const raridadeA = nomeA.split(' ').pop();
+                const raridadeB = nomeB.split(' ').pop();
+                
+                const pesoA = pesosRaridade[raridadeA] || 0;
+                const pesoB = pesosRaridade[raridadeB] || 0;
+                
+                // Primeiro ordena por raridade (decrescente)
+                if (pesoA !== pesoB) {
+                    return pesoB - pesoA; // Épico (3) vem antes de Raro (2)
+                }
+                
+                // Se mesma raridade, ordena por nome
+                return nomeA.localeCompare(nomeB);
+            });
+        }
+        
+        // --- CONSTRUTOR DO CARD ---
+        function criarCardConta(conta) {
+           // Lógica de cores por faixa de poder
+		   // No início da função criarCardConta, adicione:
+console.log(`[DEBUG CARD] Criando card para conta ${conta.seq}`);
+console.log(`[DEBUG CARD] inven_total: ${conta.inven_total}`);
+console.log(`[DEBUG CARD] inven_all length: ${conta.inven_all ? conta.inven_all.length : 0}`);
+console.log(`[DEBUG CARD] inven length: ${conta.inven ? conta.inven.length : 0}`);
+    let cardType = 'type-blue'; // Padrão para 239.999 pra baixo
+    const poder = conta.powerScore;
+
+    if (poder >= 400000) {
+        cardType = 'type-gold';
+    } else if (poder >= 249000) {
+        cardType = 'type-red';
+    } else {
+        cardType = 'type-blue';
+    }
+            
+            // Imagem da classe
+            const imgClass = conta.class.imagem ? 
+                `<img src="${ICONS_PATH}${conta.class.imagem}" alt="${conta.class.nome}" style="width: 60px; height: 60px;">` : 
+                `<span style="font-size: 40px;">${conta.class.icone}</span>`;
+
+            // Formatação
+           // Adicione estas variáveis na função que monta o card:
+// Adicione esta variável junto com as outras:
+const phyAtk = formatarNumero(conta.ataque_fisico);
+const magAtk = formatarNumero(conta.ataque_magico);
+const crit = formatarNumero(conta.critico);
+const precisao = formatarNumero(conta.precisao);
+const atkHabilidade = formatarNumero(conta.atk_habilidade) + '%';
+const evasao = formatarNumero(conta.evasao);
+const miningBoost = formatarNumero(conta.aceleramento_mineracao) + '%';
+const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
+            const priceUsd = conta.price_brl ? `(R$ ${conta.price_brl.toLocaleString('pt-BR')})` : '($ --)';
+
+            // Preparar dados
+            const equips = Array.isArray(conta.equip) ? conta.equip : [];
+            const spirits = Array.isArray(conta.spirit_list) ? conta.spirit_list : [];
+            const skills = Array.isArray(conta.skills_list) ? conta.skills_list : [];
+            const inventory = Array.isArray(conta.inven) ? conta.inven : [];
+            const training = conta.training_details || { constituicao: 0, inner_force: [] };
+
+            // Aba 0: Info Geral
+            const tab0Content = `
+                <div class="card-avatar-section">
+                    <div class="class-name-vertical">${conta.class.nome}</div>
+                    <div class="diamond-shape">
+                        ${imgClass}
+                    </div>
+                </div>
+
+                <div class="card-main-info">
+                    <div class="card-level">LV. ${conta.level}</div>
+                    <div class="card-power">${formatarNumero(conta.powerScore)}</div>
+                    <div class="card-player-name">${conta.name}</div>
+                </div>
+
+                <div class="card-stats-grid">
+                    <div class="stat-box">
+                        <label>ATAQUE FÍSICO</label>
+                        <span>${phyAtk}</span>
+                    </div>
+                    <div class="stat-box">
+                        <label>ATAQUE MÁGICO</label>
+                        <span>${magAtk}</span>
+                    </div>
+                    <div class="stat-box">
+                        <label>Crítico</label>
+                        <span>${crit}</span>
+                    </div>
+                    <div class="stat-box">
+                        <label>[L] Espíritos</label>
+                        <span>${conta.pets?.lendarios || 0}</span>
+                    </div>
+                    <div class="stat-box">
+                        <label>[L] HABILIDADES</label>
+                        <span>${conta.skills?.lendarias || 0}</span>
+                    </div>
+                    <div class="stat-box">
+                        <label>Codex</label>
+                        <span>${conta.codex || 0}</span>
+                    </div>
+					<div class="stat-box">
+    <label>Precisão</label>
+    <span>${precisao}</span>
+</div>
+<div class="stat-box">
+    <label>aumento de atk de hab</label>
+    <span>${atkHabilidade}</span>
+</div>
+<div class="stat-box">
+    <label>Evasão</label>
+    <span>${evasao}</span>
+</div>
+<div class="stat-box">
+                        <label>Mineração</label>
+                        <span>${miningBoost}</span>
+                    </div>
+<div class="stat-box">
+                        <label>Aço Negro</label>
+                        <span>${darksteelBoost}</span>
+                    </div>			
+<div class="stat-box">
+                        <label>Mina</label>
+                        <span>${conta.mina || 0}</span>
+                    </div>					
+                </div>
+				
+				
+            `;
+
+            // Aba 1: Equip, Espíritos, Skills
+            const equipsHtml = equips.length ? 
+                equips.map(item => renderItemIcon(item)).join('') : 
+                '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:#718096;">Sem equipamentos</p>';
+                
+            const spiritsHtml = spirits.length ? 
+                spirits.map(item => renderItemIcon(item)).join('') : 
+                '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:#718096;">Sem espíritos</p>';
+                
+            const skillsHtml = skills.length ? 
+                skills.map(item => renderItemIcon(item)).join('') : 
+                '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:#718096;">Sem habilidades</p>';
+
+            const tab1Content = `
+                <center><div class="section-title">Equipamentos</div>
+                <div class="items-grid">${equipsHtml}</div>
+                
+                <div class="section-title">Espíritos</div>
+                <div class="items-grid">${spiritsHtml}</div>
+
+                <div class="section-title">Habilidades</div>
+                <div class="items-grid no-tier">${skillsHtml}</div></center>
+            `;
+
+            // Aba 2: Treino
+            let forceHtml = '';
+            if (training.inner_force && training.inner_force.length > 0) {
+                forceHtml = training.inner_force.map(f => `
+                    <div class="stat-box">
+                        <label>${f.name || 'Força'}</label>
+                        <span style="color: ${f.level >= 10 ? '#f6e05e' : '#fff'}">${f.level || 0}</span>
+                    </div>
+                `).join('');
+            } else {
+                forceHtml = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:#718096;">Sem dados de força interna</p>';
+            }
+
+            const tab2Content = `
+                <div style="margin-top: 20px;">
+                    <div class="training-box">
+                        <div class="training-lbl">CONSTITUIÇÃO</div>
+                        <div class="training-val">${training.constituicao || conta.constituicao || 0}</div>
+                    </div>
+                    
+                    
+                    <div class="card-stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        ${forceHtml}
+                    </div>
+                     
+                    <center><div class="training-lbl">Potencial</div><center>
+                     <div class="training-box" style="padding: 5px;">
+                        <div class="training-val" style="font-size: 1rem;">${conta.potencial || 0}</div>
+                    </div>
+                </div>
+            `;
+
+            // Aba 3: Inventário - VERSÃO CORRIGIDA
+            const inven = conta.inven_all || []; // Todos os itens
+            const invenInicial = conta.inven || []; // Primeiros 12 itens
+
+            // IMPORTANTE: invenTotal deve vir do backend se disponível
+            const invenTotal = conta.inven_total || inven.length || 0;
+
+            // Verificar se temos mais itens do que os iniciais
+            const temMaisItens = invenTotal > invenInicial.length;
+
+            console.log(`[DEBUG] Conta ${conta.seq}: invenTotal=${invenTotal}, invenInicial=${invenInicial.length}, temMaisItens=${temMaisItens}`);
+
+            const invenHtml = invenInicial.length ? 
+                invenInicial.map(item => renderItemIcon(item)).join('') : 
+                '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem itens negociáveis</div>';
+
+            const carregarMaisBtn3 = temMaisItens ? 
+                `<button class="carregar-mais-btn" onclick="carregarMaisInventario('${conta.seq}')" 
+                        id="carregar-mais-btn-${conta.seq}">
+                    <i class="fas fa-plus"></i> Carregar mais itens (${invenTotal - invenInicial.length} restantes)
+                </button>` : '';
+
+            const tab3Content = `
+                <center><div class="section-title">Top Itens Negociáveis</div></center>
+                <div class="items-grid" id="inven-items-${conta.seq}">
+                    ${invenHtml}
+                </div>
+                ${carregarMaisBtn3}
+            `;
+
+            // Aba 4: Bilhetes
+            // HTML para Bilhetes (ordenar apenas por nome)
+            const tickets = Array.isArray(conta.tickets) ? ordenarItensEspeciais(conta.tickets) : [];
+            const ticketsHtml = tickets.length > 0 ? 
+                tickets.map(item => renderSpecialItem(item)).join('') : 
+                '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem bilhetes</div>';
+
+            // HTML para Cristais (ordenar por raridade e nome)
+            const crystals = Array.isArray(conta.crystals) ? ordenarItensEspeciais(conta.crystals) : [];
+            const crystalsHtml = crystals.length > 0 ? 
+                crystals.map(item => renderSpecialItem(item)).join('') : 
+                '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem cristais</div>';
+
+            // HTML para Fragmentos (ordenar por raridade e nome)
+            const fragments = Array.isArray(conta.fragments) ? ordenarItensEspeciais(conta.fragments) : [];
+            const fragmentsHtml = fragments.length > 0 ? 
+                fragments.map(item => renderSpecialItem(item)).join('') : 
+                '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem fragmentos</div>';
+            
+            // Estrutura do Card
+            return `
+            <div class="nft-card ${cardType}" id="card-${conta.seq}">
+                <div class="card-top-bar">
+                    <span class="card-status-badge">LISTADO</span>
+                    <span class="card-price-top">${conta.price.toLocaleString()} WEMIX</span>
+                </div>
+
+                <div class="card-tabs">
+                    <button class="card-tab-btn active" onclick="switchCardTab(this, ${conta.seq}, 0)"><i class="fas fa-home"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 1)"><i class="fas fa-tshirt"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 2)"><i class="fas fa-dumbbell"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 3)"><i class="fas fa-box-open"></i></button>
+                    <!-- NOVOS BOTÕES DAS ABAS ESPECIAIS -->
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 4)"><i class="fas fa-ticket-alt"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 5)"><i class="fas fa-gem"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 6)"><i class="fas fa-shapes"></i></button>
+                </div>
+
+                <div class="tab-content active" data-tab="0">
+                    ${tab0Content}
+                </div>
+                
+                <div class="tab-content" data-tab="1">
+                    ${tab1Content}
+                </div>
+                
+                <div class="tab-content" data-tab="2">
+                    ${tab2Content}
+                </div>
+
+                <div class="tab-content" data-tab="3">
+                    ${tab3Content}
+                </div>
+
+                <!-- NOVAS ABAS ESPECIAIS -->
+                <div class="tab-content" data-tab="4">
+                    <center><div class="section-title">Bilhetes</div></center>
+                    <div class="items-grid" id="tickets-items-${conta.seq}">
+                        ${ticketsHtml}
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="5">
+                    <center><div class="section-title">Cristais de Pico</div></center>
+                    <div class="items-grid" id="crystals-items-${conta.seq}">
+                        ${crystalsHtml}
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="6">
+                    <center><div class="section-title">Fragmentos da Praça</div></center>
+                    <div class="items-grid" id="fragments-items-${conta.seq}">
+                        ${fragmentsHtml}
+                    </div>
+                </div>
+
+                <a href="${conta.url}" target="_blank" class="card-action-btn" style="margin-top: auto;">
+                    <div class="wemix-display">
+                        <i class="fas fa-external-link-alt"></i>
+                        ${conta.price.toLocaleString()} WEMIX
+                    </div>
+                    <div class="usd-display">${priceUsd}</div>
+                </a>
+                
+                <button class="btn-todos-status" onclick="abrirModalTodosStatus(event)" 
+                        data-stats='${JSON.stringify(conta.stats).replace(/'/g, "&apos;")}'>
+                    <i class="fas fa-list"></i> Todos os Status
+                </button>
+
+                <div class="card-footer-info">
+    <span class="world-name">${conta.worldName}</span>
+</div>
+            </div>
+            `;
+        }
+
+        // --- FUNÇÕES DE INTERAÇÃO ---
+        function switchCardTab(btn, cardSeq, tabIndex) {
+            const card = document.getElementById(`card-${cardSeq}`);
+            if (!card) return;
+
+            // Remove active de todos os botões e abas
+            card.querySelectorAll('.card-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            card.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Se for uma das abas especiais (4, 5, 6) e ainda não foi carregada, mostrar loading
+            const targetTab = card.querySelector(`.tab-content[data-tab="${tabIndex}"]`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                
+                // Verificar se a aba já foi carregada
+                if (tabIndex > 1 && !targetTab.dataset.loaded) {
+                    // Mostrar loading
+                    const originalHTML = targetTab.innerHTML;
+                    targetTab.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p style="margin-top: 10px;">Carregando...</p>
+                        </div>
+                    `;
+                    
+                    // Simular carregamento (na prática, os dados já estão carregados)
+                    setTimeout(() => {
+                        targetTab.innerHTML = originalHTML;
+                        targetTab.dataset.loaded = 'true';
+                    }, 100);
+                }
+            }
+        }
+
+        // Função para carregar mais itens do inventário - VERSÃO CORRIGIDA E SIMPLIFICADA
+    // Função para carregar mais itens do inventário - VERSÃO COM DEBUG
+function carregarMaisInventario(cardSeq) {
+    console.log(`=== DEBUG: Iniciando carregarMaisInventario para card ${cardSeq} ===`);
+    console.log(`[DEBUG] Variável todasContas existe?`, typeof todasContas !== 'undefined');
+    console.log(`[DEBUG] Quantidade de contas em todasContas:`, todasContas ? todasContas.length : 0);
+    
+    const card = document.getElementById(`card-${cardSeq}`);
+    console.log(`[DEBUG] Card encontrado?`, !!card);
+    
+    const btn = document.getElementById(`carregar-mais-btn-${cardSeq}`);
+    console.log(`[DEBUG] Botão encontrado?`, !!btn);
+    console.log(`[DEBUG] Botão HTML:`, btn ? btn.outerHTML : 'NÃO ENCONTRADO');
+    
+    const container = document.getElementById(`inven-items-${cardSeq}`);
+    console.log(`[DEBUG] Container encontrado?`, !!container);
+    
+    if (!card) {
+        console.error(`[ERRO] Card ${cardSeq} não encontrado`);
+        return;
+    }
+    
+    if (!btn) {
+        console.error(`[ERRO] Botão ${cardSeq} não encontrado`);
+        return;
+    }
+    
+    if (!container) {
+        console.error(`[ERRO] Container ${cardSeq} não encontrado`);
+        return;
+    }
+    
+    // Encontrar a conta nos dados
+    console.log(`[DEBUG] Buscando conta ${cardSeq} em todasContas...`);
+    const conta = todasContas.find(c => {
+        console.log(`[DEBUG] Comparando: c.seq = ${c.seq}, tipo: ${typeof c.seq}, cardSeq = ${cardSeq}, tipo: ${typeof cardSeq}`);
+        return String(c.seq) === String(cardSeq);
+    });
+    
+    console.log(`[DEBUG] Conta encontrada?`, !!conta);
+    if (!conta) {
+        console.error(`[ERRO] Conta ${cardSeq} não encontrada nos dados`);
+        console.log(`[DEBUG] Primeiras 5 contas:`, todasContas.slice(0, 5).map(c => ({ seq: c.seq, name: c.name })));
+        return;
+    }
+    
+    // Usar inven_all que tem TODOS os itens
+    const todosItens = conta.inven_all || [];
+    console.log(`[DEBUG] Todos itens:`, todosItens.length);
+    console.log(`[DEBUG] Exemplo de itens:`, todosItens.slice(0, 2));
+    
+    const itensJaMostrados = container.querySelectorAll('.item-circle').length;
+    console.log(`[DEBUG] Itens já mostrados no container:`, itensJaMostrados);
+    
+    if (itensJaMostrados >= todosItens.length) {
+        console.log(`[DEBUG] Todos os itens já foram mostrados (${itensJaMostrados}/${todosItens.length})`);
+        btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.style.display = 'none';
+        }, 2000);
+        return;
+    }
+    
+    // Mostrar loading no botão
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+    btn.disabled = true;
+    
+    console.log(`[DEBUG] Iniciando carregamento de mais itens...`);
+    
+    // Pequeno delay para feedback visual
+    setTimeout(() => {
+        // Calcular quantos itens carregar (próximos 12)
+        const itemsPerPage = 12;
+        const inicio = itensJaMostrados;
+        const fim = Math.min(inicio + itemsPerPage, todosItens.length);
+        const proximosItens = todosItens.slice(inicio, fim);
+        
+        console.log(`[DEBUG] Carregando itens ${inicio} a ${fim}: ${proximosItens.length} itens`);
+        console.log(`[DEBUG] Primeiros 2 itens a carregar:`, proximosItens.slice(0, 2));
+        
+        if (proximosItens.length === 0) {
+            console.log(`[DEBUG] Nenhum item para carregar`);
+            btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.style.display = 'none';
+            }, 2000);
+            return;
+        }
+        
+        // Adicionar os novos itens ao container
+        const novosItensHtml = proximosItens.map(item => renderItemIcon(item)).join('');
+        console.log(`[DEBUG] HTML gerado (primeiros 100 chars):`, novosItensHtml.substring(0, 100));
+        
+        container.insertAdjacentHTML('beforeend', novosItensHtml);
+        
+        // Atualizar o botão
+        const novosTotal = itensJaMostrados + proximosItens.length;
+        const restantes = todosItens.length - novosTotal;
+        
+        console.log(`[DEBUG] Novo total mostrado: ${novosTotal}/${todosItens.length}`);
+        console.log(`[DEBUG] Restantes: ${restantes}`);
+        
+        if (restantes > 0) {
+            btn.innerHTML = `<i class="fas fa-plus"></i> Carregar mais itens (${restantes} restantes)`;
+            btn.disabled = false;
+        } else {
+            btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.style.display = 'none';
+            }, 2000);
+        }
+        
+        console.log(`[DEBUG] Carregados ${proximosItens.length} itens com sucesso!`);
+        
+    }, 300);
+}
+
+        // --- BUSCA E FILTROS ---
+        function buscarContas() {
+            const resultados = document.getElementById('resultados');
+            resultados.innerHTML = '<div class="loading"><i class="fas fa-circle-notch fa-spin fa-2x"></i><p>Carregando dados...</p></div>';
+            
+            paginaAtual = 0;
+            todasContas = [];
+            
+            const params = new URLSearchParams();
+            params.append('cache_tipo', cacheTipo);
+            params.append('pagina', paginaAtual);
+            params.append('limite', LIMITE_POR_PAGINA);
+            
+            // Coleta filtros básicos
+            const ids = [
+                'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
+                'price_min', 'price_max', 'mina_min', 'codex_min', 
+                'pets_lendarios_min', 'pets_misticos_min', 'habs_lendarias_min',
+                'constituicao_min', 'itens_comercio_min'
+            ];
+            
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value) params.append(id, el.value);
+            });
+
+            // Status de mineração - IMPORTANTE: usar os IDs corretos
+            const aceleramento = document.getElementById('status_aceleramento');
+            const aconegro = document.getElementById('status_aconegro');
+            
+            // Use o hash do status para os parâmetros
+            {% for status in status_importantes %}
+                {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
+                    if (aceleramento && aceleramento.value) {
+                        params.append('status_{{ status.hash }}', aceleramento.value);
+                    }
+                {% endif %}
+                {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
+                    if (aconegro && aconegro.value) {
+                        params.append('status_{{ status.hash }}', aconegro.value);
+                    }
+                {% endif %}
+            {% endfor %}
+
+            // Status dinâmicos do modal
+            document.querySelectorAll('#lista-status input').forEach(input => {
+                if (input.value) params.append(input.id, input.value);
+            });
+
+            // Ordenação
+            const ordenacao = document.getElementById('ordenacao').value;
+            if (ordenacao.includes('price')) {
+                params.append('ordenar_por', 'price');
+                params.append('ordenar_desc', ordenacao === 'price_desc');
+            } else if (ordenacao === 'aceleramento' || ordenacao === 'aconegro') {
+                params.append('ordenar_por', ordenacao);
+                params.append('ordenar_desc', 'true');
+            } else {
+                params.append('ordenar_por', ordenacao);
+                params.append('ordenar_desc', 'true');
+            }
+
+            filtrosAtuais = params;
+
+            fetch(`/buscar-contas?${params.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        todasContas = data.contas || [];
+                        totalContasFiltradas = data.total_filtrado || 0;
+                        renderizarResultados(todasContas);
+                        
+                        // Mostrar notificação com status aplicados
+                        const statusFiltros = Array.from(params.entries())
+                            .filter(([key]) => key.startsWith('status_'))
+                            .map(([key, value]) => `${key.replace('status_', '')}: ${value}`);
+                        
+                        if (statusFiltros.length > 0) {
+                            mostrarNotificacao(`${statusFiltros.length} filtro(s) de status aplicado(s)`, 'success');
+                        }
+                    } else {
+                        resultados.innerHTML = `<div class="sem-resultados"><p>${data.error}</p></div>`;
+                    }
+                })
+                .catch(e => {
+                    console.error("Erro na busca:", e);
+                    resultados.innerHTML = '<div class="sem-resultados"><p>Erro de conexão</p></div>';
+                });
+        }
+
+        function carregarMaisContas() {
+            paginaAtual++;
+            const btn = document.querySelector('.paginacao-container button');
+            if (!btn) return;
+            
+            const originalText = btn.innerText;
+            btn.innerText = "Carregando...";
+            btn.disabled = true;
+
+            filtrosAtuais.set('pagina', paginaAtual);
+
+            fetch(`/buscar-contas?${filtrosAtuais.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.contas && data.contas.length > 0) {
+                        todasContas = [...todasContas, ...data.contas];
+                        renderizarResultados(todasContas);
+                    }
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                })
+                .catch(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
+        }
+
+        function renderizarResultados(contas) {
+            const resultados = document.getElementById('resultados');
+            const pagContainer = document.getElementById('paginacao-container');
+            const infoPag = document.getElementById('info-paginacao');
+
+            if (contas.length === 0) {
+                resultados.innerHTML = `
+                    <div class="sem-resultados">
+                        <i class="fas fa-ghost fa-2x"></i>
+                        <h3>Nenhuma conta encontrada</h3>
+                        <p>Tente diminuir os filtros.</p>
+                    </div>`;
+                pagContainer.style.display = 'none';
+                return;
+            }
+
+            resultados.innerHTML = contas.map(conta => criarCardConta(conta)).join('');
+            
+            if (contas.length < totalContasFiltradas) {
+                pagContainer.style.display = 'flex';
+                pagContainer.style.flexDirection = 'column';
+                pagContainer.style.alignItems = 'center';
+                infoPag.textContent = `Mostrando ${contas.length} de ${totalContasFiltradas}`;
+            } else {
+                pagContainer.style.display = 'none';
+            }
+        }
+
+        // --- UI FUNCTIONS ---
+        function mostrarAba(id) {
+            document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.aba-filtro').forEach(el => el.classList.remove('active'));
+            document.getElementById(`aba-${id}`).classList.add('active');
+            
+            const btns = document.querySelectorAll('.aba-filtro');
+            for (let i = 0; i < btns.length; i++) {
+                if (btns[i].textContent.trim().toLowerCase().includes(id.toLowerCase())) {
+                    btns[i].classList.add('active');
+                }
+            }
+        }
+
+        function selecionarCache(tipo) {
+            cacheTipo = tipo;
+            document.querySelectorAll('.cache-type-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`cache-${tipo}`).classList.add('active');
+            document.getElementById('cache-info').innerText = `Modo: ${tipo === 'completas' ? 'Cache Completo' : 'Cache Teste'}`;
+        }
+
+        function mudarOrdenacao() {
+            buscarContas();
+        }
+
+        function carregarCacheTeste() {
+            if(!confirm("Carregar 10 contas de teste?")) return;
+            
+            // Mostrar status de carregamento
+            document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando 10 contas...</span>";
+            
+            // Desabilitar botões durante o carregamento
+            const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
+            botoesCache.forEach(btn => btn.disabled = true);
+            
+            fetch('/carregar-teste', {method: 'POST'})
+                .then(r => r.json())
+                .then(d => { 
+                    // Reabilitar botões
+                    botoesCache.forEach(btn => btn.disabled = false);
+                    
+                    if (d.success && d.contas_carregadas > 0) {
+                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas de teste`, 'success');
+                        // Atualizar status e selecionar cache teste
+                        verificarStatusCache(true); // true = forçar busca após carregar
+                    } else {
+                        mostrarNotificacao(d.message || 'Erro ao carregar cache teste', 'error');
+                        verificarStatusCache(false);
+                    }
+                })
+                .catch((error) => {
+                    // Reabilitar botões
+                    botoesCache.forEach(btn => btn.disabled = false);
+                    console.error('Erro:', error);
+                    mostrarNotificacao("Erro de conexão ao carregar cache", 'error');
+                    verificarStatusCache(false);
+                });
+        }
+
+        function carregarCacheCompleto() {
+            if (!confirm("Carregar TODAS as contas? Isso pode demorar vários minutos.")) return;
+            
+            // Mostrar status de carregamento
+            document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando todas as contas...</span>";
+            
+            // Desabilitar botões durante o carregamento
+            const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
+            botoesCache.forEach(btn => btn.disabled = true);
+            
+            fetch('/carregar-completo', {method: 'POST'})
+                .then(r => r.json())
+                .then(d => { 
+                    // Reabilitar botões
+                    botoesCache.forEach(btn => btn.disabled = false);
+                    
+                    if (d.success && d.contas_carregadas > 0) {
+                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas completas`, 'success');
+                        // Atualizar status e selecionar cache completo
+                        verificarStatusCache(true); // true = forçar busca após carregar
+                    } else {
+                        mostrarNotificacao(d.message || 'Erro ao carregar cache completo', 'error');
+                        verificarStatusCache(false);
+                    }
+                })
+                .catch((error) => {
+                    // Reabilitar botões
+                    botoesCache.forEach(btn => btn.disabled = false);
+                    console.error('Erro:', error);
+                    mostrarNotificacao("Erro de conexão ao carregar cache completo", 'error');
+                    verificarStatusCache(false);
+                });
+        }
+
+        // Atualize a função verificarStatusCache
+        function verificarStatusCache(buscarAposCarregar = false) {
+            return fetch('/status-carregamento')
+                .then(r => r.json())
+                .then(data => {
+                    const info = document.getElementById('cache-info');
+                    
+                    if (data.carregando) {
+                        info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
+                        // Verificar novamente em 2 segundos se ainda estiver carregando
+                        setTimeout(() => verificarStatusCache(buscarAposCarregar), 2000);
+                    } else {
+                        // Atualizar baseado no que está disponível
+                        if (data.tem_cache_completo && data.total_completo > 0) {
+                            info.innerHTML = `Status: <span style='color: #48bb78'>✅ Cache Completo (${data.total_completo} contas)</span>`;
+                            if (buscarAposCarregar) {
+                                selecionarCache('completas');
+                            }
+                        } else if (data.tem_cache_teste && data.total_teste > 0) {
+                            info.innerHTML = `Status: <span style='color: #ed8936'>⚠️ Cache Teste (${data.total_teste} contas)</span>`;
+                            if (buscarAposCarregar) {
+                                selecionarCache('teste');
+                            }
+                        } else {
+                            info.innerHTML = "Status: <span style='color: #f56565'>❌ Sem Cache - Use os botões acima</span>";
+                        }
+                    }
+                    return data;
+                })
+                .catch(() => {
+                    document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
+                });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarStatusCache();
+        });
+    </script>
+</body>
+</html>
