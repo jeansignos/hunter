@@ -1897,3 +1897,59 @@ h2, h3, h4 {
         max-width: 100%;
     }
 }
+/* ===== BOTÕES DE LOGIN/CADASTRAR NA NAVBAR ===== */
+.user-nav {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+    padding: 10px !important;
+    background: #2d3748 !important;
+    border-radius: 8px !important;
+    margin-bottom: 15px !important;
+}
+
+.user-nav .btn-auth {
+    background: rgba(45, 55, 72, 0.8) !important;
+    border: 1px solid rgba(102, 126, 234, 0.5) !important;
+    color: #e2e8f0 !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-weight: 500 !important;
+}
+
+.user-nav .btn-auth:hover {
+    background: rgba(102, 126, 234, 0.3) !important;
+    color: #fff !important;
+    border-color: #667eea !important;
+    transform: translateY(-1px) !important;
+}
+
+.user-nav .btn-auth.btn-cadastrar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.user-nav .btn-auth.btn-cadastrar:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5) !important;
+}
+
+.user-nav a {
+    color: #a0aec0 !important;
+    text-decoration: none !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+}
+
+.user-nav a:hover {
+    background: #4a5568 !important;
+    color: white !important;
+}
