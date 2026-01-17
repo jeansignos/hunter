@@ -251,14 +251,13 @@
                     </div>
                     
                     <div class="grupo-filtro">
+   {% if current_user.is_authenticated and current_user.is_admin %}
    <div class="grupo-filtro">
     <h3><i class="fas fa-database"></i> Cache</h3>
-    {% if current_user.is_authenticated and current_user.is_admin %}
     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheTeste()">Carregar 10</button>
         <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheCompleto()">Carregar Todas</button>
     </div>
-    {% endif %}
     
     <!-- Botões de seleção de cache - AGORA Sempre Full primeiro quando disponível -->
     <div class="cache-type-selector">
@@ -299,6 +298,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
                 <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
