@@ -406,12 +406,88 @@ def create_app(config_name=None):
         ordenar_por = request.args.get("ordenar_por", "power")
         ordenar_desc = request.args.get("ordenar_desc", "true").lower() == "true"
         
+        # Função auxiliar para obter valor de um stat pelo nome
+        def get_stat_value(conta, stat_name):
+            """Retorna o valor de um stat específico"""
+            for stat in conta.get("stats", []):
+                if isinstance(stat, dict):
+                    name = stat.get("statName", "").upper()
+                    if stat_name.upper() in name:
+                        try:
+                            val = stat.get("statValue", "0")
+                            if isinstance(val, str):
+                                val = val.replace(",", "").replace("%", "")
+                            return float(val)
+                        except:
+                            return 0
+            return 0
+        
+        # Função auxiliar para obter valor de um stat pelo nome
+        def get_stat_value(conta, stat_name):
+            """Retorna o valor de um stat específico"""
+            for stat in conta.get("stats", []):
+                if isinstance(stat, dict):
+                    name = stat.get("statName", "").upper()
+                    if stat_name.upper() in name:
+                        try:
+                            val = stat.get("statValue", "0")
+                            if isinstance(val, str):
+                                val = val.replace(",", "").replace("%", "")
+                            return float(val)
+                        except:
+                            return 0
+            return 0
+        
         if ordenar_por == "power":
             contas_filtradas.sort(key=lambda x: x.get("powerScore", x.get("basic", {}).get("powerScore", 0)), reverse=ordenar_desc)
         elif ordenar_por == "price":
             contas_filtradas.sort(key=lambda x: x.get("price", 0), reverse=ordenar_desc)
         elif ordenar_por == "level":
             contas_filtradas.sort(key=lambda x: x.get("level", x.get("basic", {}).get("level", 0)), reverse=ordenar_desc)
+        elif ordenar_por == "critico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "CRÍTICO"), reverse=ordenar_desc)
+        elif ordenar_por == "evasao":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "ataque_fisico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE FÍSICO"), reverse=ordenar_desc)
+        elif ordenar_por == "ataque_magico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
+        elif ordenar_por == "precisao":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "atk_habilidade":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
+        elif ordenar_por == "aceleramento":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ACELERAMENTO DE TEMPO DE MINERAÇÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "aconegro":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE GANHO DE AÇO NEGRO"), reverse=ordenar_desc)
+        elif ordenar_por == "codex":
+            contas_filtradas.sort(key=lambda x: x.get("codex", 0), reverse=ordenar_desc)
+        elif ordenar_por == "mina":
+            contas_filtradas.sort(key=lambda x: x.get("building", {}).get("mina", 0), reverse=ordenar_desc)
+        elif ordenar_por == "constituicao":
+            contas_filtradas.sort(key=lambda x: x.get("training", {}).get("constituicao", 0), reverse=ordenar_desc)
+        elif ordenar_por == "critico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "CRÍTICO"), reverse=ordenar_desc)
+        elif ordenar_por == "evasao":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "ataque_fisico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE FÍSICO"), reverse=ordenar_desc)
+        elif ordenar_por == "ataque_magico":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
+        elif ordenar_por == "precisao":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "atk_habilidade":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
+        elif ordenar_por == "aceleramento":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ACELERAMENTO DE TEMPO DE MINERAÇÃO"), reverse=ordenar_desc)
+        elif ordenar_por == "aconegro":
+            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE GANHO DE AÇO NEGRO"), reverse=ordenar_desc)
+        elif ordenar_por == "codex":
+            contas_filtradas.sort(key=lambda x: x.get("codex", 0), reverse=ordenar_desc)
+        elif ordenar_por == "mina":
+            contas_filtradas.sort(key=lambda x: x.get("building", {}).get("mina", 0), reverse=ordenar_desc)
+        elif ordenar_por == "constituicao":
+            contas_filtradas.sort(key=lambda x: x.get("training", {}).get("constituicao", 0), reverse=ordenar_desc)
         
         # Paginação
         pagina = request.args.get("pagina", 0, type=int)

@@ -230,7 +230,7 @@
                     
                     <!-- FILTROS SEPARADOS: ÉPICOS E LENDÁRIOS -->
                     <div class="grupo-filtro">
-                        <h3><i class="fas fa-gem"></i> Itens por Raridade</h3>
+                        <h3><i class="fas fa-gem"></i> Filtrar Itens de Comércio</h3>
                         <div class="campo-duplo">
                             <div class="input-group">
                                 <label style="color: #a855f7;">Épicos (mín)</label>
@@ -1499,20 +1499,15 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
             botoesCache.forEach(btn => btn.disabled = true);
             
+            // Selecionar cache completo imediatamente
+            selecionarCache('completas');
+            
             fetch('/carregar-completo', {method: 'POST'})
                 .then(r => r.json())
                 .then(d => { 
-                    // Reabilitar botões
-                    botoesCache.forEach(btn => btn.disabled = false);
-                    
-                    if (d.success && d.contas_carregadas > 0) {
-                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas completas`, 'success');
-                        // Atualizar status e selecionar cache completo
-                        verificarStatusCache(true); // true = forçar busca após carregar
-                    } else {
-                        mostrarNotificacao(d.message || 'Erro ao carregar cache completo', 'error');
-                        verificarStatusCache(false);
-                    }
+                    mostrarNotificacao(d.message || 'Carregamento iniciado', 'success');
+                    // Iniciar polling para verificar quando terminar
+                    pollingCacheCompleto();
                 })
                 .catch((error) => {
                     // Reabilitar botões
@@ -1520,6 +1515,44 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     console.error('Erro:', error);
                     mostrarNotificacao("Erro de conexão ao carregar cache completo", 'error');
                     verificarStatusCache(false);
+                });
+        }
+        
+        function pollingCacheCompleto() {
+            fetch('/status-carregamento')
+                .then(r => r.json())
+                .then(data => {
+                    const info = document.getElementById('cache-info');
+                    const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
+                    
+                    if (data.carregando) {
+                        // Mostrar progresso
+                        const progresso = data.progresso || {};
+                        const atual = progresso.atual || 0;
+                        const total = progresso.total || 0;
+                        const pct = progresso.percentual || 0;
+                        info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${atual}/${total} (${pct}%)</span>`;
+                        // Continuar polling
+                        setTimeout(pollingCacheCompleto, 3000);
+                    } else {
+                        // Carregamento terminou
+                        botoesCache.forEach(btn => btn.disabled = false);
+                        
+                        if (data.tem_cache_completo && data.total_completo > 0) {
+                            info.innerHTML = `Status: <span style='color: #48bb78'>✅ Cache Completo (${data.total_completo} contas)</span>`;
+                            mostrarNotificacao(`Carregadas ${data.total_completo} contas!`, 'success');
+                            // Garantir que está selecionado o cache completo
+                            selecionarCache('completas');
+                        } else if (data.tem_cache_teste && data.total_teste > 0) {
+                            info.innerHTML = `Status: <span style='color: #ed8936'>⚠️ Cache Teste (${data.total_teste} contas)</span>`;
+                        } else {
+                            info.innerHTML = "Status: <span style='color: #f56565'>❌ Erro no carregamento</span>";
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error('Erro no polling:', error);
+                    document.querySelectorAll('.cache-type-btn, .btn-buscar').forEach(btn => btn.disabled = false);
                 });
         }
 
