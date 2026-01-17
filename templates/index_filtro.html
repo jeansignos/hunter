@@ -221,20 +221,10 @@
                     <!-- NOVO FILTRO: Itens Comercializáveis -->
                     <div class="grupo-filtro">
                         <h3><i class="fas fa-exchange-alt"></i> Itens Comercializáveis <span class="premium-badge">NOVO</span></h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label>Mín. Épicos</label>
-                                <input type="number" id="itens_epicos_min" placeholder="0" min="0" value="">
-                            </div>
-                            <div class="input-group">
-                                <label>Mín. Lendários</label>
-                                <input type="number" id="itens_lendarios_min" placeholder="0" min="0" value="">
-                            </div>
-                        </div>
-                        <div class="input-group" style="margin-top: 8px;">
-                            <label>Mín. Total (Épicos + Lendários)</label>
-                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" value="">
-                            <small style="color: #a0aec0; font-size: 0.75rem;">Deixe vazio ou 0 para não filtrar</small>
+                        <div class="input-group">
+                            <label>Mín. Itens Épicos/Lendários</label>
+                            <input type="number" id="itens_comercio_min" placeholder="Ex: 1" min="0" value="1">
+                            <small style="color: #a0aec0; font-size: 0.75rem;">Filtrar contas com 1+ itens de comércio valiosos</small>
                         </div>
                     </div>
                     
@@ -249,24 +239,18 @@
 
                 <div id="aba-combate" class="conteudo-aba">
                     <div class="grupo-filtro">
-                        <h3><i class="fas fa-star"></i> Potencial</h3>
-                        <div class="input-group">
-                            <label>Potencial Mínimo</label>
-                            <input type="number" id="potencial_min" placeholder="0" min="0">
-                            <small style="color: #a0aec0; font-size: 0.75rem;">Filtra pelo potencial total do personagem</small>
-                        </div>
-                    </div>
-                    
-                    <div class="grupo-filtro">
                         <h3><i class="fas fa-book"></i> Codex</h3>
-                        <div class="input-group">
-                            <label>Codex Mínimo</label>
-                            <input type="number" id="codex_min" placeholder="0" min="0">
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Codex</label>
+                                <input type="number" id="codex_min" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                                          </div>
                         </div>
                     </div>
                     
                     <div class="grupo-filtro">
-   {% if current_user.is_authenticated and current_user.is_admin %}
    <div class="grupo-filtro">
     <h3><i class="fas fa-database"></i> Cache</h3>
     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
@@ -313,7 +297,6 @@
         {% endif %}
     </div>
 </div>
-{% endif %}
 
                 <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
@@ -1134,126 +1117,72 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             }
         }
 
-        // Função para carregar mais itens do inventário - VERSÃO CORRIGIDA E SIMPLIFICADA
-    // Função para carregar mais itens do inventário - VERSÃO COM DEBUG
-function carregarMaisInventario(cardSeq) {
-    console.log(`=== DEBUG: Iniciando carregarMaisInventario para card ${cardSeq} ===`);
-    console.log(`[DEBUG] Variável todasContas existe?`, typeof todasContas !== 'undefined');
-    console.log(`[DEBUG] Quantidade de contas em todasContas:`, todasContas ? todasContas.length : 0);
-    
-    const card = document.getElementById(`card-${cardSeq}`);
-    console.log(`[DEBUG] Card encontrado?`, !!card);
-    
-    const btn = document.getElementById(`carregar-mais-btn-${cardSeq}`);
-    console.log(`[DEBUG] Botão encontrado?`, !!btn);
-    console.log(`[DEBUG] Botão HTML:`, btn ? btn.outerHTML : 'NÃO ENCONTRADO');
-    
-    const container = document.getElementById(`inven-items-${cardSeq}`);
-    console.log(`[DEBUG] Container encontrado?`, !!container);
-    
-    if (!card) {
-        console.error(`[ERRO] Card ${cardSeq} não encontrado`);
-        return;
-    }
-    
-    if (!btn) {
-        console.error(`[ERRO] Botão ${cardSeq} não encontrado`);
-        return;
-    }
-    
-    if (!container) {
-        console.error(`[ERRO] Container ${cardSeq} não encontrado`);
-        return;
-    }
-    
-    // Encontrar a conta nos dados
-    console.log(`[DEBUG] Buscando conta ${cardSeq} em todasContas...`);
-    const conta = todasContas.find(c => {
-        console.log(`[DEBUG] Comparando: c.seq = ${c.seq}, tipo: ${typeof c.seq}, cardSeq = ${cardSeq}, tipo: ${typeof cardSeq}`);
-        return String(c.seq) === String(cardSeq);
-    });
-    
-    console.log(`[DEBUG] Conta encontrada?`, !!conta);
-    if (!conta) {
-        console.error(`[ERRO] Conta ${cardSeq} não encontrada nos dados`);
-        console.log(`[DEBUG] Primeiras 5 contas:`, todasContas.slice(0, 5).map(c => ({ seq: c.seq, name: c.name })));
-        return;
-    }
-    
-    // Usar inven_all que tem TODOS os itens
-    const todosItens = conta.inven_all || [];
-    console.log(`[DEBUG] Todos itens:`, todosItens.length);
-    console.log(`[DEBUG] Exemplo de itens:`, todosItens.slice(0, 2));
-    
-    const itensJaMostrados = container.querySelectorAll('.item-circle').length;
-    console.log(`[DEBUG] Itens já mostrados no container:`, itensJaMostrados);
-    
-    if (itensJaMostrados >= todosItens.length) {
-        console.log(`[DEBUG] Todos os itens já foram mostrados (${itensJaMostrados}/${todosItens.length})`);
-        btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
-        btn.disabled = true;
-        setTimeout(() => {
-            btn.style.display = 'none';
-        }, 2000);
-        return;
-    }
-    
-    // Mostrar loading no botão
-    const textoOriginal = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
-    btn.disabled = true;
-    
-    console.log(`[DEBUG] Iniciando carregamento de mais itens...`);
-    
-    // Pequeno delay para feedback visual
-    setTimeout(() => {
-        // Calcular quantos itens carregar (próximos 12)
-        const itemsPerPage = 12;
-        const inicio = itensJaMostrados;
-        const fim = Math.min(inicio + itemsPerPage, todosItens.length);
-        const proximosItens = todosItens.slice(inicio, fim);
-        
-        console.log(`[DEBUG] Carregando itens ${inicio} a ${fim}: ${proximosItens.length} itens`);
-        console.log(`[DEBUG] Primeiros 2 itens a carregar:`, proximosItens.slice(0, 2));
-        
-        if (proximosItens.length === 0) {
-            console.log(`[DEBUG] Nenhum item para carregar`);
-            btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+        // Função para carregar mais itens do inventário
+        function carregarMaisInventario(cardSeq) {
+            const card = document.getElementById(`card-${cardSeq}`);
+            const btn = document.getElementById(`carregar-mais-btn-${cardSeq}`);
+            const container = document.getElementById(`inven-items-${cardSeq}`);
+            
+            if (!card || !btn || !container) {
+                console.error(`Elementos não encontrados para card ${cardSeq}`);
+                return;
+            }
+            
+            // Encontrar a conta nos dados
+            const conta = todasContas.find(c => String(c.seq) === String(cardSeq));
+            
+            if (!conta) {
+                console.error(`Conta ${cardSeq} não encontrada`);
+                return;
+            }
+            
+            // Usar inven_all que tem TODOS os itens
+            const todosItens = conta.inven_all || [];
+            const itensJaMostrados = container.querySelectorAll('.item-circle').length;
+            
+            if (itensJaMostrados >= todosItens.length) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+                btn.disabled = true;
+                setTimeout(() => { btn.style.display = 'none'; }, 2000);
+                return;
+            }
+            
+            // Mostrar loading no botão
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
             btn.disabled = true;
+            
+            // Pequeno delay para feedback visual
             setTimeout(() => {
-                btn.style.display = 'none';
-            }, 2000);
-            return;
+                const itemsPerPage = 12;
+                const inicio = itensJaMostrados;
+                const fim = Math.min(inicio + itemsPerPage, todosItens.length);
+                const proximosItens = todosItens.slice(inicio, fim);
+                
+                if (proximosItens.length === 0) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+                    btn.disabled = true;
+                    setTimeout(() => { btn.style.display = 'none'; }, 2000);
+                    return;
+                }
+                
+                // Adicionar os novos itens ao container
+                const novosItensHtml = proximosItens.map(item => renderItemIcon(item)).join('');
+                container.insertAdjacentHTML('beforeend', novosItensHtml);
+                
+                // Atualizar o botão
+                const novosTotal = itensJaMostrados + proximosItens.length;
+                const restantes = todosItens.length - novosTotal;
+                
+                if (restantes > 0) {
+                    btn.innerHTML = `<i class="fas fa-plus"></i> Carregar mais itens (${restantes} restantes)`;
+                    btn.disabled = false;
+                } else {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
+                    btn.disabled = true;
+                    setTimeout(() => { btn.style.display = 'none'; }, 2000);
+                }
+            }, 300);
         }
-        
-        // Adicionar os novos itens ao container
-        const novosItensHtml = proximosItens.map(item => renderItemIcon(item)).join('');
-        console.log(`[DEBUG] HTML gerado (primeiros 100 chars):`, novosItensHtml.substring(0, 100));
-        
-        container.insertAdjacentHTML('beforeend', novosItensHtml);
-        
-        // Atualizar o botão
-        const novosTotal = itensJaMostrados + proximosItens.length;
-        const restantes = todosItens.length - novosTotal;
-        
-        console.log(`[DEBUG] Novo total mostrado: ${novosTotal}/${todosItens.length}`);
-        console.log(`[DEBUG] Restantes: ${restantes}`);
-        
-        if (restantes > 0) {
-            btn.innerHTML = `<i class="fas fa-plus"></i> Carregar mais itens (${restantes} restantes)`;
-            btn.disabled = false;
-        } else {
-            btn.innerHTML = '<i class="fas fa-check"></i> Todos os itens carregados';
-            btn.disabled = true;
-            setTimeout(() => {
-                btn.style.display = 'none';
-            }, 2000);
-        }
-        
-        console.log(`[DEBUG] Carregados ${proximosItens.length} itens com sucesso!`);
-        
-    }, 300);
-}
 
         // --- BUSCA E FILTROS ---
         function buscarContas() {
@@ -1273,8 +1202,7 @@ function carregarMaisInventario(cardSeq) {
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
                 'price_min', 'price_max', 'mina_min', 'codex_min', 
                 'pets_lendarios_min', 'pets_misticos_min', 'habs_lendarias_min',
-                'constituicao_min', 'itens_comercio_min', 'itens_epicos_min', 
-                'itens_lendarios_min', 'potencial_min'
+                'constituicao_min', 'itens_comercio_min'
             ];
             
             ids.forEach(id => {
@@ -1527,11 +1455,6 @@ function carregarMaisInventario(cardSeq) {
                     document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
                 });
         }
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            verificarStatusCache();
-        });
     </script>
 </body>
 </html>
