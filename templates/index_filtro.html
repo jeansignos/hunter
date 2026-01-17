@@ -586,6 +586,133 @@
             }
         }
 
+        // ==================== FUNÇÕES DO MODAL DE ITENS ====================
+        let filtrosItensAtivos = {}; // {hash: {nome: string, qtd: number}}
+        
+        function abrirModalItens(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            const modal = document.getElementById('modal-itens');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+            
+            // Focar no campo de busca
+            setTimeout(() => {
+                document.getElementById('busca-item')?.focus();
+            }, 50);
+            
+            // Atualizar lista de filtros ativos
+            atualizarListaFiltrosItens();
+        }
+
+        function fecharModalItens() {
+            const modal = document.getElementById('modal-itens');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function filtrarItens() {
+            const buscaOriginal = document.getElementById('busca-item')?.value || '';
+            const busca = removerAcentos(buscaOriginal.toLowerCase().trim());
+            const items = document.querySelectorAll('#lista-itens .item-filtro-item');
+            
+            let encontrados = 0;
+            const maxResultados = 50; // Limitar resultados para performance
+            
+            items.forEach(item => {
+                if (busca.length < 2) {
+                    item.style.display = 'none';
+                    return;
+                }
+                
+                const nomeOriginal = item.getAttribute('data-nome') || '';
+                const nomeSemAcento = removerAcentos(nomeOriginal);
+                
+                if (encontrados < maxResultados && nomeSemAcento.includes(busca)) {
+                    item.style.display = 'flex';
+                    encontrados++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function adicionarFiltroItem(hash, nome) {
+            // Se já existe, não adicionar novamente
+            if (filtrosItensAtivos[hash]) {
+                mostrarNotificacao('Este item já está na lista de filtros', 'warning');
+                return;
+            }
+            
+            // Adicionar com quantidade padrão 1
+            filtrosItensAtivos[hash] = { nome: nome, qtd: 1 };
+            
+            // Limpar busca
+            document.getElementById('busca-item').value = '';
+            filtrarItens();
+            
+            // Atualizar lista
+            atualizarListaFiltrosItens();
+            
+            mostrarNotificacao(`"${nome}" adicionado aos filtros`, 'success');
+        }
+
+        function removerFiltroItem(hash) {
+            const nome = filtrosItensAtivos[hash]?.nome || '';
+            delete filtrosItensAtivos[hash];
+            atualizarListaFiltrosItens();
+            mostrarNotificacao(`"${nome}" removido dos filtros`, 'success');
+        }
+
+        function atualizarQuantidadeItem(hash, qtd) {
+            if (filtrosItensAtivos[hash]) {
+                filtrosItensAtivos[hash].qtd = parseInt(qtd) || 1;
+            }
+        }
+
+        function atualizarListaFiltrosItens() {
+            const container = document.getElementById('itens-filtro-lista');
+            
+            if (Object.keys(filtrosItensAtivos).length === 0) {
+                container.innerHTML = '<p style="color: #a0aec0; font-style: italic;">Nenhum filtro de item ativo. Busque e clique em um item para adicionar.</p>';
+                return;
+            }
+            
+            let html = '';
+            for (const [hash, data] of Object.entries(filtrosItensAtivos)) {
+                html += `
+                    <div class="item-filtro-ativo" style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #4a5568;">
+                        <div style="flex: 1; color: white; font-size: 0.85rem;" title="${data.nome}">${data.nome}</div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: #a0aec0; font-size: 0.8rem;">Mín:</label>
+                            <input type="number" value="${data.qtd}" min="1" 
+                                   style="width: 60px; padding: 5px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 3px;"
+                                   onchange="atualizarQuantidadeItem('${hash}', this.value)">
+                        </div>
+                        <button onclick="removerFiltroItem('${hash}')" 
+                                style="background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function limparFiltrosItens() {
+            filtrosItensAtivos = {};
+            atualizarListaFiltrosItens();
+            mostrarNotificacao('Filtros de itens limpos', 'success');
+        }
+
         // --- FUNÇÕES DO MODAL DE TODOS OS STATUS ---
         function abrirModalTodosStatus(event) {
             event.stopPropagation();
