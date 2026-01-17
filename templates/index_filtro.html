@@ -124,6 +124,72 @@
             background: #3182ce;
         }
         
+        /* Botões do Modal */
+        .btn-limpar-modal {
+            padding: 10px 20px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-limpar-modal:hover {
+            background: #2d3748;
+        }
+        
+        .btn-aplicar-modal {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-aplicar-modal:hover {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            transform: translateY(-1px);
+        }
+        
+        /* Botão Premium Bloqueado */
+        .btn-premium-bloqueado {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #553C9A, #6B46C1);
+            color: #E9D8FD;
+            border: 1px solid #805AD5;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .btn-premium-bloqueado:hover {
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+        }
+        
+        .btn-premium-bloqueado .fa-lock {
+            font-size: 0.7rem;
+            color: #F6E05E;
+        }
+        
         /* Linha de filtros principais */
         .filtros-linha-principal {
             display: flex;
@@ -747,6 +813,7 @@
             <!-- Linha 2: Dropdowns de filtros avançados -->
             <div class="filtros-linha-principal" style="width: 100%; margin-top: 10px; justify-content: center;">
                 
+                {% if is_premium %}
                 <!-- Dropdown Mineração -->
                 <div class="mini-dropdown">
                     <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-mineracao')">
@@ -770,7 +837,14 @@
                         <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-mineracao')">Aplicar</button>
                     </div>
                 </div>
+                {% else %}
+                <!-- Mineração bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-gem"></i> Mineração <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
+                {% if is_premium %}
                 <!-- Dropdown Training/Treino -->
                 <div class="mini-dropdown">
                     <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-treino')">
@@ -807,6 +881,12 @@
                         <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-treino')">Aplicar</button>
                     </div>
                 </div>
+                {% else %}
+                <!-- Treino bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-dumbbell"></i> Treino <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
                 <!-- Dropdown Nível (Codex/Potencial) -->
                 <div class="mini-dropdown">
@@ -832,6 +912,7 @@
                     </div>
                 </div>
                 
+                {% if is_premium %}
                 <!-- Dropdown Trade (Itens Comercializáveis) -->
                 <div class="mini-dropdown">
                     <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-trade')">
@@ -854,26 +935,60 @@
                         <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-trade')">Aplicar</button>
                     </div>
                 </div>
+                {% else %}
+                <!-- Trade bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-balance-scale"></i> Trade <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
+                {% if is_premium %}
                 <!-- Botão Status Avançados -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalStatus(event)">
                     <i class="fas fa-sliders-h"></i> Status
                 </button>
+                {% else %}
+                <!-- Status bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-sliders-h"></i> Status <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
+                {% if is_premium %}
                 <!-- Botão Filtro de Itens -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalItens(event)">
                     <i class="fas fa-box-open"></i> Itens
                 </button>
+                {% else %}
+                <!-- Itens bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-box-open"></i> Itens <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
+                {% if is_premium %}
                 <!-- Botão Filtro de Espíritos -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalEspiritos(event)">
                     <i class="fas fa-ghost"></i> Espíritos <span id="count-espiritos" class="mini-dropdown-count">0</span>
                 </button>
+                {% else %}
+                <!-- Espíritos bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado">
+                    <i class="fas fa-ghost"></i> Espíritos <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
+                {% if is_premium %}
                 <!-- Botão Filtro de Habilidades -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalHabilidades(event)" style="border-color: #f6e05e;">
                     <i class="fas fa-magic"></i> Skills <span id="count-skills" class="mini-dropdown-count">0</span>
                 </button>
+                {% else %}
+                <!-- Skills bloqueado -->
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-premium-bloqueado" style="border-color: #f6e05e;">
+                    <i class="fas fa-magic"></i> Skills <i class="fas fa-lock"></i>
+                </a>
+                {% endif %}
                 
                 <!-- Busca por nome -->
                 <input type="text" id="busca_nome" class="busca-nome" placeholder="Nome do jogador...">
@@ -965,8 +1080,8 @@
                 </div>
                 
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                    <button type="button" class="btn-aplicar" onclick="limparSkills()" style="background: #4a5568;">Limpar Seleção</button>
-                    <button type="button" class="btn-aplicar" onclick="fecharModalHabilidades()">Aplicar Filtros</button>
+                    <button type="button" class="btn-limpar-modal" onclick="limparSkills()"><i class="fas fa-times"></i> Limpar Seleção</button>
+                    <button type="button" class="btn-aplicar-modal" onclick="fecharModalHabilidades()"><i class="fas fa-check"></i> Aplicar Filtros</button>
                 </div>
             </div>
         </div>
@@ -986,98 +1101,113 @@
                 
                 <h4 style="color: #f6e05e; margin: 15px 0 10px;">Espíritos Lendários (Grade 5)</h4>
                 <div class="espiritos-grid" id="espiritos-lendarios">
-                    <!-- Lendários -->
-                    <div class="espirito-item" data-nome="Alma do Dragão Branco" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_018.png" alt="Alma do Dragão Branco" title="Alma do Dragão Branco">
+                    <!-- Lendários Grade 5 -->
+                    <div class="espirito-item" data-nome="Grifavalo, o Garanhão Sombrio" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Centaur01.png" alt="Grifavalo" title="Grifavalo, o Garanhão Sombrio">
                     </div>
-                    <div class="espirito-item" data-nome="Oroonki" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_010.png" alt="Oroonki" title="Oroonki">
-                    </div>
-                    <div class="espirito-item" data-nome="Baratan, a Besta Relâmpago" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_012.png" alt="Baratan" title="Baratan, a Besta Relâmpago">
-                    </div>
-                    <div class="espirito-item" data-nome="Gargas, o Vigia Verdejante" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_013.png" alt="Gargas" title="Gargas, o Vigia Verdejante">
-                    </div>
-                    <div class="espirito-item" data-nome="Mantata, o Barão Azul" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_011.png" alt="Mantata" title="Mantata, o Barão Azul">
-                    </div>
-                    <div class="espirito-item" data-nome="Anjo da Morte, o Ceifeiro de Almas" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_009.png" alt="Anjo da Morte" title="Anjo da Morte, o Ceifeiro de Almas">
-                    </div>
-                    <div class="espirito-item" data-nome="Energia do Demônio do Vazio" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_014.png" alt="Energia do Demônio" title="Energia do Demônio do Vazio">
-                    </div>
-                    <div class="espirito-item" data-nome="Woosa, o Sábio do Deserto" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_015.png" alt="Woosa" title="Woosa, o Sábio do Deserto">
-                    </div>
-                    <div class="espirito-item" data-nome="Khalion, o Grande General" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_016.png" alt="Khalion" title="Khalion, o Grande General">
+                    <div class="espirito-item" data-nome="Darknyan, o Ressuscitador" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Cat03.png" alt="Darknyan" title="Darknyan, o Ressuscitador">
                     </div>
                     <div class="espirito-item" data-nome="Vendavalma, o Invocador do Vento" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_019.png" alt="Vendavalma" title="Vendavalma, o Invocador do Vento">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Wind01.png" alt="Vendavalma" title="Vendavalma, o Invocador do Vento">
                     </div>
-                    <div class="espirito-item" data-nome="Poipoi, o Dragão da Nuvem Negra" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_017.png" alt="Poipoi" title="Poipoi, o Dragão da Nuvem Negra">
+                    <div class="espirito-item" data-nome="Drago Ponta de Sangue" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon03.png" alt="Drago Ponta de Sangue" title="Drago Ponta de Sangue">
                     </div>
-                    <div class="espirito-item" data-nome="Flordoura, a Dragoa Fada" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_020.png" alt="Flordoura" title="Flordoura, a Dragoa Fada">
+                    <div class="espirito-item" data-nome="Wooska, Príncipe Herdeiro das Trevas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Tiger02.png" alt="Wooska" title="Wooska, Príncipe Herdeiro das Trevas">
                     </div>
-                    <div class="espirito-item" data-nome="Zakhan, o Assassino Sombrio" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_021.png" alt="Zakhan" title="Zakhan, o Assassino Sombrio">
+                    <div class="espirito-item" data-nome="Raryo, o Pequeno Dragão Branco" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon07.png" alt="Raryo" title="Raryo, o Pequeno Dragão Branco">
                     </div>
-                    <div class="espirito-item" data-nome="Zeon, o Dragão do Golpe de Relâmpago" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_022.png" alt="Zeon" title="Zeon, o Dragão do Golpe de Relâmpago">
+                    <div class="espirito-item" data-nome="Imperador da Destruição, o Demônio Infernal Octogonal" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Undead01.png" alt="Imperador da Destruição" title="Imperador da Destruição">
                     </div>
-                    <div class="espirito-item" data-nome="Lord do Deserto" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_023.png" alt="Lord do Deserto" title="Lord do Deserto">
+                    <div class="espirito-item" data-nome="Balrog, o Lorde do Fogo" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_DarkMen01.png" alt="Balrog" title="Balrog, o Lorde do Fogo">
                     </div>
-                    <div class="espirito-item" data-nome="Grifavalo, o Garanhão Sombrio" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_024.png" alt="Grifavalo" title="Grifavalo, o Garanhão Sombrio">
-                    </div>
-                    <div class="espirito-item" data-nome="Nerr, o Demônio de Gelo das Trevas" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_025.png" alt="Nerr" title="Nerr, o Demônio de Gelo das Trevas">
-                    </div>
-                    <div class="espirito-item" data-nome="Mir, o Dragão Radiante" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_026.png" alt="Mir" title="Mir, o Dragão Radiante">
-                    </div>
-                    <div class="espirito-item" data-nome="Cãomandante, o Chefe Canino" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_027.png" alt="Cãomandante" title="Cãomandante, o Chefe Canino">
+                    <div class="espirito-item" data-nome="Rocki, o Dragonino Rochoso" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon09.png" alt="Rocki" title="Rocki, o Dragonino Rochoso">
                     </div>
                 </div>
                 
                 <h4 style="color: #9f7aea; margin: 20px 0 10px;">Espíritos Épicos (Grade 4)</h4>
                 <div class="espiritos-grid" id="espiritos-epicos">
-                    <!-- Épicos -->
-                    <div class="espirito-item" data-nome="Muumuu" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_001.png" alt="Muumuu" title="Muumuu">
-                    </div>
-                    <div class="espirito-item" data-nome="Chacha, o Mestre do Disfarce" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_002.png" alt="Chacha" title="Chacha, o Mestre do Disfarce">
-                    </div>
-                    <div class="espirito-item" data-nome="Tesouro Dourado" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_003.png" alt="Tesouro Dourado" title="Tesouro Dourado">
-                    </div>
-                    <div class="espirito-item" data-nome="Força Vital do Dragão" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_004.png" alt="Força Vital" title="Força Vital do Dragão">
-                    </div>
+                    <!-- Épicos Grade 4 -->
                     <div class="espirito-item" data-nome="Suparna, o Pássaro Dourado" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_005.png" alt="Suparna" title="Suparna, o Pássaro Dourado">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Peacock01.png" alt="Suparna" title="Suparna, o Pássaro Dourado">
                     </div>
-                    <div class="espirito-item" data-nome="Coração do Demônio Negro" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_006.png" alt="Coração Demônio" title="Coração do Demônio Negro">
+                    <div class="espirito-item" data-nome="Baleiana, a Beleza Absoluta" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Whale01.png" alt="Baleiana" title="Baleiana, a Beleza Absoluta">
                     </div>
-                    <div class="espirito-item" data-nome="Coração de Capitão Yeticlops" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_007.png" alt="Yeticlops" title="Coração de Capitão Yeticlops">
+                    <div class="espirito-item" data-nome="Cristalidro, o Pavão Branco" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Peacock02.png" alt="Cristalidro" title="Cristalidro, o Pavão Branco">
+                    </div>
+                    <div class="espirito-item" data-nome="Sortitude, o Gato Sortudo" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Cat02.png" alt="Sortitude" title="Sortitude, o Gato Sortudo">
+                    </div>
+                    <div class="espirito-item" data-nome="Shaoshao, o Maníaco das Gemas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon02.png" alt="Shaoshao" title="Shaoshao, o Maníaco das Gemas">
+                    </div>
+                    <div class="espirito-item" data-nome="Nyanja Assassino" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Cat04.png" alt="Nyanja" title="Nyanja Assassino">
+                    </div>
+                    <div class="espirito-item" data-nome="Baratan, a Besta Relâmpago" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_ElecDevil01.png" alt="Baratan" title="Baratan, a Besta Relâmpago">
+                    </div>
+                    <div class="espirito-item" data-nome="Faísca, a Gema Brilhante" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Insect02.png" alt="Faísca" title="Faísca, a Gema Brilhante">
+                    </div>
+                    <div class="espirito-item" data-nome="Chifre Flamejante, o Diabo de Fogo" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_FireDevil01.png" alt="Chifre Flamejante" title="Chifre Flamejante, o Diabo de Fogo">
+                    </div>
+                    <div class="espirito-item" data-nome="Anjo da Morte, o Ceifeiro de Almas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Reaper01.png" alt="Anjo da Morte" title="Anjo da Morte, o Ceifeiro de Almas">
+                    </div>
+                    <div class="espirito-item" data-nome="Biyoho, o Descendente Infernal das Chamas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Fox03.png" alt="Biyoho" title="Biyoho, o Descendente Infernal das Chamas">
+                    </div>
+                    <div class="espirito-item" data-nome="Rei Leão Khun" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Lion01.png" alt="Rei Leão Khun" title="Rei Leão Khun">
+                    </div>
+                    <div class="espirito-item" data-nome="Koiga, Coração de Leão Brutal" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Monkey02.png" alt="Koiga" title="Koiga, Coração de Leão Brutal">
+                    </div>
+                    <div class="espirito-item" data-nome="Nerr, o Demônio de Gelo das Trevas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Goat01.png" alt="Nerr" title="Nerr, o Demônio de Gelo das Trevas">
+                    </div>
+                    <div class="espirito-item" data-nome="Mir, o Dragão Radiante" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon04.png" alt="Mir" title="Mir, o Dragão Radiante">
+                    </div>
+                    <div class="espirito-item" data-nome="Gargas, o Vigia Verdejante" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Eagle02.png" alt="Gargas" title="Gargas, o Vigia Verdejante">
+                    </div>
+                    <div class="espirito-item" data-nome="Yobi, o Mensageiro da Primavera" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon05.png" alt="Yobi" title="Yobi, o Mensageiro da Primavera">
+                    </div>
+                    <div class="espirito-item" data-nome="Poipoi, o Dragão da Nuvem Negra" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon06.png" alt="Poipoi" title="Poipoi, o Dragão da Nuvem Negra">
                     </div>
                     <div class="espirito-item" data-nome="Cometa, o Dono dos Chifres Vermelhos" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_008.png" alt="Cometa" title="Cometa, o Dono dos Chifres Vermelhos">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Skeleton02.png" alt="Cometa" title="Cometa, o Dono dos Chifres Vermelhos">
+                    </div>
+                    <div class="espirito-item" data-nome="Zakhan, o Assassino Sombrio" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Bat02.png" alt="Zakhan" title="Zakhan, o Assassino Sombrio">
+                    </div>
+                    <div class="espirito-item" data-nome="Mantata, o Barão Azul" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Cat06.png" alt="Mantata" title="Mantata, o Barão Azul">
+                    </div>
+                    <div class="espirito-item" data-nome="Woosa, o Sábio do Deserto" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Rabbit02.png" alt="Woosa" title="Woosa, o Sábio do Deserto">
+                    </div>
+                    <div class="espirito-item" data-nome="Bisana, a Borboleta Turquesa" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Butterfly03.png" alt="Bisana" title="Bisana, a Borboleta Turquesa">
                     </div>
                 </div>
                 
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                    <button type="button" class="btn-aplicar" onclick="limparEspiritos()" style="background: #4a5568;">Limpar Seleção</button>
-                    <button type="button" class="btn-aplicar" onclick="fecharModalEspiritos()">Aplicar Filtros</button>
+                    <button type="button" class="btn-limpar-modal" onclick="limparEspiritos()"><i class="fas fa-times"></i> Limpar Seleção</button>
+                    <button type="button" class="btn-aplicar-modal" onclick="fecharModalEspiritos()"><i class="fas fa-check"></i> Aplicar Filtros</button>
                 </div>
             </div>
         </div>
