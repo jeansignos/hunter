@@ -1348,12 +1348,11 @@
                         <h4><i class="fas fa-terminal"></i> Log do Cache</h4>
                         <i id="cache-log-toggle-icon" class="fas fa-chevron-down"></i>
                     </div>
+                    <div id="cache-info" style="padding: 5px 10px; font-size: 11px; color: #a0aec0; border-bottom: 1px solid #2d3748;">Status: <span style='color: #718096'>Aguardando...</span></div>
                     <div id="cache-log-content" class="cache-log-content" style="display: none;">
                         <div class="log-line"><span class="log-info">Aguardando ações...</span></div>
                     </div>
                 </div>
-
-            </div>
         </div>
         
         <!-- Contador e tabs Listado/Com Lance -->
@@ -3237,7 +3236,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             cacheTipo = tipo;
             document.querySelectorAll('.cache-type-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`cache-${tipo}`).classList.add('active');
-            document.getElementById('cache-info').innerText = `Modo: ${tipo === 'completas' ? 'Cache Completo' : 'Cache Teste'}`;
+            const ci2 = document.getElementById('cache-info'); if(ci2) ci2.innerText = `Modo: ${tipo === 'completas' ? 'Cache Completo' : 'Cache Teste'}`;
         }
 
         function mudarOrdenacao() {
@@ -3250,7 +3249,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             addCacheLog('Iniciando carregamento de 10 contas...', 'info');
             
             // Mostrar status de carregamento
-            document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando 10 contas...</span>";
+            const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando 10 contas...</span>";
             
             // Desabilitar botões durante o carregamento
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
@@ -3288,7 +3287,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             addCacheLog('Iniciando carregamento completo...', 'info');
             
             // Mostrar status de carregamento
-            document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando todas as contas...</span>";
+            const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando todas as contas...</span>";
             
             // Desabilitar botões durante o carregamento
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
@@ -3325,7 +3324,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             return fetch('/status-carregamento')
                 .then(r => r.json())
                 .then(data => {
-                    const info = document.getElementById('cache-info');
+                    const info = document.getElementById('cache-info'); if(!info) return;
                     
                     if (data.carregando) {
                         info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
@@ -3350,7 +3349,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     return data;
                 })
                 .catch(() => {
-                    document.getElementById('cache-info').innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
+                    const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
                 });
         }
         // ===== FUNÇÕES DOS MODAIS DE AUTENTICAÇÃO =====
