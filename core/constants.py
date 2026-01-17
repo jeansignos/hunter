@@ -78,11 +78,11 @@ CLASSES = {
 # Mapeamento para habilidades
 CLASSE_PARA_PASTA = {
     "1": "guerreiro",
-    "2": "feiticeira", 
+    "2": "maga", 
     "3": "taoista",
     "4": "lanceiro",
     "5": "arqueira",
-    "6": "invocador",
+    "6": "soturna",
     "7": "guerreiro"
 }
 

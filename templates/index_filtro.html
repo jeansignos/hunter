@@ -190,6 +190,80 @@
             color: #F6E05E;
         }
         
+        /* Modal Premium Banner */
+        .modal-premium-banner {
+            max-width: 500px;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            border: 2px solid #F6E05E;
+        }
+        
+        .premium-beneficios {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .beneficio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(246, 224, 94, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(246, 224, 94, 0.3);
+        }
+        
+        .beneficio-item i {
+            color: #F6E05E;
+            font-size: 1.1rem;
+            width: 24px;
+        }
+        
+        .beneficio-item span {
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+        
+        .premium-preco {
+            margin: 25px 0 15px;
+        }
+        
+        .preco-valor {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #F6E05E;
+        }
+        
+        .preco-periodo {
+            font-size: 1rem;
+            color: #a0aec0;
+        }
+        
+        .btn-discord-premium {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-discord-premium:hover {
+            background: linear-gradient(135deg, #4752C4, #5865F2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
+        }
+        
         /* Linha de filtros principais */
         .filtros-linha-principal {
             display: flex;
@@ -334,6 +408,49 @@
         
         .tab-status:hover:not(.active) {
             background: #3d4a5c;
+        }
+        
+        .tab-status.tab-locked {
+            background: linear-gradient(135deg, #553C9A, #6B46C1);
+            color: #E9D8FD;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .tab-status.tab-locked:hover {
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+        }
+        
+        .badge-premium-mini {
+            background: #F6E05E;
+            color: #1a202c;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+        
+        /* Botão Seja Premium */
+        .btn-seja-premium {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #F6E05E, #ECC94B);
+            color: #1a202c;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-seja-premium:hover {
+            background: linear-gradient(135deg, #ECC94B, #D69E2E);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(246, 224, 94, 0.4);
         }
         
         /* Campo de busca por nome */
@@ -710,9 +827,9 @@
                     {% if is_premium %}
                         <span class="premium-user"><i class="fas fa-crown"></i> Premium</span>
                     {% else %}
-                        <a href="https://discord.gg/deSKDPNzAW" target="_blank" style="background: linear-gradient(135deg, #5865F2, #7289DA); color: white; padding: 5px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none;">
-                            <i class="fab fa-discord"></i> Seja Premium
-                        </a>
+                        <button type="button" onclick="abrirModalPremium()" class="btn-seja-premium">
+                            <i class="fas fa-crown"></i> Seja Premium
+                        </button>
                     {% endif %}
                     <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a>
                 </div>
@@ -1018,7 +1135,13 @@
         
         <div class="tabs-status">
             <button type="button" class="tab-status active" id="tab-listado" onclick="filtrarPorStatus('listado')">Listado</button>
+            {% if is_premium %}
             <button type="button" class="tab-status" id="tab-bidding" onclick="filtrarPorStatus('bidding')">Com Lance</button>
+            {% else %}
+            <button type="button" class="tab-status tab-locked" onclick="abrirModalPremium()">
+                <i class="fas fa-lock"></i> Com Lance <span class="badge-premium-mini">Premium</span>
+            </button>
+            {% endif %}
         </div>
         
         <!-- Área de Resultados -->
@@ -1064,11 +1187,11 @@
                     <select id="skill-classe" class="select-compacto" onchange="carregarSkillsClasse()" style="min-width: 180px;">
                         <option value="">Selecione uma classe</option>
                         <option value="1">Guerreiro</option>
-                        <option value="2">Feiticeira</option>
+                        <option value="2">Maga</option>
                         <option value="3">Taoísta</option>
                         <option value="4">Lanceiro</option>
                         <option value="5">Arqueira</option>
-                        <option value="6">Invocador</option>
+                        <option value="6">Soturna</option>
                     </select>
                 </div>
                 
@@ -1317,6 +1440,73 @@
         </div>
     </div>
 
+    <!-- Modal Premium - Banner de Benefícios -->
+    <div id="modal-premium" class="modal" onclick="fecharModalPremium()">
+        <div class="modal-conteudo modal-premium-banner" onclick="event.stopPropagation()">
+            <div class="modal-cabecalho" style="background: linear-gradient(135deg, #F6E05E, #ECC94B); color: #1a202c;">
+                <h2><i class="fas fa-crown"></i> MIR4 You Premium</h2>
+                <span class="fechar-modal" onclick="fecharModalPremium()" style="color: #1a202c;">&times;</span>
+            </div>
+            <div class="modal-corpo" style="text-align: center;">
+                <p style="font-size: 1.2rem; color: #f6e05e; margin-bottom: 20px;">
+                    <strong>Desbloqueie todo o potencial da busca!</strong>
+                </p>
+                
+                <div class="premium-beneficios">
+                    <div class="beneficio-item">
+                        <i class="fas fa-ghost"></i>
+                        <span>Filtro de Espíritos</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-magic"></i>
+                        <span>Filtro de Habilidades</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Filtros de Status</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-box-open"></i>
+                        <span>Filtro de Itens</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-gem"></i>
+                        <span>Filtros de Mineração</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Itens Comercializáveis</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>Filtro de Treinamento</span>
+                    </div>
+                    <div class="beneficio-item">
+                        <i class="fas fa-gavel"></i>
+                        <span>Ver Contas em Leilão</span>
+                    </div>
+                </div>
+                
+                <div class="premium-preco">
+                    <span class="preco-valor">R$ 25</span>
+                    <span class="preco-periodo">/mês</span>
+                </div>
+                
+                <p style="color: #a0aec0; margin: 15px 0; font-size: 0.9rem;">
+                    Pagamento via <strong style="color: #48bb78;">Pix</strong>
+                </p>
+                
+                <a href="https://discord.gg/deSKDPNzAW" target="_blank" class="btn-discord-premium">
+                    <i class="fab fa-discord"></i> Assinar via Discord
+                </a>
+                
+                <p style="color: #718096; font-size: 0.75rem; margin-top: 15px;">
+                    Entre no Discord e fale com um admin para ativar seu Premium
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para Todos os Status -->
     <div id="modal-todos-status" class="modal" onclick="fecharModalTodosStatus()">
         <div class="modal-conteudo" onclick="event.stopPropagation()">
@@ -1398,6 +1588,23 @@
                 }
             });
         });
+
+        // --- FUNÇÕES DO MODAL PREMIUM ---
+        function abrirModalPremium() {
+            const modal = document.getElementById('modal-premium');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+        
+        function fecharModalPremium() {
+            const modal = document.getElementById('modal-premium');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
 
         // --- FUNÇÕES DO MODAL ---
         function abrirModalStatus(event) {
@@ -1492,11 +1699,11 @@
         
         const CLASSE_PARA_PASTA = {
             "1": "guerreiro",
-            "2": "feiticeira",
+            "2": "maga",
             "3": "taoista",
             "4": "lanceiro",
             "5": "arqueira",
-            "6": "invocador"
+            "6": "soturna"
         };
         
         function abrirModalHabilidades(event) {

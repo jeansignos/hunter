@@ -214,9 +214,9 @@
             {{ form.hidden_tag() }}
             
             <div class="form-group">
-                <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                {{ form.email(placeholder="seu@email.com", class="form-control") }}
-                {% for error in form.email.errors %}
+                <label for="login"><i class="fas fa-user"></i> Email ou Usuário</label>
+                {{ form.login(placeholder="seu@email.com ou seu_nick", class="form-control") }}
+                {% for error in form.login.errors %}
                 <span class="error-text">{{ error }}</span>
                 {% endfor %}
             </div>

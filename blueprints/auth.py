@@ -8,17 +8,22 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    """Página de login"""
+    """Página de login - aceita email ou username"""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
     form = LoginForm()
     
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data.lower()).first()
+        login_input = form.login.data.strip().lower()
+        
+        # Tenta encontrar por email primeiro, depois por username
+        user = User.query.filter_by(email=login_input).first()
+        if not user:
+            user = User.query.filter(User.username.ilike(login_input)).first()
         
         if user is None or not user.check_password(form.password.data):
-            flash('Email ou senha incorretos.', 'error')
+            flash('Email/usuário ou senha incorretos.', 'error')
             return render_template('auth/login.html', form=form)
         
         if not user.is_active:

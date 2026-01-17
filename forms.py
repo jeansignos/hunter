@@ -5,10 +5,9 @@ from models import User
 
 
 class LoginForm(FlaskForm):
-    """Formulário de login"""
-    email = StringField('Email', validators=[
-        DataRequired(message='Email é obrigatório'),
-        Email(message='Email inválido')
+    """Formulário de login - aceita email ou username"""
+    login = StringField('Email ou Usuário', validators=[
+        DataRequired(message='Email ou usuário é obrigatório')
     ])
     password = PasswordField('Senha', validators=[
         DataRequired(message='Senha é obrigatória')
