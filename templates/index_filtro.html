@@ -1134,6 +1134,7 @@
     </style>
 </head>
 <body>
+<input type="hidden" name="csrf_token" id="csrf-global" value="{{ csrf_token() }}">
     <div class="container layout-horizontal">
         
         <!-- Barra de usuário -->
@@ -3356,7 +3357,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
             botoesCache.forEach(btn => btn.disabled = true);
             
-            fetch('/carregar-teste', {method: 'POST'})
+            fetch('/carregar-teste', {method: 'POST', headers: {'X-CSRFToken': document.querySelector('input[name=csrf_token]')?.value || ''}})
                 .then(r => r.json())
                 .then(d => { 
                     // Reabilitar botões
@@ -3394,7 +3395,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
             botoesCache.forEach(btn => btn.disabled = true);
             
-            fetch('/carregar-completo', {method: 'POST'})
+            fetch('/carregar-completo', {method: 'POST', headers: {'X-CSRFToken': document.querySelector('input[name=csrf_token]')?.value || ''}})
                 .then(r => r.json())
                 .then(d => { 
                     // Reabilitar botões
