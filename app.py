@@ -192,6 +192,7 @@ def create_app(config_name=None):
             "servidor": request.args.get("servidor"),
             # NOVOS FILTROS
             "busca_nome": request.args.get("busca_nome"),
+            "nome_jogador": request.args.get("nome_jogador"),
             "filtro_status": request.args.get("filtro_status"),  # listado/bidding
             # Treino
             "treino_constituicao": request.args.get("treino_constituicao", type=int),
@@ -202,6 +203,9 @@ def create_app(config_name=None):
             # Outros
             "potencial_min": request.args.get("potencial_min", type=int),
             "espiritos": request.args.get("espiritos"),  # Lista de nomes separados por vírgula
+            # Trade (itens comercializáveis)
+            "equip_lend_trade_min": request.args.get("equip_lend_trade_min", type=int),
+            "equip_epic_trade_min": request.args.get("equip_epic_trade_min", type=int),
             "status_filtros": {},
             "itens_filtros": {}
         }
@@ -325,6 +329,23 @@ def create_app(config_name=None):
                 itens_all = conta.get("inven_all", [])
                 itens_valiosos = [i for i in itens_all if i.get("grade", 0) >= 4]  # Grade 4+ = Épico/Lendário
                 if len(itens_valiosos) < filtros["itens_comercio_min"]:
+                    continue
+            
+            # NOVO FILTRO: Equipamentos Trade (comercializáveis com balança)
+            if filtros.get("equip_lend_trade_min") or filtros.get("equip_epic_trade_min"):
+                equipamentos = conta.get("equip_list", [])
+                lend_trade_count = sum(1 for e in equipamentos if e.get("trade") and e.get("grade") == 5)
+                epic_trade_count = sum(1 for e in equipamentos if e.get("trade") and e.get("grade") == 4)
+                
+                if filtros.get("equip_lend_trade_min") and lend_trade_count < filtros["equip_lend_trade_min"]:
+                    continue
+                if filtros.get("equip_epic_trade_min") and epic_trade_count < filtros["equip_epic_trade_min"]:
+                    continue
+            
+            # NOVO FILTRO: Nome do jogador
+            if filtros.get("nome_jogador"):
+                nome_conta = conta.get("basic", {}).get("name", conta.get("name", ""))
+                if filtros["nome_jogador"].lower() not in nome_conta.lower():
                     continue
             
             # Filtros Premium

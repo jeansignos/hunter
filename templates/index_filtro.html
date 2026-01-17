@@ -759,6 +759,29 @@
                     </div>
                 </div>
                 
+                <!-- Dropdown Trade (Itens Comercializáveis) -->
+                <div class="mini-dropdown">
+                    <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-trade')">
+                        <span><i class="fas fa-balance-scale"></i> Trade</span>
+                        <span class="mini-dropdown-count" id="count-trade">0</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="dd-trade" class="mini-dropdown-content">
+                        <p style="font-size: 0.75rem; color: #a0aec0; margin-bottom: 10px;">
+                            Filtrar por itens equipados comercializáveis (com balança)
+                        </p>
+                        <div class="input-row">
+                            <label style="flex:2;">Equipamentos Lendários Trade</label>
+                            <input type="number" id="equip_lend_trade_min" placeholder="0" min="0" onchange="atualizarCountTrade()">
+                        </div>
+                        <div class="input-row">
+                            <label style="flex:2;">Equipamentos Épicos Trade</label>
+                            <input type="number" id="equip_epic_trade_min" placeholder="0" min="0" onchange="atualizarCountTrade()">
+                        </div>
+                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-trade')">Aplicar</button>
+                    </div>
+                </div>
+                
                 <!-- Botão Status Avançados -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalStatus(event)">
                     <i class="fas fa-sliders-h"></i> Status
@@ -2104,6 +2127,16 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 params.append('espiritos', Array.from(espiritosAtivos).join(','));
             }
             
+            // Filtros de Trade (itens comercializáveis)
+            const equipLendTrade = document.getElementById('equip_lend_trade_min')?.value;
+            const equipEpicTrade = document.getElementById('equip_epic_trade_min')?.value;
+            if (equipLendTrade && parseInt(equipLendTrade) > 0) {
+                params.append('equip_lend_trade_min', equipLendTrade);
+            }
+            if (equipEpicTrade && parseInt(equipEpicTrade) > 0) {
+                params.append('equip_epic_trade_min', equipEpicTrade);
+            }
+            
             // Coleta filtros básicos
             const ids = [
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
@@ -2329,6 +2362,21 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             if (itens && parseFloat(itens) > 0) count++;
             
             const countEl = document.getElementById('count-nivel');
+            if (countEl) {
+                countEl.textContent = count;
+                countEl.classList.toggle('has-value', count > 0);
+            }
+        }
+        
+        function atualizarCountTrade() {
+            let count = 0;
+            const lend = document.getElementById('equip_lend_trade_min')?.value;
+            const epic = document.getElementById('equip_epic_trade_min')?.value;
+            
+            if (lend && parseFloat(lend) > 0) count++;
+            if (epic && parseFloat(epic) > 0) count++;
+            
+            const countEl = document.getElementById('count-trade');
             if (countEl) {
                 countEl.textContent = count;
                 countEl.classList.toggle('has-value', count > 0);
