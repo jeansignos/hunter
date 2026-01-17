@@ -180,7 +180,9 @@ def create_app(config_name=None):
             "habs_lendarias_min": request.args.get("habs_lendarias_min", type=int),
             "constituicao_min": request.args.get("constituicao_min", type=int),
             "mina_min": request.args.get("mina_min", type=int),
-            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),  # NOVO FILTRO
+            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),
+            "itens_epicos_min": request.args.get("itens_epicos_min", type=int),
+            "itens_lendarios_min": request.args.get("itens_lendarios_min", type=int),
             "status_filtros": {}
         }
         
@@ -255,14 +257,23 @@ def create_app(config_name=None):
             if filtros.get("codex_min") and codex < filtros["codex_min"]:
                 continue
             
-            # NOVO FILTRO: Itens de comércio (2+)
-            if filtros.get("itens_comercio_min"):
-                total_itens = conta.get("inven_total", 0)
-                # Contar itens épicos e lendários
-                itens_all = conta.get("inven_all", [])
-                itens_valiosos = [i for i in itens_all if i.get("grade", 0) >= 4]  # Grade 4+ = Épico/Lendário
-                if len(itens_valiosos) < filtros["itens_comercio_min"]:
-                    continue
+            # FILTRO: Itens de comércio (Épicos e Lendários)
+            itens_all = conta.get("inven_all", [])
+            itens_epicos = [i for i in itens_all if i.get("grade", 0) == 4]  # Grade 4 = Épico
+            itens_lendarios = [i for i in itens_all if i.get("grade", 0) >= 5]  # Grade 5+ = Lendário
+            itens_valiosos = itens_epicos + itens_lendarios
+            
+            # Filtro por mínimo de épicos
+            if filtros.get("itens_epicos_min") and len(itens_epicos) < filtros["itens_epicos_min"]:
+                continue
+            
+            # Filtro por mínimo de lendários
+            if filtros.get("itens_lendarios_min") and len(itens_lendarios) < filtros["itens_lendarios_min"]:
+                continue
+            
+            # Filtro por total (épicos + lendários)
+            if filtros.get("itens_comercio_min") and len(itens_valiosos) < filtros["itens_comercio_min"]:
+                continue
             
             # Filtros Premium
             if is_premium:
