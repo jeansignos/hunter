@@ -4,7 +4,6 @@ Versão refatorada com sistema de login e Premium
 """
 
 import os
-import json
 import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, current_user, login_required
@@ -69,22 +68,18 @@ def create_app(config_name=None):
         db.create_all()
         
         # Criar admin padrão se não existir
-        try:
-            admin = User.query.filter_by(email='admin@mir4market.com').first()
-            if not admin:
-                admin = User(
-                    username='admin',
-                    email='admin@mir4market.com',
-                    is_admin=True,
-                    is_premium=True
-                )
-                admin.set_password('admin123')  # MUDAR EM PRODUÇÃO!
-                db.session.add(admin)
-                db.session.commit()
-                print("[SETUP] Admin padrão criado: admin@mir4market.com / admin123")
-        except Exception as e:
-            db.session.rollback()
-            print(f"[SETUP] Admin já existe ou erro: {e}")
+        admin = User.query.filter_by(email='admin@mir4market.com').first()
+        if not admin:
+            admin = User(
+                username='admin',
+                email='admin@mir4market.com',
+                is_admin=True,
+                is_premium=True
+            )
+            admin.set_password('admin123')  # MUDAR EM PRODUÇÃO!
+            db.session.add(admin)
+            db.session.commit()
+            print("[SETUP] Admin padrão criado: admin@mir4market.com / admin123")
     
     # ==================== VARIÁVEIS GLOBAIS ====================
     cache_carregando = False
@@ -103,11 +98,7 @@ def create_app(config_name=None):
     @app.route("/")
     def index():
         """Página principal com filtros"""
-        # Usar cache OU lista global de status
         status_cache = read_from_cache("status_disponiveis") or []
-        if not status_cache:
-            # Usar lista global se cache estiver vazio
-            status_cache = list(STATUS_DISPONIVEIS)
         
         status_importantes = []
         for status in STATUS_MINERACAO:
@@ -132,8 +123,7 @@ def create_app(config_name=None):
                 "destaque": False
             })
         
-        # Ordenar sem limite - mostrar TODOS os status
-        outros_status = sorted(outros_status, key=lambda x: x["nome"])
+        outros_status = sorted(outros_status, key=lambda x: x["nome"])[:40]
         status_importantes.extend(outros_status)
         
         cache_completo = read_from_cache("contas_completas")
@@ -150,32 +140,9 @@ def create_app(config_name=None):
         # Verificar se usuário tem acesso premium
         is_premium = current_user.has_premium_access() if current_user.is_authenticated else False
         
-        # Carregar lista de itens para o filtro
-        itens_lista = []
-        try:
-            import os as os_local
-            itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
-            if os_local.path.exists(itens_path):
-                with open(itens_path, 'r', encoding='utf-8') as f_itens:
-                    itens_lista = json.load(f_itens)
-        except Exception as e:
-            print(f"Erro ao carregar lista de itens: {e}")
-        
-        # Carregar lista de itens para o filtro
-        itens_lista = []
-        try:
-            import os as os_local
-            itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
-            if os_local.path.exists(itens_path):
-                with open(itens_path, 'r', encoding='utf-8') as f_itens:
-                    itens_lista = json.load(f_itens)
-        except Exception as e:
-            print(f"Erro ao carregar lista de itens: {e}")
-        
         return render_template("index_filtro.html", 
                              classes=CLASSES, 
                              status_importantes=status_importantes,
-                             itens_lista=itens_lista,
                              cache_status=cache_status,
                              tem_cache_completo=tem_cache_completo,
                              tem_cache_teste=tem_cache_teste,
@@ -209,11 +176,10 @@ def create_app(config_name=None):
             "habs_lendarias_min": request.args.get("habs_lendarias_min", type=int),
             "constituicao_min": request.args.get("constituicao_min", type=int),
             "mina_min": request.args.get("mina_min", type=int),
-            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),
-            "itens_epicos_min": request.args.get("itens_epicos_min", type=int),
-            "itens_lendarios_min": request.args.get("itens_lendarios_min", type=int),
-            "status_filtros": {},
-            "itens_filtros": {}
+            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),  # NOVO FILTRO
+            "regiao": request.args.get("regiao"),
+            "servidor": request.args.get("servidor"),
+            "status_filtros": {}
         }
         
         # Filtros Premium - só aplicar se usuário tiver acesso
@@ -234,18 +200,6 @@ def create_app(config_name=None):
                 valor_min = request.args.get(input_id, type=float)
                 if valor_min is not None:
                     filtros["status_filtros"][status_nome] = valor_min
-            
-            # Coletar filtros de itens
-            for key, value in request.args.items():
-                if key.startswith('item_'):
-                    try:
-                        qtd_min = int(value)
-                        if qtd_min > 0:
-                            # Extrair o nome do item do hash
-                            item_hash = key.replace('item_', '')
-                            filtros["itens_filtros"][item_hash] = qtd_min
-                    except (ValueError, TypeError):
-                        pass
         
         cache_tipo = request.args.get("cache_tipo", "teste")
         
@@ -271,6 +225,29 @@ def create_app(config_name=None):
             classe_conta = str(conta.get("class", "1"))
             if filtros.get("classe") and filtros["classe"] != "0":
                 if classe_conta != filtros["classe"]:
+                    continue
+            
+            # Filtro de servidor
+            world_name = conta.get("worldName", conta.get("basic", {}).get("worldName", ""))
+            if filtros.get("servidor") and filtros["servidor"]:
+                if world_name != filtros["servidor"]:
+                    continue
+            elif filtros.get("regiao") and filtros["regiao"]:
+                # Se só tem região, filtra pelos servidores daquela região
+                regiao_servidores = {
+                    "ASIA1": ["ASIA011", "ASIA012", "ASIA013", "ASIA014", "ASIA021", "ASIA022", "ASIA023", "ASIA024", "ASIA031", "ASIA032", "ASIA033", "ASIA041", "ASIA042", "ASIA043"],
+                    "ASIA2": ["ASIA051", "ASIA052", "ASIA053", "ASIA054", "ASIA061", "ASIA062", "ASIA063", "ASIA064", "ASIA071", "ASIA072", "ASIA073", "ASIA081", "ASIA082", "ASIA083"],
+                    "ASIA3": ["ASIA311", "ASIA312", "ASIA313", "ASIA314", "ASIA321", "ASIA322", "ASIA323", "ASIA324", "ASIA331", "ASIA332", "ASIA333", "ASIA341", "ASIA342", "ASIA343"],
+                    "ASIA4": ["ASIA351", "ASIA352", "ASIA353", "ASIA354", "ASIA361", "ASIA362", "ASIA363", "ASIA364", "ASIA371", "ASIA372", "ASIA373"],
+                    "INMENA1": ["INMENA011", "INMENA012", "INMENA013", "INMENA014", "INMENA021", "INMENA022", "INMENA023", "INMENA024"],
+                    "EU1": ["EU011", "EU012", "EU013", "EU014", "EU021", "EU022", "EU023", "EU024", "EU031", "EU032", "EU033", "EU034", "EU041", "EU042", "EU043"],
+                    "SA1": ["SA011", "SA012", "SA013", "SA014", "SA021", "SA022", "SA023", "SA031", "SA032", "SA033", "SA034", "SA041", "SA043", "SA044"],
+                    "SA2": ["SA051", "SA052", "SA053", "SA054", "SA061", "SA062", "SA064", "SA071", "SA072", "SA073", "SA081", "SA082", "SA083"],
+                    "NA1": ["NA011", "NA012", "NA013", "NA014", "NA021", "NA022", "NA023", "NA031", "NA032", "NA033", "NA034", "NA042", "NA043", "NA044"],
+                    "NA2": ["NA051", "NA052", "NA053", "NA054", "NA061", "NA062", "NA071", "NA072", "NA073", "NA074", "NA081", "NA082", "NA083", "NA084"]
+                }
+                servidores_regiao = regiao_servidores.get(filtros["regiao"], [])
+                if servidores_regiao and world_name not in servidores_regiao:
                     continue
             
             power = conta.get("powerScore", conta.get("basic", {}).get("powerScore", 0))
@@ -299,23 +276,14 @@ def create_app(config_name=None):
             if filtros.get("codex_min") and codex < filtros["codex_min"]:
                 continue
             
-            # FILTRO: Itens de comércio (Épicos e Lendários) - VERIFICAR NOS EQUIPAMENTOS
-            equipamentos = conta.get("equip", [])
-            itens_epicos = [i for i in equipamentos if i.get("grade", 0) == 4 and i.get("trade", False)]  # Grade 4 = Épico
-            itens_lendarios = [i for i in equipamentos if i.get("grade", 0) >= 5 and i.get("trade", False)]  # Grade 5+ = Lendário
-            itens_valiosos = itens_epicos + itens_lendarios
-            
-            # Filtro por mínimo de épicos
-            if filtros.get("itens_epicos_min") and len(itens_epicos) < filtros["itens_epicos_min"]:
-                continue
-            
-            # Filtro por mínimo de lendários
-            if filtros.get("itens_lendarios_min") and len(itens_lendarios) < filtros["itens_lendarios_min"]:
-                continue
-            
-            # Filtro por total (épicos + lendários)
-            if filtros.get("itens_comercio_min") and len(itens_valiosos) < filtros["itens_comercio_min"]:
-                continue
+            # NOVO FILTRO: Itens de comércio (2+)
+            if filtros.get("itens_comercio_min"):
+                total_itens = conta.get("inven_total", 0)
+                # Contar itens épicos e lendários
+                itens_all = conta.get("inven_all", [])
+                itens_valiosos = [i for i in itens_all if i.get("grade", 0) >= 4]  # Grade 4+ = Épico/Lendário
+                if len(itens_valiosos) < filtros["itens_comercio_min"]:
+                    continue
             
             # Filtros Premium
             if is_premium:
@@ -357,48 +325,6 @@ def create_app(config_name=None):
                     
                     if not passa_nos_filtros:
                         continue
-                
-                # Filtros de itens - verificar se a conta tem os itens com quantidade mínima
-                if filtros["itens_filtros"]:
-                    # Carregar lista de itens para fazer o mapeamento hash -> nome
-                    import os as os_local
-                    itens_lista = []
-                    try:
-                        itens_path = os_local.path.join(app.static_folder, 'itens_lista.json')
-                        if os_local.path.exists(itens_path):
-                            with open(itens_path, 'r', encoding='utf-8') as f_itens:
-                                itens_lista = json.load(f_itens)
-                    except:
-                        pass
-                    
-                    # Criar mapeamento hash -> nome
-                    hash_to_nome = {item["hash"]: item["nome"] for item in itens_lista}
-                    
-                    # Obter inventário completo da conta
-                    inventario = conta.get("inven_all", [])
-                    
-                    # Contar itens por nome
-                    contagem_itens = {}
-                    for item in inventario:
-                        if isinstance(item, dict):
-                            nome_item = item.get("name", "")
-                            stack = item.get("count", 1)
-                            # stack 0 significa 1 item único
-                            quantidade = stack if stack > 0 else 1
-                            contagem_itens[nome_item] = contagem_itens.get(nome_item, 0) + quantidade
-                    
-                    # Verificar se passa nos filtros de itens
-                    passa_nos_itens = True
-                    for item_hash, qtd_min in filtros["itens_filtros"].items():
-                        nome_item = hash_to_nome.get(item_hash, "")
-                        if nome_item:
-                            qtd_atual = contagem_itens.get(nome_item, 0)
-                            if qtd_atual < qtd_min:
-                                passa_nos_itens = False
-                                break
-                    
-                    if not passa_nos_itens:
-                        continue
             
             contas_filtradas.append(conta)
         
@@ -406,96 +332,12 @@ def create_app(config_name=None):
         ordenar_por = request.args.get("ordenar_por", "power")
         ordenar_desc = request.args.get("ordenar_desc", "true").lower() == "true"
         
-        # Função auxiliar para obter valor de um stat pelo nome
-        def get_stat_value(conta, stat_name):
-            """Retorna o valor de um stat específico"""
-            for stat in conta.get("stats", []):
-                if isinstance(stat, dict):
-                    name = stat.get("statName", "").upper()
-                    if stat_name.upper() in name:
-                        try:
-                            val = stat.get("statValue", "0")
-                            if isinstance(val, str):
-                                val = val.replace(",", "").replace("%", "")
-                            return float(val)
-                        except:
-                            return 0
-            return 0
-        
-        # Função auxiliar para obter valor de um stat pelo nome
-        def get_stat_value(conta, stat_name):
-            """Retorna o valor de um stat específico"""
-            for stat in conta.get("stats", []):
-                if isinstance(stat, dict):
-                    name = stat.get("statName", "").upper()
-                    if stat_name.upper() in name:
-                        try:
-                            val = stat.get("statValue", "0")
-                            if isinstance(val, str):
-                                val = val.replace(",", "").replace("%", "")
-                            return float(val)
-                        except:
-                            return 0
-            return 0
-        
         if ordenar_por == "power":
             contas_filtradas.sort(key=lambda x: x.get("powerScore", x.get("basic", {}).get("powerScore", 0)), reverse=ordenar_desc)
         elif ordenar_por == "price":
             contas_filtradas.sort(key=lambda x: x.get("price", 0), reverse=ordenar_desc)
         elif ordenar_por == "level":
             contas_filtradas.sort(key=lambda x: x.get("level", x.get("basic", {}).get("level", 0)), reverse=ordenar_desc)
-        elif ordenar_por == "critico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "CRÍTICO"), reverse=ordenar_desc)
-        elif ordenar_por == "evasao":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "ataque_fisico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE FÍSICO"), reverse=ordenar_desc)
-        elif ordenar_por == "ataque_magico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
-        elif ordenar_por == "precisao":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "derrubada":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DA PROBABILIDADE DE SUCESSO DE DERRUBAR"), reverse=ordenar_desc)
-        elif ordenar_por == "evasao_critico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO DE CRÍTICO"), reverse=ordenar_desc)
-        elif ordenar_por == "atk_habilidade":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
-        elif ordenar_por == "aceleramento":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ACELERAMENTO DE TEMPO DE MINERAÇÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "aconegro":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE GANHO DE AÇO NEGRO"), reverse=ordenar_desc)
-        elif ordenar_por == "codex":
-            contas_filtradas.sort(key=lambda x: x.get("codex", 0), reverse=ordenar_desc)
-        elif ordenar_por == "mina":
-            contas_filtradas.sort(key=lambda x: x.get("building", {}).get("mina", 0), reverse=ordenar_desc)
-        elif ordenar_por == "constituicao":
-            contas_filtradas.sort(key=lambda x: x.get("training", {}).get("constituicao", 0), reverse=ordenar_desc)
-        elif ordenar_por == "critico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "CRÍTICO"), reverse=ordenar_desc)
-        elif ordenar_por == "evasao":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "ataque_fisico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE FÍSICO"), reverse=ordenar_desc)
-        elif ordenar_por == "ataque_magico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ATAQUE DE FEITIÇO"), reverse=ordenar_desc)
-        elif ordenar_por == "precisao":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "PRECISÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "derrubada":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DA PROBABILIDADE DE SUCESSO DE DERRUBAR"), reverse=ordenar_desc)
-        elif ordenar_por == "evasao_critico":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "EVASÃO DE CRÍTICO"), reverse=ordenar_desc)
-        elif ordenar_por == "atk_habilidade":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE ATK DE HABILIDADE"), reverse=ordenar_desc)
-        elif ordenar_por == "aceleramento":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "ACELERAMENTO DE TEMPO DE MINERAÇÃO"), reverse=ordenar_desc)
-        elif ordenar_por == "aconegro":
-            contas_filtradas.sort(key=lambda x: get_stat_value(x, "AUMENTO DE GANHO DE AÇO NEGRO"), reverse=ordenar_desc)
-        elif ordenar_por == "codex":
-            contas_filtradas.sort(key=lambda x: x.get("codex", 0), reverse=ordenar_desc)
-        elif ordenar_por == "mina":
-            contas_filtradas.sort(key=lambda x: x.get("building", {}).get("mina", 0), reverse=ordenar_desc)
-        elif ordenar_por == "constituicao":
-            contas_filtradas.sort(key=lambda x: x.get("training", {}).get("constituicao", 0), reverse=ordenar_desc)
         
         # Paginação
         pagina = request.args.get("pagina", 0, type=int)
@@ -653,64 +495,6 @@ def create_app(config_name=None):
 
 # Criar aplicação
 app = create_app()
-
-# ==================== SCHEDULER AUTOMÁTICO ====================
-# Carrega automaticamente as contas a cada 5 horas
-# O site continua funcionando com cache antigo durante o carregamento
-# Só substitui quando o novo cache estiver 100% pronto
-import threading
-import time
-from datetime import datetime
-
-def auto_load_scheduler():
-    """
-    Thread que carrega as contas automaticamente a cada 5 horas.
-    
-    Funcionamento:
-    - O site continua funcionando normalmente com o cache existente
-    - O carregamento acontece em background sem afetar usuários
-    - Só substitui o cache quando o novo estiver 100% completo
-    - Se der erro, mantém o cache antigo
-    """
-    INTERVALO_HORAS = 5
-    INTERVALO_SEGUNDOS = INTERVALO_HORAS * 60 * 60  # 5 horas em segundos
-    
-    # Aguarda 2 minutos após iniciar para o app estar totalmente pronto
-    print("[SCHEDULER] Aguardando 2 minutos para iniciar...")
-    time.sleep(120)
-    
-    while True:
-        try:
-            hora_atual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[SCHEDULER] [{hora_atual}] Iniciando carregamento automático em background...")
-            print(f"[SCHEDULER] Site continua funcionando normalmente com cache existente")
-            
-            with app.app_context():
-                from core.loader import carregar_contas_completas
-                # O carregamento já é feito de forma segura:
-                # - Coleta todos os dados novos primeiro
-                # - Só substitui o cache global no final (atômico)
-                # - Se der erro, mantém cache antigo
-                carregar_contas_completas()
-            
-            hora_fim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[SCHEDULER] [{hora_fim}] Carregamento completo!")
-            print(f"[SCHEDULER] Próximo carregamento em {INTERVALO_HORAS} horas")
-            
-        except Exception as e:
-            print(f"[SCHEDULER] Erro no carregamento automático: {e}")
-            print(f"[SCHEDULER] Cache antigo mantido. Tentando novamente em {INTERVALO_HORAS} horas.")
-        
-        # Aguarda 5 horas para próximo carregamento
-        time.sleep(INTERVALO_SEGUNDOS)
-
-# Inicia o scheduler em uma thread daemon (roda em background)
-scheduler_thread = threading.Thread(target=auto_load_scheduler, daemon=True, name="AutoLoader-5h")
-scheduler_thread.start()
-print("[SCHEDULER] ✓ Auto-loader iniciado")
-print("[SCHEDULER]   - Carrega contas a cada 5 horas")
-print("[SCHEDULER]   - Site funciona normal durante carregamento")
-print("[SCHEDULER]   - Cache antigo mantido até novo estar pronto")
 
 
 if __name__ == "__main__":

@@ -165,6 +165,34 @@
                     </div>
 
                     <div class="grupo-filtro">
+                        <h3><i class="fas fa-globe"></i> Servidor</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label>Região</label>
+                                <select id="regiao" name="regiao" onchange="atualizarServidores()">
+                                    <option value="">Todas</option>
+                                    <option value="ASIA1">ASIA1</option>
+                                    <option value="ASIA2">ASIA2</option>
+                                    <option value="ASIA3">ASIA3</option>
+                                    <option value="ASIA4">ASIA4</option>
+                                    <option value="INMENA1">INMENA1</option>
+                                    <option value="EU1">EU1</option>
+                                    <option value="SA1">SA1</option>
+                                    <option value="SA2">SA2</option>
+                                    <option value="NA1">NA1</option>
+                                    <option value="NA2">NA2</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Servidor</label>
+                                <select id="servidor" name="servidor">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grupo-filtro">
                         <h3><i class="fas fa-bolt"></i> Poder & Level</h3>
                         <div class="campo-duplo">
                             <div class="input-group">
@@ -218,45 +246,18 @@
                         {% endfor %}
                     </div>
                     
-                    
-                    <!-- FILTRO DE POTENCIAL -->
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-star"></i> Potencial</h3>
-                        <div class="input-group">
-                            <label>Potencial Mínimo</label>
-                            <input type="number" id="potencial_min" placeholder="0" min="0" value="0">
-                        </div>
-                    </div>
-                    
-                    <!-- FILTROS SEPARADOS: ÉPICOS E LENDÁRIOS -->
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-gem"></i> Filtrar Itens de Comércio</h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label style="color: #a855f7;">Épicos (mín)</label>
-                                <input type="number" id="itens_epicos_min" placeholder="0" min="0" value="0">
-                            </div>
-                            <div class="input-group">
-                                <label style="color: #f59e0b;">Lendários (mín)</label>
-                                <input type="number" id="itens_lendarios_min" placeholder="0" min="0" value="0">
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- NOVO FILTRO: Itens Comercializáveis -->
                     <div class="grupo-filtro">
                         <h3><i class="fas fa-exchange-alt"></i> Itens Comercializáveis <span class="premium-badge">NOVO</span></h3>
                         <div class="input-group">
                             <label>Mín. Itens Épicos/Lendários</label>
-                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" value="0">
+                            <input type="number" id="itens_comercio_min" placeholder="Ex: 1" min="0" value="1">
                             <small style="color: #a0aec0; font-size: 0.75rem;">Filtrar contas com 1+ itens de comércio valiosos</small>
                         </div>
                     </div>
                     
 					<button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
-                </button>
-                <button class="btn-buscar" onclick="abrirModalItens(event)" style="margin-bottom: 10px; background: #2d4a4a;">
-                    <i class="fas fa-box-open"></i> Filtro de Itens
                 </button>
 					<button class="btn-buscar" onclick="buscarContas()">
                     <i class="fas fa-search"></i> Buscar Contas
@@ -328,10 +329,6 @@
                 <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
                     <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
                 </button>
-                
-                <button class="btn-buscar" onclick="abrirModalItens(event)" style="margin-bottom: 10px; background: #2d4a4a;">
-                    <i class="fas fa-box-open"></i> Filtro de Itens
-                </button>
 
                 <button class="btn-buscar" onclick="buscarContas()">
                     <i class="fas fa-search"></i> Buscar Contas
@@ -358,8 +355,6 @@
                             <option value="constituicao">Maior Constituição</option>
 							 <option value="atk_habilidade">Maior ATK Habilidade</option>
 							 <option value="precisao">Maior Precisão</option>
-                                                     <option value="derrubada">Maior Derrubada</option>
-                                                     <option value="evasao_critico">Maior Evasão de Crítico</option>
                         </select>
                     </div>
                 </div>
@@ -431,60 +426,6 @@
         </div>
     </div>
     
-    <!-- Modal de Filtro de Itens -->
-    <div id="modal-itens" class="modal" onclick="fecharModalItens()">
-        <div class="modal-conteudo" onclick="event.stopPropagation()">
-            <div class="modal-cabecalho">
-                <h2><i class="fas fa-box-open"></i> Filtro de Itens</h2>
-                <span class="fechar-modal" onclick="fecharModalItens()">&times;</span>
-            </div>
-            <div class="modal-corpo">
-                <p style="font-size: 0.9rem; color: #a0aec0; margin-bottom: 15px;">
-                    Busque itens pelo nome e defina a quantidade mínima. Deixe em branco para ignorar.
-                </p>
-                
-                <div class="modal-buscar">
-                    <input type="text" id="busca-item" placeholder="Buscar item..." onkeyup="filtrarItens()" 
-                           style="width: 100%; padding: 10px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 5px;">
-                </div>
-                
-                <div id="itens-selecionados" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
-                    <!-- Itens selecionados aparecem aqui como tags -->
-                </div>
-                
-                <div id="lista-itens" style="max-height: 40vh; overflow-y: auto; padding-right: 10px; margin-top: 15px;">
-                    {% for item in itens_lista %}
-                        <div class="item-filtro-item" data-nome="{{ item.nome|lower }}" data-hash="{{ item.hash }}"
-                             style="display: none; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #4a5568; cursor: pointer;"
-                             onclick="adicionarFiltroItem('{{ item.hash }}', '{{ item.nome }}')">
-                            <div class="item-info" style="flex: 1;">
-                                <label style="font-size: 0.85rem; color: white; cursor: pointer;">{{ item.nome }}</label>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                
-                <div id="itens-filtro-ativos" style="margin-top: 15px; border-top: 1px solid #4a5568; padding-top: 15px;">
-                    <h4 style="color: #f6e05e; margin-bottom: 10px;"><i class="fas fa-filter"></i> Filtros Ativos</h4>
-                    <div id="itens-filtro-lista" style="max-height: 25vh; overflow-y: auto;">
-                        <!-- Itens com filtro ativo -->
-                    </div>
-                </div>
-                
-                <div class="modal-controles" style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn-modal btn-limpar" onclick="limparFiltrosItens()" 
-                            style="flex: 1; padding: 10px; background: #718096; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        <i class="fas fa-trash-alt"></i> Limpar Todos
-                    </button>
-                    <button class="btn-modal btn-aplicar" onclick="fecharModalItens()" 
-                            style="flex: 1; padding: 10px; background: #38a169; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        <i class="fas fa-check"></i> Aplicar Filtros
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal para Todos os Status -->
     <div id="modal-todos-status" class="modal" onclick="fecharModalTodosStatus()">
         <div class="modal-conteudo" onclick="event.stopPropagation()">
@@ -513,6 +454,39 @@
         let filtrosAtuais = null;
         const LIMITE_POR_PAGINA = 10;
         let totalContasFiltradas = 0;
+
+        // Mapeamento de servidores por região
+        const SERVIDORES = {
+            "ASIA1": ["ASIA011", "ASIA012", "ASIA013", "ASIA014", "ASIA021", "ASIA022", "ASIA023", "ASIA024", "ASIA031", "ASIA032", "ASIA033", "ASIA041", "ASIA042", "ASIA043"],
+            "ASIA2": ["ASIA051", "ASIA052", "ASIA053", "ASIA054", "ASIA061", "ASIA062", "ASIA063", "ASIA064", "ASIA071", "ASIA072", "ASIA073", "ASIA081", "ASIA082", "ASIA083"],
+            "ASIA3": ["ASIA311", "ASIA312", "ASIA313", "ASIA314", "ASIA321", "ASIA322", "ASIA323", "ASIA324", "ASIA331", "ASIA332", "ASIA333", "ASIA341", "ASIA342", "ASIA343"],
+            "ASIA4": ["ASIA351", "ASIA352", "ASIA353", "ASIA354", "ASIA361", "ASIA362", "ASIA363", "ASIA364", "ASIA371", "ASIA372", "ASIA373"],
+            "INMENA1": ["INMENA011", "INMENA012", "INMENA013", "INMENA014", "INMENA021", "INMENA022", "INMENA023", "INMENA024"],
+            "EU1": ["EU011", "EU012", "EU013", "EU014", "EU021", "EU022", "EU023", "EU024", "EU031", "EU032", "EU033", "EU034", "EU041", "EU042", "EU043"],
+            "SA1": ["SA011", "SA012", "SA013", "SA014", "SA021", "SA022", "SA023", "SA031", "SA032", "SA033", "SA034", "SA041", "SA043", "SA044"],
+            "SA2": ["SA051", "SA052", "SA053", "SA054", "SA061", "SA062", "SA064", "SA071", "SA072", "SA073", "SA081", "SA082", "SA083"],
+            "NA1": ["NA011", "NA012", "NA013", "NA014", "NA021", "NA022", "NA023", "NA031", "NA032", "NA033", "NA034", "NA042", "NA043", "NA044"],
+            "NA2": ["NA051", "NA052", "NA053", "NA054", "NA061", "NA062", "NA071", "NA072", "NA073", "NA074", "NA081", "NA082", "NA083", "NA084"]
+        };
+
+        // Função para atualizar dropdown de servidores com base na região selecionada
+        function atualizarServidores() {
+            const regiao = document.getElementById('regiao').value;
+            const servidorSelect = document.getElementById('servidor');
+            
+            // Limpar opções atuais
+            servidorSelect.innerHTML = '<option value="">Todos</option>';
+            
+            // Se uma região foi selecionada, adicionar os servidores dela
+            if (regiao && SERVIDORES[regiao]) {
+                SERVIDORES[regiao].forEach(servidor => {
+                    const option = document.createElement('option');
+                    option.value = servidor;
+                    option.textContent = servidor;
+                    servidorSelect.appendChild(option);
+                });
+            }
+        }
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
@@ -549,21 +523,12 @@
             }, 300);
         }
 
-        // Função para remover acentos de uma string
-        function removerAcentos(str) {
-            return str.normalize('NFD').replace(/[̀-ͯ]/g, '');
-        }
-
         function filtrarStatus() {
-            const buscaOriginal = document.getElementById('busca-status')?.value || '';
-            const busca = removerAcentos(buscaOriginal.toLowerCase());
+            const busca = document.getElementById('busca-status')?.value.toLowerCase() || '';
             const items = document.querySelectorAll('#lista-status .status-item');
             
             items.forEach(item => {
-                const nomeOriginal = item.getAttribute('data-nome') || '';
-                const nome = removerAcentos(nomeOriginal);
-                
-                // Verifica se o nome contém a busca (ignora acentos)
+                const nome = item.getAttribute('data-nome');
                 if (nome.includes(busca)) {
                     item.style.display = 'flex';
                 } else {
@@ -586,133 +551,6 @@
                 if (aconegro) aconegro.value = '';
                 if (minaMin) minaMin.value = '';
             }
-        }
-
-        // ==================== FUNÇÕES DO MODAL DE ITENS ====================
-        let filtrosItensAtivos = {}; // {hash: {nome: string, qtd: number}}
-        
-        function abrirModalItens(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            
-            const modal = document.getElementById('modal-itens');
-            modal.style.display = 'block';
-            setTimeout(() => {
-                modal.style.opacity = '1';
-            }, 10);
-            
-            // Focar no campo de busca
-            setTimeout(() => {
-                document.getElementById('busca-item')?.focus();
-            }, 50);
-            
-            // Atualizar lista de filtros ativos
-            atualizarListaFiltrosItens();
-        }
-
-        function fecharModalItens() {
-            const modal = document.getElementById('modal-itens');
-            modal.style.opacity = '0';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-
-        function filtrarItens() {
-            const buscaOriginal = document.getElementById('busca-item')?.value || '';
-            const busca = removerAcentos(buscaOriginal.toLowerCase().trim());
-            const items = document.querySelectorAll('#lista-itens .item-filtro-item');
-            
-            let encontrados = 0;
-            const maxResultados = 50; // Limitar resultados para performance
-            
-            items.forEach(item => {
-                if (busca.length < 2) {
-                    item.style.display = 'none';
-                    return;
-                }
-                
-                const nomeOriginal = item.getAttribute('data-nome') || '';
-                const nomeSemAcento = removerAcentos(nomeOriginal);
-                
-                if (encontrados < maxResultados && nomeSemAcento.includes(busca)) {
-                    item.style.display = 'flex';
-                    encontrados++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-
-        function adicionarFiltroItem(hash, nome) {
-            // Se já existe, não adicionar novamente
-            if (filtrosItensAtivos[hash]) {
-                mostrarNotificacao('Este item já está na lista de filtros', 'warning');
-                return;
-            }
-            
-            // Adicionar com quantidade padrão 1
-            filtrosItensAtivos[hash] = { nome: nome, qtd: 1 };
-            
-            // Limpar busca
-            document.getElementById('busca-item').value = '';
-            filtrarItens();
-            
-            // Atualizar lista
-            atualizarListaFiltrosItens();
-            
-            mostrarNotificacao(`"${nome}" adicionado aos filtros`, 'success');
-        }
-
-        function removerFiltroItem(hash) {
-            const nome = filtrosItensAtivos[hash]?.nome || '';
-            delete filtrosItensAtivos[hash];
-            atualizarListaFiltrosItens();
-            mostrarNotificacao(`"${nome}" removido dos filtros`, 'success');
-        }
-
-        function atualizarQuantidadeItem(hash, qtd) {
-            if (filtrosItensAtivos[hash]) {
-                filtrosItensAtivos[hash].qtd = parseInt(qtd) || 1;
-            }
-        }
-
-        function atualizarListaFiltrosItens() {
-            const container = document.getElementById('itens-filtro-lista');
-            
-            if (Object.keys(filtrosItensAtivos).length === 0) {
-                container.innerHTML = '<p style="color: #a0aec0; font-style: italic;">Nenhum filtro de item ativo. Busque e clique em um item para adicionar.</p>';
-                return;
-            }
-            
-            let html = '';
-            for (const [hash, data] of Object.entries(filtrosItensAtivos)) {
-                html += `
-                    <div class="item-filtro-ativo" style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #4a5568;">
-                        <div style="flex: 1; color: white; font-size: 0.85rem;" title="${data.nome}">${data.nome}</div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: #a0aec0; font-size: 0.8rem;">Mín:</label>
-                            <input type="number" value="${data.qtd}" min="1" 
-                                   style="width: 60px; padding: 5px; background: #2d3748; border: 1px solid #4a5568; color: white; border-radius: 3px;"
-                                   onchange="atualizarQuantidadeItem('${hash}', this.value)">
-                        </div>
-                        <button onclick="removerFiltroItem('${hash}')" 
-                                style="background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function limparFiltrosItens() {
-            filtrosItensAtivos = {};
-            atualizarListaFiltrosItens();
-            mostrarNotificacao('Filtros de itens limpos', 'success');
         }
 
         // --- FUNÇÕES DO MODAL DE TODOS OS STATUS ---
@@ -1293,7 +1131,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 </a>
                 
                 <button class="btn-todos-status" onclick="abrirModalTodosStatus(event)" 
-                        data-stats='${JSON.stringify(conta.stats || {}).replace(/'/g, "&apos;")}'>
+                        data-stats='${JSON.stringify(conta.stats).replace(/'/g, "&apos;")}'>
                     <i class="fas fa-list"></i> Todos os Status
                 </button>
 
@@ -1425,7 +1263,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
                 'price_min', 'price_max', 'mina_min', 'codex_min', 
                 'pets_lendarios_min', 'pets_misticos_min', 'habs_lendarias_min',
-                'constituicao_min', 'itens_comercio_min', 'potencial_min', 'itens_epicos_min', 'itens_lendarios_min'
+                'constituicao_min', 'itens_comercio_min', 'regiao', 'servidor'
             ];
             
             ids.forEach(id => {
@@ -1455,13 +1293,6 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             document.querySelectorAll('#lista-status input').forEach(input => {
                 if (input.value) params.append(input.id, input.value);
             });
-
-            // Filtros de itens dinâmicos
-            for (const [hash, data] of Object.entries(filtrosItensAtivos)) {
-                if (data.qtd > 0) {
-                    params.append(`item_${hash}`, data.qtd);
-                }
-            }
 
             // Ordenação
             const ordenacao = document.getElementById('ordenacao').value;
@@ -1628,15 +1459,20 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
             botoesCache.forEach(btn => btn.disabled = true);
             
-            // Selecionar cache completo imediatamente
-            selecionarCache('completas');
-            
             fetch('/carregar-completo', {method: 'POST'})
                 .then(r => r.json())
                 .then(d => { 
-                    mostrarNotificacao(d.message || 'Carregamento iniciado', 'success');
-                    // Iniciar polling para verificar quando terminar
-                    pollingCacheCompleto();
+                    // Reabilitar botões
+                    botoesCache.forEach(btn => btn.disabled = false);
+                    
+                    if (d.success && d.contas_carregadas > 0) {
+                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas completas`, 'success');
+                        // Atualizar status e selecionar cache completo
+                        verificarStatusCache(true); // true = forçar busca após carregar
+                    } else {
+                        mostrarNotificacao(d.message || 'Erro ao carregar cache completo', 'error');
+                        verificarStatusCache(false);
+                    }
                 })
                 .catch((error) => {
                     // Reabilitar botões
@@ -1644,44 +1480,6 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     console.error('Erro:', error);
                     mostrarNotificacao("Erro de conexão ao carregar cache completo", 'error');
                     verificarStatusCache(false);
-                });
-        }
-        
-        function pollingCacheCompleto() {
-            fetch('/status-carregamento')
-                .then(r => r.json())
-                .then(data => {
-                    const info = document.getElementById('cache-info');
-                    const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
-                    
-                    if (data.carregando) {
-                        // Mostrar progresso
-                        const progresso = data.progresso || {};
-                        const atual = progresso.atual || 0;
-                        const total = progresso.total || 0;
-                        const pct = progresso.percentual || 0;
-                        info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${atual}/${total} (${pct}%)</span>`;
-                        // Continuar polling
-                        setTimeout(pollingCacheCompleto, 3000);
-                    } else {
-                        // Carregamento terminou
-                        botoesCache.forEach(btn => btn.disabled = false);
-                        
-                        if (data.tem_cache_completo && data.total_completo > 0) {
-                            info.innerHTML = `Status: <span style='color: #48bb78'>✅ Cache Completo (${data.total_completo} contas)</span>`;
-                            mostrarNotificacao(`Carregadas ${data.total_completo} contas!`, 'success');
-                            // Garantir que está selecionado o cache completo
-                            selecionarCache('completas');
-                        } else if (data.tem_cache_teste && data.total_teste > 0) {
-                            info.innerHTML = `Status: <span style='color: #ed8936'>⚠️ Cache Teste (${data.total_teste} contas)</span>`;
-                        } else {
-                            info.innerHTML = "Status: <span style='color: #f56565'>❌ Erro no carregamento</span>";
-                        }
-                    }
-                })
-                .catch((error) => {
-                    console.error('Erro no polling:', error);
-                    document.querySelectorAll('.cache-type-btn, .btn-buscar').forEach(btn => btn.disabled = false);
                 });
         }
 
