@@ -381,8 +381,8 @@ def create_app(config_name=None):
                     contagem_itens = {}
                     for item in inventario:
                         if isinstance(item, dict):
-                            nome_item = item.get("itemName", "")
-                            stack = item.get("stack", 1)
+                            nome_item = item.get("name", "")
+                            stack = item.get("count", 1)
                             # stack 0 significa 1 item único
                             quantidade = stack if stack > 0 else 1
                             contagem_itens[nome_item] = contagem_itens.get(nome_item, 0) + quantidade
