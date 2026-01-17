@@ -218,12 +218,36 @@
                         {% endfor %}
                     </div>
                     
-                    <!-- NOVO FILTRO: Itens Comercializáveis -->
+                    
+                    <!-- FILTRO DE POTENCIAL -->
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-star"></i> Potencial</h3>
+                        <div class="input-group">
+                            <label>Potencial Mínimo</label>
+                            <input type="number" id="potencial_min" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <!-- FILTROS SEPARADOS: ÉPICOS E LENDÁRIOS -->
+                    <div class="grupo-filtro">
+                        <h3><i class="fas fa-gem"></i> Itens por Raridade</h3>
+                        <div class="campo-duplo">
+                            <div class="input-group">
+                                <label style="color: #a855f7;">Épicos (mín)</label>
+                                <input type="number" id="itens_epicos_min" placeholder="0" min="0" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #f59e0b;">Lendários (mín)</label>
+                                <input type="number" id="itens_lendarios_min" placeholder="0" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grupo-filtro">
                         <h3><i class="fas fa-exchange-alt"></i> Itens Comercializáveis <span class="premium-badge">NOVO</span></h3>
                         <div class="input-group">
                             <label>Mín. Itens Épicos/Lendários</label>
-                            <input type="number" id="itens_comercio_min" placeholder="Ex: 1" min="0" value="1">
+                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" value="0">
                             <small style="color: #a0aec0; font-size: 0.75rem;">Filtrar contas com 1+ itens de comércio valiosos</small>
                         </div>
                     </div>
@@ -1202,7 +1226,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
                 'price_min', 'price_max', 'mina_min', 'codex_min', 
                 'pets_lendarios_min', 'pets_misticos_min', 'habs_lendarias_min',
-                'constituicao_min', 'itens_comercio_min'
+                'constituicao_min', 'itens_comercio_min', 'potencial_min', 'itens_epicos_min', 'itens_lendarios_min'
             ];
             
             ids.forEach(id => {
