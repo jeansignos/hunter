@@ -644,7 +644,9 @@
                     {% if is_premium %}
                         <span class="premium-user"><i class="fas fa-crown"></i> Premium</span>
                     {% else %}
-                        <span style="color: #a0aec0;">Conta Gratuita</span>
+                        <a href="https://discord.gg/deSKDPNzAW" target="_blank" style="background: linear-gradient(135deg, #5865F2, #7289DA); color: white; padding: 5px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none;">
+                            <i class="fab fa-discord"></i> Seja Premium
+                        </a>
                     {% endif %}
                     <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a>
                 </div>
