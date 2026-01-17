@@ -8,7 +8,310 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilo para o botão Carregar Mais Itens */
+        /* ============ NOVO LAYOUT COMPACTO ============ */
+        .filtros-topo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px;
+            background: #1a202c;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        
+        /* Mini Dropdowns inline */
+        .mini-dropdown {
+            position: relative;
+            min-width: 140px;
+        }
+        
+        .mini-dropdown-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .mini-dropdown-btn:hover {
+            border-color: #667eea;
+            background: #3d4a5c;
+        }
+        
+        .mini-dropdown-btn.active {
+            border-color: #48bb78;
+            background: #2d4a3d;
+        }
+        
+        .mini-dropdown-count {
+            background: #4a5568;
+            color: #a0aec0;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .mini-dropdown-count.has-value {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .mini-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 280px;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 12px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+        }
+        
+        .mini-dropdown-content.show {
+            display: block;
+        }
+        
+        .mini-dropdown-content .input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .mini-dropdown-content .input-row label {
+            flex: 1;
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+        
+        .mini-dropdown-content .input-row input {
+            width: 70px;
+            padding: 5px 8px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .mini-dropdown-content .btn-aplicar {
+            width: 100%;
+            padding: 8px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .mini-dropdown-content .btn-aplicar:hover {
+            background: #3182ce;
+        }
+        
+        /* Linha de filtros principais */
+        .filtros-linha-principal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        /* Select compacto */
+        .select-compacto {
+            padding: 8px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            cursor: pointer;
+            min-width: 130px;
+        }
+        
+        .select-compacto:hover {
+            border-color: #667eea;
+        }
+        
+        /* Input compacto */
+        .input-compacto {
+            padding: 8px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            width: 100px;
+        }
+        
+        .input-compacto::placeholder {
+            color: #718096;
+        }
+        
+        /* Grupo com label */
+        .filtro-grupo-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .filtro-grupo-inline label {
+            font-size: 0.65rem;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        
+        /* Botões de ação compactos */
+        .btn-acao-compacto {
+            padding: 8px 15px;
+            background: #4a5568;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-acao-compacto:hover {
+            background: #5a6a7c;
+            border-color: #667eea;
+        }
+        
+        .btn-buscar-principal {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        
+        .btn-buscar-principal:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-1px);
+        }
+        
+        /* Contador de resultados */
+        .contador-resultados {
+            text-align: center;
+            padding: 10px;
+            background: #1a202c;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .contador-resultados .numero {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4299e1;
+        }
+        
+        .contador-resultados .texto {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        
+        /* Tabs Listado/Com Lance */
+        .tabs-status {
+            display: flex;
+            gap: 0;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .tab-status {
+            padding: 10px 30px;
+            background: #2d3748;
+            color: #a0aec0;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-status:first-child {
+            border-radius: 6px 0 0 6px;
+        }
+        
+        .tab-status:last-child {
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .tab-status.active {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .tab-status:hover:not(.active) {
+            background: #3d4a5c;
+        }
+        
+        /* Campo de busca por nome */
+        .busca-nome {
+            width: 200px;
+            padding: 8px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+        }
+        
+        .busca-nome::placeholder {
+            color: #718096;
+        }
+        
+        /* Badge Bidding */
+        .badge-bidding {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: #ed8936;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            z-index: 10;
+        }
+        
+        .tempo-restante {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: #f6e05e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        /* ============ ESTILOS ANTERIORES ============ */
         .carregar-mais-btn {
             width: 100%;
             padding: 10px 15px;
@@ -247,250 +550,233 @@
             {% endif %}
         </div>
         
-        <div class="filtros-container">
-            <aside class="menu-lateral">
-                <div class="abas-filtros">
-                    <button class="aba-filtro active" onclick="mostrarAba('geral')">Filtro</button>
-                    {% if is_premium %}
-                    <button class="aba-filtro" onclick="mostrarAba('combate')">Combate</button>
-                    {% endif %}
+        <!-- ============ NOVO LAYOUT COMPACTO ============ -->
+        <div class="filtros-topo">
+            <!-- Linha 1: Filtros principais -->
+            <div class="filtros-linha-principal" style="width: 100%; flex-wrap: wrap;">
+                
+                <!-- Classe -->
+                <div class="filtro-grupo-inline">
+                    <label>Classe</label>
+                    <select id="classe" name="classe" class="select-compacto">
+                        <option value="0">Todas</option>
+                        {% for id, info in classes.items() %}
+                        <option value="{{ id }}">{{ info.nome }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
-                <div id="aba-geral" class="conteudo-aba active">
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-users"></i> Classe</h3>
-                        <div class="input-group">
-                            <select id="classe" name="classe">
-                                <option value="0">Todas as Classes</option>
-                                {% for id, info in classes.items() %}
-                                <option value="{{ id }}">{{ info.nome }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-globe"></i> Servidor</h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label>Região</label>
-                                <select id="regiao" name="regiao" onchange="atualizarServidores()">
-                                    <option value="">Todas</option>
-                                    <option value="ASIA1">ASIA1</option>
-                                    <option value="ASIA2">ASIA2</option>
-                                    <option value="ASIA3">ASIA3</option>
-                                    <option value="ASIA4">ASIA4</option>
-                                    <option value="INMENA1">INMENA1</option>
-                                    <option value="EU1">EU1</option>
-                                    <option value="SA1">SA1</option>
-                                    <option value="SA2">SA2</option>
-                                    <option value="NA1">NA1</option>
-                                    <option value="NA2">NA2</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Servidor</label>
-                                <select id="servidor" name="servidor">
-                                    <option value="">Todos</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-bolt"></i> Poder & Level</h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label>Level Mín.</label>
-                                <input type="number" id="level_min" placeholder="0">
-                            </div>
-                            <div class="input-group">
-                                <label>Poder Mín.</label>
-                                <input type="number" id="power_min" placeholder="0">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-coins"></i> Preço WEMIX</h3>
-                        <div class="campo-duplo">
-                            <div class="input-group">
-                                <label>Mínimo</label>
-                                <input type="number" id="price_min" placeholder="0">
-                            </div>
-                            <div class="input-group">
-                                <label>Máximo</label>
-                                <input type="number" id="price_max" placeholder="10000">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown Mineração (colapsável) -->
-                    <div class="dropdown-filtro">
-                        <button type="button" class="dropdown-btn" onclick="toggleDropdown('dropdown-mineracao')">
-                            <span><i class="fas fa-gem"></i> Filtro de Mineração</span>
-                            <span class="dropdown-count" id="count-mineracao">(0)</span>
-                            <i class="fas fa-chevron-down dropdown-arrow"></i>
-                        </button>
-                        <div id="dropdown-mineracao" class="dropdown-content" style="display: none;">
-                            <div class="input-group">
-                                <label>Mina (Nível)</label>
-                                <input type="number" id="mina_min" placeholder="Ex: 15" onchange="atualizarCountMineracao()">
-                            </div>
-                            
-                            {% for status in status_importantes %}
-                                {% if status.destaque and "Aceleramento de Mineração" in status.nome %}
-                                <div class="input-group">
-                                    <label style="color: #f6e05e;">Boost Mineração (%)</label>
-                                    <input type="number" id="status_aceleramento" placeholder="Ex: 200" onchange="atualizarCountMineracao()">
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% for status in status_importantes %}
-                                {% if status.destaque and "Aumento de Ganho de Aço Negro" in status.nome %}
-                                <div class="input-group">
-                                    <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
-                                    <input type="number" id="status_aconegro" placeholder="Ex: 150" onchange="atualizarCountMineracao()">
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                            
-                            <button type="button" class="btn-aplicar-dropdown" onclick="toggleDropdown('dropdown-mineracao')">
-                                Aplicar
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Codex no filtro principal -->
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-book"></i> Codex</h3>
-                        <div class="input-group">
-                            <input type="number" id="codex_min" placeholder="Mín. Codex">
-                        </div>
-                    </div>
-                    
-                    <!-- NOVO FILTRO: Itens Comercializáveis -->
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-exchange-alt"></i> Itens Comercializáveis <span class="premium-badge">NOVO</span></h3>
-                        <div class="input-group">
-                            <label>Mín. Itens Épicos/Lendários</label>
-                            <input type="number" id="itens_comercio_min" placeholder="Ex: 1" min="0" value="1">
-                            <small style="color: #a0aec0; font-size: 0.75rem;">Filtrar contas com 1+ itens de comércio valiosos</small>
-                        </div>
-                    </div>
-                    
-					<div class="botoes-filtro-grupo">
-                        <button class="btn-filtro-secundario" onclick="abrirModalStatus(event)">
-                            <i class="fas fa-sliders-h"></i> Status Avançados
-                        </button>
-                        <button class="btn-filtro-secundario" onclick="abrirModalItens(event)">
-                            <i class="fas fa-box-open"></i> Filtro de Itens
-                        </button>
-                    </div>
-					<button class="btn-buscar" onclick="buscarContas()">
-                    <i class="fas fa-search"></i> Buscar Contas
-                </button>
-					
-                </div>
-
-                <div id="aba-combate" class="conteudo-aba">
-                    <div class="grupo-filtro">
-                        <h3><i class="fas fa-database"></i> Cache</h3>
-    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-        <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheTeste()">Carregar 10</button>
-        <button class="btn-buscar" style="background: #333; font-size: 0.8rem; padding: 8px;" onclick="carregarCacheCompleto()">Carregar Todas</button>
-    </div>
-    
-    <!-- Botões de seleção de cache - AGORA Sempre Full primeiro quando disponível -->
-    <div class="cache-type-selector">
-        <button type="button" 
-                class="cache-type-btn 
-                    {% if tem_cache_completo and cache_padrao == 'completas' %}active{% endif %}
-                    {% if not tem_cache_completo %}disabled{% endif %}" 
-                onclick="selecionarCache('completas')" 
-                id="cache-completas"
-                {% if not tem_cache_completo %}disabled title="Cache completo não disponível"{% endif %}>
-            Usar Full {% if cache_padrao == 'completas' %}(Padrão){% endif %}
-        </button>
-        <button type="button" 
-                class="cache-type-btn 
-                    {% if not tem_cache_completo and tem_cache_teste and cache_padrao == 'teste' %}active{% endif %}
-                    {% if not tem_cache_teste %}disabled{% endif %}" 
-                onclick="selecionarCache('teste')" 
-                id="cache-teste"
-                {% if not tem_cache_teste %}disabled title="Cache teste não disponível"{% endif %}>
-            Usar Teste {% if not tem_cache_completo and cache_padrao == 'teste' %}(Padrão){% endif %}
-        </button>
-    </div>
-    
-    <!-- Informações do cache -->
-    <div id="cache-info" style="margin-top: 10px;">
-        {% if cache_status == 'completo' %}
-        <span style="color: #48bb78; font-size: 0.8rem;">
-            ✅ Cache Full ({{ total_completo }} contas) - Selecionado por padrão
-        </span>
-        {% elif cache_status == 'teste' %}
-        <span style="color: #ed8936; font-size: 0.8rem;">
-            ⚠️ Cache Teste ({{ total_teste }} contas) - Full não disponível
-        </span>
-        {% else %}
-        <span style="color: #f56565; font-size: 0.8rem;">
-            ❌ Sem cache - Carregue dados primeiro
-        </span>
-        {% endif %}
-    </div>
-</div>
-
-                <button class="btn-buscar" onclick="abrirModalStatus(event)" style="margin-bottom: 10px; background: #4a5568;">
-                    <i class="fas fa-sliders-h"></i> Filtros de Status Avançados
-                </button>
-
-                <button class="btn-buscar" onclick="buscarContas()">
-                    <i class="fas fa-search"></i> Buscar Contas
-                </button>
-            </aside>
-
-            <main>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;">
-                    <h2 style="font-size: 1.2rem; color: #fff;">Resultados Disponíveis</h2>
-                    <div class="input-group" style="width: 200px; margin-bottom: 0;">
-                        <select id="ordenacao" onchange="mudarOrdenacao()">
-                            <option value="power">Maior Poder</option>
-                            <option value="level">Maior Level</option>
-							<option value="critico">Maior Crítico</option>
-							<option value="evasao">Maior Evasão</option>
-							<option value="derrubada">Maior Derrubada</option>
-							<option value="evasao_critico">Maior Evasão de Crítico</option>
-							<option value="ataque_fisico">Maior ATK Físico</option>
-							<option value="ataque_magico">Maior ATK de Feitiço</option>
-                            <option value="price">Menor Preço</option>
-                            <option value="price_desc">Maior Preço</option>
-                            <option value="aceleramento">Maior Mineração</option>
-                            <option value="aconegro">Mais Aço Negro</option>
-                            <option value="codex">Maior Codex</option>
-                            <option value="mina">Maior Nível Mina</option>
-                            <option value="constituicao">Maior Constituição</option>
-							 <option value="atk_habilidade">Maior ATK Habilidade</option>
-							 <option value="precisao">Maior Precisão</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="resultados" class="contas-grid">
-                    <div class="sem-resultados">
-                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <p>Configure os filtros e clique em Buscar</p>
-                    </div>
+                <!-- Servidor -->
+                <div class="filtro-grupo-inline">
+                    <label>Região</label>
+                    <select id="regiao" name="regiao" class="select-compacto" onchange="atualizarServidores()">
+                        <option value="">Todas</option>
+                        <option value="ASIA1">ASIA1</option>
+                        <option value="ASIA2">ASIA2</option>
+                        <option value="ASIA3">ASIA3</option>
+                        <option value="ASIA4">ASIA4</option>
+                        <option value="INMENA1">INMENA1</option>
+                        <option value="EU1">EU1</option>
+                        <option value="SA1">SA1</option>
+                        <option value="SA2">SA2</option>
+                        <option value="NA1">NA1</option>
+                        <option value="NA2">NA2</option>
+                    </select>
                 </div>
                 
-                <div class="paginacao-container" id="paginacao-container" style="display: none;">
-                    <button class="btn-buscar" style="width: auto; padding: 10px 30px;" onclick="carregarMaisContas()">
-                        Carregar Mais
+                <div class="filtro-grupo-inline">
+                    <label>Servidor</label>
+                    <select id="servidor" name="servidor" class="select-compacto">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                
+                <!-- Level e Poder -->
+                <div class="filtro-grupo-inline">
+                    <label>Level Mín.</label>
+                    <input type="number" id="level_min" class="input-compacto" placeholder="0">
+                </div>
+                
+                <div class="filtro-grupo-inline">
+                    <label>Poder Mín.</label>
+                    <input type="number" id="power_min" class="input-compacto" placeholder="0">
+                </div>
+                
+                <!-- Preço -->
+                <div class="filtro-grupo-inline">
+                    <label>Preço Mín.</label>
+                    <input type="number" id="price_min" class="input-compacto" placeholder="0">
+                </div>
+                
+                <div class="filtro-grupo-inline">
+                    <label>Preço Máx.</label>
+                    <input type="number" id="price_max" class="input-compacto" placeholder="10000">
+                </div>
+                
+                <!-- Ordenação -->
+                <div class="filtro-grupo-inline">
+                    <label>Ordenar por</label>
+                    <select id="ordenacao" class="select-compacto" onchange="mudarOrdenacao()">
+                        <option value="power">Maior Poder</option>
+                        <option value="level">Maior Level</option>
+                        <option value="critico">Maior Crítico</option>
+                        <option value="evasao">Maior Evasão</option>
+                        <option value="derrubada">Maior Derrubada</option>
+                        <option value="evasao_critico">Maior Evasão Crítico</option>
+                        <option value="ataque_fisico">Maior ATK Físico</option>
+                        <option value="ataque_magico">Maior ATK Mágico</option>
+                        <option value="price">Menor Preço</option>
+                        <option value="price_desc">Maior Preço</option>
+                        <option value="aceleramento">Maior Mineração</option>
+                        <option value="aconegro">Mais Aço Negro</option>
+                        <option value="codex">Maior Codex</option>
+                        <option value="mina">Maior Nível Mina</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Linha 2: Dropdowns de filtros avançados -->
+            <div class="filtros-linha-principal" style="width: 100%; margin-top: 10px;">
+                
+                <!-- Dropdown Mineração -->
+                <div class="mini-dropdown">
+                    <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-mineracao')">
+                        <span><i class="fas fa-gem"></i> Mineração</span>
+                        <span class="mini-dropdown-count" id="count-mineracao">0</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                    <span id="info-paginacao" style="display: block; margin-top: 10px; color: #888;"></span>
+                    <div id="dd-mineracao" class="mini-dropdown-content">
+                        <div class="input-row">
+                            <label>Mina (Nível)</label>
+                            <input type="number" id="mina_min" placeholder="0" onchange="atualizarCountMineracao()">
+                        </div>
+                        <div class="input-row">
+                            <label style="color: #f6e05e;">Boost Mineração (%)</label>
+                            <input type="number" id="status_aceleramento" placeholder="0" onchange="atualizarCountMineracao()">
+                        </div>
+                        <div class="input-row">
+                            <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
+                            <input type="number" id="status_aconegro" placeholder="0" onchange="atualizarCountMineracao()">
+                        </div>
+                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-mineracao')">Aplicar</button>
+                    </div>
                 </div>
-            </main>
+                
+                <!-- Dropdown Training/Treino -->
+                <div class="mini-dropdown">
+                    <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-treino')">
+                        <span><i class="fas fa-dumbbell"></i> Treino</span>
+                        <span class="mini-dropdown-count" id="count-treino">0</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="dd-treino" class="mini-dropdown-content">
+                        <div class="input-row">
+                            <label>Constituição</label>
+                            <input type="number" id="treino_constituicao" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
+                            <span style="color:#718096;font-size:0.7rem;">/23</span>
+                        </div>
+                        <div class="input-row">
+                            <label>Músculo</label>
+                            <input type="number" id="treino_muscular" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
+                            <span style="color:#718096;font-size:0.7rem;">/23</span>
+                        </div>
+                        <div class="input-row">
+                            <label>Nine Yin</label>
+                            <input type="number" id="treino_noveyin" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
+                            <span style="color:#718096;font-size:0.7rem;">/23</span>
+                        </div>
+                        <div class="input-row">
+                            <label>Nine Yang</label>
+                            <input type="number" id="treino_noveyang" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
+                            <span style="color:#718096;font-size:0.7rem;">/23</span>
+                        </div>
+                        <div class="input-row">
+                            <label>Postura Sapo</label>
+                            <input type="number" id="treino_sapo" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
+                            <span style="color:#718096;font-size:0.7rem;">/23</span>
+                        </div>
+                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-treino')">Aplicar</button>
+                    </div>
+                </div>
+                
+                <!-- Dropdown Nível (Power/Level/Codex) -->
+                <div class="mini-dropdown">
+                    <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-nivel')">
+                        <span><i class="fas fa-chart-line"></i> Nível</span>
+                        <span class="mini-dropdown-count" id="count-nivel">0</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="dd-nivel" class="mini-dropdown-content">
+                        <div class="input-row">
+                            <label>Codex Mín.</label>
+                            <input type="number" id="codex_min" placeholder="0" onchange="atualizarCountNivel()">
+                        </div>
+                        <div class="input-row">
+                            <label>Itens Épicos/Lend.</label>
+                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" onchange="atualizarCountNivel()">
+                        </div>
+                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-nivel')">Aplicar</button>
+                    </div>
+                </div>
+                
+                <!-- Botão Status Avançados -->
+                <button type="button" class="btn-acao-compacto" onclick="abrirModalStatus(event)">
+                    <i class="fas fa-sliders-h"></i> Status
+                </button>
+                
+                <!-- Botão Filtro de Itens -->
+                <button type="button" class="btn-acao-compacto" onclick="abrirModalItens(event)">
+                    <i class="fas fa-box-open"></i> Itens
+                </button>
+                
+                <!-- Busca por nome -->
+                <input type="text" id="busca_nome" class="busca-nome" placeholder="Nome do jogador...">
+                
+                <!-- Botão Buscar -->
+                <button type="button" class="btn-buscar-principal" onclick="buscarContas()">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                
+                {% if is_premium %}
+                <!-- Botões Cache (só premium) -->
+                <button type="button" class="btn-acao-compacto" onclick="carregarCacheTeste()" style="background: #333;">
+                    <i class="fas fa-database"></i> Cache 10
+                </button>
+                <button type="button" class="btn-acao-compacto" onclick="carregarCacheCompleto()" style="background: #333;">
+                    <i class="fas fa-database"></i> Cache Full
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Contador e tabs Listado/Com Lance -->
+        <div class="contador-resultados">
+            <div class="numero" id="total-nfts">0</div>
+            <div class="texto">Total de NFTs (atualiza ao buscar)</div>
+        </div>
+        
+        <div class="tabs-status">
+            <button type="button" class="tab-status active" id="tab-listado" onclick="filtrarPorStatus('listado')">Listado</button>
+            <button type="button" class="tab-status" id="tab-bidding" onclick="filtrarPorStatus('bidding')">Com Lance</button>
+        </div>
+        
+        <!-- Área de Resultados -->
+        <main>
+            <div id="resultados" class="contas-grid">
+                <div class="sem-resultados">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <p>Configure os filtros e clique em Buscar</p>
+                </div>
+            </div>
+            
+            <div class="paginacao-container" id="paginacao-container" style="display: none;">
+                <button class="btn-buscar" style="width: auto; padding: 10px 30px;" onclick="carregarMaisContas()">
+                    Carregar Mais
+                </button>
+                <span id="info-paginacao" style="display: block; margin-top: 10px; color: #888;"></span>
+            </div>
+        </main>
+        
         </div>
     </div>
 
@@ -1567,6 +1853,26 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             params.append('pagina', paginaAtual);
             params.append('limite', LIMITE_POR_PAGINA);
             
+            // Busca por nome
+            const buscaNome = document.getElementById('busca_nome');
+            if (buscaNome && buscaNome.value.trim()) {
+                params.append('nome_jogador', buscaNome.value.trim());
+            }
+            
+            // Filtro por status (listado/bidding)
+            if (filtroStatusAtual) {
+                params.append('status_lance', filtroStatusAtual);
+            }
+            
+            // Filtros de Treino
+            const treinoIds = ['treino_constituicao', 'treino_muscular', 'treino_noveyin', 'treino_noveyang', 'treino_sapo'];
+            treinoIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value && parseFloat(el.value) > 0) {
+                    params.append(id, el.value);
+                }
+            });
+            
             // Coleta filtros básicos
             const ids = [
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
@@ -1705,6 +2011,31 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
 
         // --- UI FUNCTIONS ---
+        
+        // Mini Dropdowns
+        function toggleMiniDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.mini-dropdown-content');
+            
+            // Fecha outros dropdowns
+            allDropdowns.forEach(dd => {
+                if (dd.id !== id) {
+                    dd.classList.remove('show');
+                }
+            });
+            
+            dropdown.classList.toggle('show');
+        }
+        
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.mini-dropdown')) {
+                document.querySelectorAll('.mini-dropdown-content').forEach(dd => {
+                    dd.classList.remove('show');
+                });
+            }
+        });
+        
         function toggleDropdown(id) {
             const dropdown = document.getElementById(id);
             const parent = dropdown.closest('.dropdown-filtro');
@@ -1724,15 +2055,64 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             const boost = document.getElementById('status_aceleramento')?.value;
             const acoNegro = document.getElementById('status_aconegro')?.value;
             
-            if (mina && mina > 0) count++;
-            if (boost && boost > 0) count++;
-            if (acoNegro && acoNegro > 0) count++;
+            if (mina && parseFloat(mina) > 0) count++;
+            if (boost && parseFloat(boost) > 0) count++;
+            if (acoNegro && parseFloat(acoNegro) > 0) count++;
             
             const countEl = document.getElementById('count-mineracao');
             if (countEl) {
-                countEl.textContent = `(${count})`;
-                countEl.style.color = count > 0 ? '#48bb78' : '#a0aec0';
+                countEl.textContent = count;
+                countEl.classList.toggle('has-value', count > 0);
             }
+        }
+        
+        function atualizarCountTreino() {
+            let count = 0;
+            const constituicao = document.getElementById('treino_constituicao')?.value;
+            const musculo = document.getElementById('treino_muscular')?.value;
+            const nineyin = document.getElementById('treino_noveyin')?.value;
+            const nineyang = document.getElementById('treino_noveyang')?.value;
+            const sapo = document.getElementById('treino_sapo')?.value;
+            
+            if (constituicao && parseFloat(constituicao) > 0) count++;
+            if (musculo && parseFloat(musculo) > 0) count++;
+            if (nineyin && parseFloat(nineyin) > 0) count++;
+            if (nineyang && parseFloat(nineyang) > 0) count++;
+            if (sapo && parseFloat(sapo) > 0) count++;
+            
+            const countEl = document.getElementById('count-treino');
+            if (countEl) {
+                countEl.textContent = count;
+                countEl.classList.toggle('has-value', count > 0);
+            }
+        }
+        
+        function atualizarCountNivel() {
+            let count = 0;
+            const codex = document.getElementById('codex_min')?.value;
+            const itens = document.getElementById('itens_comercio_min')?.value;
+            
+            if (codex && parseFloat(codex) > 0) count++;
+            if (itens && parseFloat(itens) > 0) count++;
+            
+            const countEl = document.getElementById('count-nivel');
+            if (countEl) {
+                countEl.textContent = count;
+                countEl.classList.toggle('has-value', count > 0);
+            }
+        }
+        
+        // Filtrar por status (Listado / Com Lance)
+        let filtroStatusAtual = 'listado';
+        
+        function filtrarPorStatus(status) {
+            filtroStatusAtual = status;
+            
+            document.querySelectorAll('.tab-status').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${status}`).classList.add('active');
+            
+            // Rebuscar com o novo filtro
+            buscarContas();
         }
         
         function mostrarAba(id) {

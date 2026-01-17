@@ -187,9 +187,18 @@ def create_app(config_name=None):
             "habs_lendarias_min": request.args.get("habs_lendarias_min", type=int),
             "constituicao_min": request.args.get("constituicao_min", type=int),
             "mina_min": request.args.get("mina_min", type=int),
-            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),  # NOVO FILTRO
+            "itens_comercio_min": request.args.get("itens_comercio_min", type=int),
             "regiao": request.args.get("regiao"),
             "servidor": request.args.get("servidor"),
+            # NOVOS FILTROS
+            "busca_nome": request.args.get("busca_nome"),
+            "filtro_status": request.args.get("filtro_status"),  # listado/bidding
+            # Treino
+            "treino_constituicao": request.args.get("treino_constituicao", type=int),
+            "treino_musculo": request.args.get("treino_musculo", type=int),
+            "treino_nineyin": request.args.get("treino_nineyin", type=int),
+            "treino_nineyang": request.args.get("treino_nineyang", type=int),
+            "treino_sapo": request.args.get("treino_sapo", type=int),
             "status_filtros": {},
             "itens_filtros": {}
         }
@@ -248,6 +257,13 @@ def create_app(config_name=None):
             classe_conta = str(conta.get("class", "1"))
             if filtros.get("classe") and filtros["classe"] != "0":
                 if classe_conta != filtros["classe"]:
+                    continue
+            
+            # Filtro por nome do jogador
+            if filtros.get("nome_jogador") and filtros["nome_jogador"]:
+                nome_conta = conta.get("name", conta.get("basic", {}).get("name", "")).lower()
+                nome_busca = filtros["nome_jogador"].lower()
+                if nome_busca not in nome_conta:
                     continue
             
             # Filtro de servidor
@@ -616,4 +632,3 @@ if __name__ == "__main__":
     print("=" * 60)
     
     app.run(debug=True, host="0.0.0.0", port=5001)
-
