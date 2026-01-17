@@ -336,25 +336,19 @@ def buscar_detalhes_conta(seq, transport_id):
         
         classe = detalhes["classe"]
         
-        # 2. Status - Buscar TODOS os status disponíveis
+        # 2. Status
         url_stats = f"https://webapi.mir4global.com/nft/character/stats?transportID={transport_id}&languageCode=pt"
-        try:
-            res = session.get(url_stats, timeout=10)
-            if res.ok:
-                data = res.json().get("data", {})
-                if isinstance(data, dict):
-                    stats_list = data.get("lists", [])
-                    detalhes["stats"] = stats_list
-                    
-                    # Coletar TODOS os status para o filtro
-                    for stat in stats_list:
-                        if isinstance(stat, dict):
-                            nome_status = stat.get("statName")
-                            if nome_status and nome_status not in STATUS_DISPONIVEIS:
-                                STATUS_DISPONIVEIS.append(nome_status)
-                                print(f"[STATUS] Novo status coletado: {nome_status} (total: {len(STATUS_DISPONIVEIS)})")
-        except Exception as e:
-            print(f"[ERRO] Falha ao buscar stats: {e}")
+        res = session.get(url_stats, timeout=10)
+        if res.ok:
+            data = res.json().get("data", {})
+            if isinstance(data, dict):
+                detalhes["stats"] = data.get("lists", [])
+                
+                for stat in detalhes["stats"]:
+                    if isinstance(stat, dict):
+                        nome_status = stat.get("statName")
+                        if nome_status and nome_status not in STATUS_DISPONIVEIS:
+                            STATUS_DISPONIVEIS.append(nome_status)
 
         # 3. Equipamentos
         equipamentos_raw = buscar_equipamentos_equipados(seq)
@@ -442,13 +436,29 @@ def buscar_detalhes_conta(seq, transport_id):
                     detalhes["training"]["constituicao"] = int(data.get("consitutionLevel", 0))
                     detalhes["training"]["limbo"] = int(data.get("collectLevel", 0))
                     
+                    # Mapear forças por forceIdx
                     for i in range(6):
                         force = data.get(str(i), {})
                         if isinstance(force, dict):
+                            force_idx = force.get("forceIdx", "")
+                            force_level = int(force.get("forceLevel", 0))
+                            force_name = force.get("forceName", f"Força {i+1}")
+                            
                             detalhes["training"]["inner_force"].append({
-                                "name": force.get("forceName", f"Força {i+1}"),
-                                "level": int(force.get("forceLevel", 0))
+                                "name": force_name,
+                                "level": force_level,
+                                "idx": force_idx
                             })
+                            
+                            # Mapear para campos específicos
+                            if force_idx == "3001":  # Muscular
+                                detalhes["training"]["muscular"] = force_level
+                            elif force_idx == "3002":  # Nine Yin
+                                detalhes["training"]["noveyin"] = force_level
+                            elif force_idx == "3003":  # Nine Yang
+                                detalhes["training"]["noveyang"] = force_level
+                            elif force_idx == "3006":  # Postura do Sapo
+                                detalhes["training"]["sapo"] = force_level
         except Exception as e:
             print(f"Erro ao buscar treinamento: {e}")
         

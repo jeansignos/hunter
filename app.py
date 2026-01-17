@@ -330,8 +330,30 @@ def create_app(config_name=None):
                 if filtros.get("pets_lendarios_min") and pets_lendarios < filtros["pets_lendarios_min"]:
                     continue
                 
-                constituicao = conta.get("training", {}).get("constituicao", 0)
+                # Filtros de Treino
+                training = conta.get("training", {})
+                
+                constituicao = training.get("constituicao", 0)
+                if filtros.get("treino_constituicao") and constituicao < filtros["treino_constituicao"]:
+                    continue
+                # Também verificar filtro antigo
                 if filtros.get("constituicao_min") and constituicao < filtros["constituicao_min"]:
+                    continue
+                
+                muscular = training.get("muscular", 0)
+                if filtros.get("treino_muscular") and muscular < filtros["treino_muscular"]:
+                    continue
+                
+                noveyin = training.get("noveyin", 0)
+                if filtros.get("treino_noveyin") and noveyin < filtros["treino_noveyin"]:
+                    continue
+                
+                noveyang = training.get("noveyang", 0)
+                if filtros.get("treino_noveyang") and noveyang < filtros["treino_noveyang"]:
+                    continue
+                
+                sapo = training.get("sapo", 0)
+                if filtros.get("treino_sapo") and sapo < filtros["treino_sapo"]:
                     continue
                 
                 habs_lendarias = conta.get("skills", {}).get("lendarias", 0)
