@@ -18,6 +18,7 @@
             border-radius: 10px;
             margin-bottom: 15px;
             align-items: flex-start;
+            justify-content: center;
         }
         
         /* Mini Dropdowns inline */
@@ -282,6 +283,41 @@
         
         .busca-nome::placeholder {
             color: #718096;
+        }
+        
+        /* Grid de Espíritos */
+        .espiritos-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .espirito-item {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            background: #2d3748;
+        }
+        
+        .espirito-item:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+        
+        .espirito-item.selected {
+            border-color: #48bb78;
+            box-shadow: 0 0 10px rgba(72, 187, 120, 0.5);
+        }
+        
+        .espirito-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         /* Badge Bidding */
@@ -636,7 +672,7 @@
             </div>
             
             <!-- Linha 2: Dropdowns de filtros avançados -->
-            <div class="filtros-linha-principal" style="width: 100%; margin-top: 10px;">
+            <div class="filtros-linha-principal" style="width: 100%; margin-top: 10px; justify-content: center;">
                 
                 <!-- Dropdown Mineração -->
                 <div class="mini-dropdown">
@@ -699,10 +735,10 @@
                     </div>
                 </div>
                 
-                <!-- Dropdown Nível (Power/Level/Codex) -->
+                <!-- Dropdown Nível (Codex/Potencial) -->
                 <div class="mini-dropdown">
                     <button type="button" class="mini-dropdown-btn" onclick="toggleMiniDropdown('dd-nivel')">
-                        <span><i class="fas fa-chart-line"></i> Nível</span>
+                        <span><i class="fas fa-chart-line"></i> Codex</span>
                         <span class="mini-dropdown-count" id="count-nivel">0</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
@@ -710,6 +746,10 @@
                         <div class="input-row">
                             <label>Codex Mín.</label>
                             <input type="number" id="codex_min" placeholder="0" onchange="atualizarCountNivel()">
+                        </div>
+                        <div class="input-row">
+                            <label>Potencial Mín.</label>
+                            <input type="number" id="potencial_min" placeholder="0" onchange="atualizarCountNivel()">
                         </div>
                         <div class="input-row">
                             <label>Itens Épicos/Lend.</label>
@@ -727,6 +767,11 @@
                 <!-- Botão Filtro de Itens -->
                 <button type="button" class="btn-acao-compacto" onclick="abrirModalItens(event)">
                     <i class="fas fa-box-open"></i> Itens
+                </button>
+                
+                <!-- Botão Filtro de Espíritos -->
+                <button type="button" class="btn-acao-compacto" onclick="abrirModalEspiritos(event)">
+                    <i class="fas fa-ghost"></i> Espíritos <span id="count-espiritos" class="mini-dropdown-count">0</span>
                 </button>
                 
                 <!-- Busca por nome -->
@@ -777,6 +822,117 @@
             </div>
         </main>
         
+        </div>
+    </div>
+
+    <!-- Modal de Espíritos -->
+    <div id="modal-espiritos" class="modal" onclick="fecharModalEspiritos()">
+        <div class="modal-conteudo" onclick="event.stopPropagation()" style="max-width: 700px;">
+            <div class="modal-cabecalho">
+                <h2><i class="fas fa-ghost"></i> Filtro de Espíritos</h2>
+                <span class="fechar-modal" onclick="fecharModalEspiritos()">&times;</span>
+            </div>
+            <div class="modal-corpo">
+                <p style="font-size: 0.85rem; color: #a0aec0; margin-bottom: 10px;">
+                    Clique nos espíritos que deseja filtrar. Máximo de 13 por vez.
+                </p>
+                
+                <h4 style="color: #f6e05e; margin: 15px 0 10px;">Espíritos Lendários (Grade 5)</h4>
+                <div class="espiritos-grid" id="espiritos-lendarios">
+                    <!-- Lendários -->
+                    <div class="espirito-item" data-nome="Alma do Dragão Branco" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_018.png" alt="Alma do Dragão Branco" title="Alma do Dragão Branco">
+                    </div>
+                    <div class="espirito-item" data-nome="Oroonki" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_010.png" alt="Oroonki" title="Oroonki">
+                    </div>
+                    <div class="espirito-item" data-nome="Baratan, a Besta Relâmpago" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_012.png" alt="Baratan" title="Baratan, a Besta Relâmpago">
+                    </div>
+                    <div class="espirito-item" data-nome="Gargas, o Vigia Verdejante" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_013.png" alt="Gargas" title="Gargas, o Vigia Verdejante">
+                    </div>
+                    <div class="espirito-item" data-nome="Mantata, o Barão Azul" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_011.png" alt="Mantata" title="Mantata, o Barão Azul">
+                    </div>
+                    <div class="espirito-item" data-nome="Anjo da Morte, o Ceifeiro de Almas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_009.png" alt="Anjo da Morte" title="Anjo da Morte, o Ceifeiro de Almas">
+                    </div>
+                    <div class="espirito-item" data-nome="Energia do Demônio do Vazio" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_014.png" alt="Energia do Demônio" title="Energia do Demônio do Vazio">
+                    </div>
+                    <div class="espirito-item" data-nome="Woosa, o Sábio do Deserto" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_015.png" alt="Woosa" title="Woosa, o Sábio do Deserto">
+                    </div>
+                    <div class="espirito-item" data-nome="Khalion, o Grande General" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_016.png" alt="Khalion" title="Khalion, o Grande General">
+                    </div>
+                    <div class="espirito-item" data-nome="Vendavalma, o Invocador do Vento" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_019.png" alt="Vendavalma" title="Vendavalma, o Invocador do Vento">
+                    </div>
+                    <div class="espirito-item" data-nome="Poipoi, o Dragão da Nuvem Negra" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_017.png" alt="Poipoi" title="Poipoi, o Dragão da Nuvem Negra">
+                    </div>
+                    <div class="espirito-item" data-nome="Flordoura, a Dragoa Fada" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_020.png" alt="Flordoura" title="Flordoura, a Dragoa Fada">
+                    </div>
+                    <div class="espirito-item" data-nome="Zakhan, o Assassino Sombrio" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_021.png" alt="Zakhan" title="Zakhan, o Assassino Sombrio">
+                    </div>
+                    <div class="espirito-item" data-nome="Zeon, o Dragão do Golpe de Relâmpago" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_022.png" alt="Zeon" title="Zeon, o Dragão do Golpe de Relâmpago">
+                    </div>
+                    <div class="espirito-item" data-nome="Lord do Deserto" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_023.png" alt="Lord do Deserto" title="Lord do Deserto">
+                    </div>
+                    <div class="espirito-item" data-nome="Grifavalo, o Garanhão Sombrio" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_024.png" alt="Grifavalo" title="Grifavalo, o Garanhão Sombrio">
+                    </div>
+                    <div class="espirito-item" data-nome="Nerr, o Demônio de Gelo das Trevas" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_025.png" alt="Nerr" title="Nerr, o Demônio de Gelo das Trevas">
+                    </div>
+                    <div class="espirito-item" data-nome="Mir, o Dragão Radiante" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_026.png" alt="Mir" title="Mir, o Dragão Radiante">
+                    </div>
+                    <div class="espirito-item" data-nome="Cãomandante, o Chefe Canino" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_027.png" alt="Cãomandante" title="Cãomandante, o Chefe Canino">
+                    </div>
+                </div>
+                
+                <h4 style="color: #9f7aea; margin: 20px 0 10px;">Espíritos Épicos (Grade 4)</h4>
+                <div class="espiritos-grid" id="espiritos-epicos">
+                    <!-- Épicos -->
+                    <div class="espirito-item" data-nome="Muumuu" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_001.png" alt="Muumuu" title="Muumuu">
+                    </div>
+                    <div class="espirito-item" data-nome="Chacha, o Mestre do Disfarce" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_002.png" alt="Chacha" title="Chacha, o Mestre do Disfarce">
+                    </div>
+                    <div class="espirito-item" data-nome="Tesouro Dourado" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_003.png" alt="Tesouro Dourado" title="Tesouro Dourado">
+                    </div>
+                    <div class="espirito-item" data-nome="Força Vital do Dragão" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_004.png" alt="Força Vital" title="Força Vital do Dragão">
+                    </div>
+                    <div class="espirito-item" data-nome="Suparna, o Pássaro Dourado" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_005.png" alt="Suparna" title="Suparna, o Pássaro Dourado">
+                    </div>
+                    <div class="espirito-item" data-nome="Coração do Demônio Negro" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_006.png" alt="Coração Demônio" title="Coração do Demônio Negro">
+                    </div>
+                    <div class="espirito-item" data-nome="Coração de Capitão Yeticlops" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_007.png" alt="Yeticlops" title="Coração de Capitão Yeticlops">
+                    </div>
+                    <div class="espirito-item" data-nome="Cometa, o Dono dos Chifres Vermelhos" onclick="toggleEspirito(this)">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Temp/Pet/Pet_Spirit_008.png" alt="Cometa" title="Cometa, o Dono dos Chifres Vermelhos">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" class="btn-aplicar" onclick="limparEspiritos()" style="background: #4a5568;">Limpar Seleção</button>
+                    <button type="button" class="btn-aplicar" onclick="fecharModalEspiritos()">Aplicar Filtros</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -949,10 +1105,21 @@
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
-            verificarStatusCache();
-            
-            // Seleciona cache teste por padrão
-            selecionarCache('completas');
+            // Verificar cache e carregar vitrine automaticamente
+            verificarStatusCache().then(data => {
+                if (data && (data.tem_cache_completo || data.tem_cache_teste)) {
+                    // Seleciona o melhor cache disponível
+                    if (data.tem_cache_completo && data.total_completo > 0) {
+                        selecionarCache('completas');
+                    } else if (data.tem_cache_teste && data.total_teste > 0) {
+                        selecionarCache('teste');
+                    }
+                    // Carregar vitrine automaticamente (contas mais fortes)
+                    setTimeout(() => {
+                        buscarContas();
+                    }, 300);
+                }
+            });
         });
 
         // --- FUNÇÕES DO MODAL ---
@@ -980,6 +1147,65 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
+        }
+        
+        // --- MODAL DE ESPÍRITOS ---
+        let espiritosAtivos = new Set();
+        const MAX_ESPIRITOS = 13;
+        
+        function abrirModalEspiritos(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const modal = document.getElementById('modal-espiritos');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+        
+        function fecharModalEspiritos() {
+            const modal = document.getElementById('modal-espiritos');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+            atualizarCountEspiritos();
+        }
+        
+        function toggleEspirito(el) {
+            const nome = el.getAttribute('data-nome');
+            
+            if (el.classList.contains('selected')) {
+                el.classList.remove('selected');
+                espiritosAtivos.delete(nome);
+            } else {
+                if (espiritosAtivos.size >= MAX_ESPIRITOS) {
+                    mostrarNotificacao(`Máximo de ${MAX_ESPIRITOS} espíritos selecionados`, 'warning');
+                    return;
+                }
+                el.classList.add('selected');
+                espiritosAtivos.add(nome);
+            }
+            
+            atualizarCountEspiritos();
+        }
+        
+        function limparEspiritos() {
+            espiritosAtivos.clear();
+            document.querySelectorAll('.espirito-item.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            atualizarCountEspiritos();
+        }
+        
+        function atualizarCountEspiritos() {
+            const countEl = document.getElementById('count-espiritos');
+            if (countEl) {
+                countEl.textContent = espiritosAtivos.size;
+                countEl.classList.toggle('has-value', espiritosAtivos.size > 0);
+            }
         }
 
         function filtrarStatus() {
@@ -1873,10 +2099,15 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 }
             });
             
+            // Filtros de Espíritos
+            if (espiritosAtivos.size > 0) {
+                params.append('espiritos', Array.from(espiritosAtivos).join(','));
+            }
+            
             // Coleta filtros básicos
             const ids = [
                 'classe', 'power_min', 'power_max', 'level_min', 'level_max', 
-                'price_min', 'price_max', 'mina_min', 'codex_min', 
+                'price_min', 'price_max', 'mina_min', 'codex_min', 'potencial_min',
                 'pets_lendarios_min', 'pets_misticos_min', 'habs_lendarias_min',
                 'constituicao_min', 'itens_comercio_min', 'regiao', 'servidor'
             ];
@@ -2090,9 +2321,11 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         function atualizarCountNivel() {
             let count = 0;
             const codex = document.getElementById('codex_min')?.value;
+            const potencial = document.getElementById('potencial_min')?.value;
             const itens = document.getElementById('itens_comercio_min')?.value;
             
             if (codex && parseFloat(codex) > 0) count++;
+            if (potencial && parseFloat(potencial) > 0) count++;
             if (itens && parseFloat(itens) > 0) count++;
             
             const countEl = document.getElementById('count-nivel');

@@ -195,10 +195,13 @@ def create_app(config_name=None):
             "filtro_status": request.args.get("filtro_status"),  # listado/bidding
             # Treino
             "treino_constituicao": request.args.get("treino_constituicao", type=int),
-            "treino_musculo": request.args.get("treino_musculo", type=int),
-            "treino_nineyin": request.args.get("treino_nineyin", type=int),
-            "treino_nineyang": request.args.get("treino_nineyang", type=int),
+            "treino_muscular": request.args.get("treino_muscular", type=int),
+            "treino_noveyin": request.args.get("treino_noveyin", type=int),
+            "treino_noveyang": request.args.get("treino_noveyang", type=int),
             "treino_sapo": request.args.get("treino_sapo", type=int),
+            # Outros
+            "potencial_min": request.args.get("potencial_min", type=int),
+            "espiritos": request.args.get("espiritos"),  # Lista de nomes separados por vírgula
             "status_filtros": {},
             "itens_filtros": {}
         }
@@ -427,6 +430,24 @@ def create_app(config_name=None):
                                 break
                     
                     if not passa_nos_itens:
+                        continue
+                
+                # Filtro de Espíritos específicos
+                if filtros.get("espiritos"):
+                    espiritos_desejados = [e.strip() for e in filtros["espiritos"].split(",")]
+                    spirit_list = conta.get("spirit_list", [])
+                    nomes_espiritos = [s.get("name", "") for s in spirit_list if isinstance(s, dict)]
+                    
+                    # Verificar se a conta tem TODOS os espíritos selecionados
+                    tem_todos = True
+                    for espirito in espiritos_desejados:
+                        # Busca parcial (contém)
+                        encontrado = any(espirito.lower() in nome.lower() for nome in nomes_espiritos)
+                        if not encontrado:
+                            tem_todos = False
+                            break
+                    
+                    if not tem_todos:
                         continue
             
             contas_filtradas.append(conta)
