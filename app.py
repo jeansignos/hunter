@@ -477,34 +477,61 @@ app = create_app()
 
 # ==================== SCHEDULER AUTOMÁTICO ====================
 # Carrega automaticamente as contas a cada 5 horas
+# O site continua funcionando com cache antigo durante o carregamento
+# Só substitui quando o novo cache estiver 100% pronto
 import threading
 import time
+from datetime import datetime
 
 def auto_load_scheduler():
-    """Thread que carrega as contas automaticamente a cada 5 horas"""
+    """
+    Thread que carrega as contas automaticamente a cada 5 horas.
+    
+    Funcionamento:
+    - O site continua funcionando normalmente com o cache existente
+    - O carregamento acontece em background sem afetar usuários
+    - Só substitui o cache quando o novo estiver 100% completo
+    - Se der erro, mantém o cache antigo
+    """
     INTERVALO_HORAS = 5
     INTERVALO_SEGUNDOS = INTERVALO_HORAS * 60 * 60  # 5 horas em segundos
     
-    # Aguarda 60 segundos após iniciar para o app estar pronto
-    time.sleep(60)
+    # Aguarda 2 minutos após iniciar para o app estar totalmente pronto
+    print("[SCHEDULER] Aguardando 2 minutos para iniciar...")
+    time.sleep(120)
     
     while True:
         try:
-            print(f"[SCHEDULER] Iniciando carregamento automático de contas...")
+            hora_atual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[SCHEDULER] [{hora_atual}] Iniciando carregamento automático em background...")
+            print(f"[SCHEDULER] Site continua funcionando normalmente com cache existente")
+            
             with app.app_context():
                 from core.loader import carregar_contas_completas
+                # O carregamento já é feito de forma segura:
+                # - Coleta todos os dados novos primeiro
+                # - Só substitui o cache global no final (atômico)
+                # - Se der erro, mantém cache antigo
                 carregar_contas_completas()
-            print(f"[SCHEDULER] Carregamento completo. Próximo em {INTERVALO_HORAS} horas.")
+            
+            hora_fim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[SCHEDULER] [{hora_fim}] Carregamento completo!")
+            print(f"[SCHEDULER] Próximo carregamento em {INTERVALO_HORAS} horas")
+            
         except Exception as e:
             print(f"[SCHEDULER] Erro no carregamento automático: {e}")
+            print(f"[SCHEDULER] Cache antigo mantido. Tentando novamente em {INTERVALO_HORAS} horas.")
         
         # Aguarda 5 horas para próximo carregamento
         time.sleep(INTERVALO_SEGUNDOS)
 
 # Inicia o scheduler em uma thread daemon (roda em background)
-scheduler_thread = threading.Thread(target=auto_load_scheduler, daemon=True)
+scheduler_thread = threading.Thread(target=auto_load_scheduler, daemon=True, name="AutoLoader-5h")
 scheduler_thread.start()
-print("[SCHEDULER] Auto-loader iniciado - carrega contas a cada 5 horas")
+print("[SCHEDULER] ✓ Auto-loader iniciado")
+print("[SCHEDULER]   - Carrega contas a cada 5 horas")
+print("[SCHEDULER]   - Site funciona normal durante carregamento")
+print("[SCHEDULER]   - Cache antigo mantido até novo estar pronto")
 
 
 if __name__ == "__main__":
