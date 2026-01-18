@@ -295,11 +295,30 @@ p.subtitle {
 /* --- RESULTADOS & CARDS --- */
 .contas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
     
     /* O SEGREDO ESTÁ AQUI EMBAIXO: */
     align-items: start; /* Isso impede que os vizinhos estiquem junto */
+}
+
+/* Responsivo para telas menores */
+@media (max-width: 1400px) {
+    .contas-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .contas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .contas-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .nft-card {
