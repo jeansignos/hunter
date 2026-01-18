@@ -1658,7 +1658,7 @@
                         <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon10.png" alt="Toril" title="Thunder Divine Dragon Toril">
                     </div>
                     <div class="espirito-item" data-nome="Lightning Force Dragon Zeon" onclick="toggleEspirito(this)">
-                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Hydra02.png" alt="Zeon" title="Lightning Force Dragon Zeon">
+                        <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Dragon11.png" alt="Zeon" title="Lightning Force Dragon Zeon">
                     </div>
                     <div class="espirito-item" data-nome="Mystic Meow Haeryeong" onclick="toggleEspirito(this)">
                         <img src="https://file.mir4global.com/xdraco-thumb/Content/UI/Atlas_N_Resource/Icon/Pet/Pet_Portrait/Icon_Item_Pet_Cat07.png" alt="Haeryeong" title="Mystic Meow Haeryeong">
@@ -2930,8 +2930,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 </div>
 
                 <div class="card-tabs">
-                    <button class="card-tab-btn active" onclick="switchCardTab(this, ${conta.seq}, 0)"><i class="fas fa-home"></i></button>
-                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 1)"><i class="fas fa-tshirt"></i></button>
+                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 0)"><i class="fas fa-home"></i></button>
+                    <button class="card-tab-btn active" onclick="switchCardTab(this, ${conta.seq}, 1)"><i class="fas fa-tshirt"></i></button>
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 2)"><i class="fas fa-dumbbell"></i></button>
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 3)"><i class="fas fa-box-open"></i></button>
                     <!-- NOVOS BOTÕES DAS ABAS ESPECIAIS -->
@@ -2940,11 +2940,11 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 6)"><i class="fas fa-shapes"></i></button>
                 </div>
 
-                <div class="tab-content active" data-tab="0">
+                <div class="tab-content" data-tab="0">
                     ${tab0Content}
                 </div>
                 
-                <div class="tab-content" data-tab="1">
+                <div class="tab-content active" data-tab="1">
                     ${tab1Content}
                 </div>
                 
@@ -3528,7 +3528,15 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     const info = document.getElementById('cache-info'); if(!info) return;
                     
                     if (data.carregando) {
-                        info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
+                        // Mostrar progresso detalhado
+                        const prog = data.progresso || {};
+                        if (prog.atual > 0 && prog.total > 0) {
+                            const pct = Math.round((prog.atual / prog.total) * 100);
+                            info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${prog.atual}/${prog.total} (${pct}%)</span>`;
+                            addCacheLog(`Processando conta ${prog.atual} de ${prog.total}...`, 'info');
+                        } else {
+                            info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
+                        }
                         // Verificar novamente em 2 segundos se ainda estiver carregando
                         setTimeout(() => verificarStatusCache(buscarAposCarregar), 2000);
                     } else {
