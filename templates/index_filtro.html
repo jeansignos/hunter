@@ -2710,22 +2710,17 @@
         
         // --- CONSTRUTOR DO CARD ---
         function criarCardConta(conta) {
-           // Lógica de cores por faixa de poder
-		   // No início da função criarCardConta, adicione:
-console.log(`[DEBUG CARD] Criando card para conta ${conta.seq}`);
-console.log(`[DEBUG CARD] inven_total: ${conta.inven_total}`);
-console.log(`[DEBUG CARD] inven_all length: ${conta.inven_all ? conta.inven_all.length : 0}`);
-console.log(`[DEBUG CARD] inven length: ${conta.inven ? conta.inven.length : 0}`);
-    let cardType = 'type-blue'; // Padrão para 239.999 pra baixo
-    const poder = conta.powerScore;
+            // Lógica de cores por faixa de poder
+            let cardType = 'type-blue'; // Padrão para 239.999 pra baixo
+            const poder = conta.powerScore;
 
-    if (poder >= 400000) {
-        cardType = 'type-gold';
-    } else if (poder >= 249000) {
-        cardType = 'type-red';
-    } else {
-        cardType = 'type-blue';
-    }
+            if (poder >= 400000) {
+                cardType = 'type-gold';
+            } else if (poder >= 249000) {
+                cardType = 'type-red';
+            } else {
+                cardType = 'type-blue';
+            }
             
             // Imagem da classe
             const imgClass = conta.class.imagem ? 
@@ -2886,8 +2881,6 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
 
             // Verificar se temos mais itens do que os iniciais
             const temMaisItens = invenTotal > invenInicial.length;
-
-            console.log(`[DEBUG] Conta ${conta.seq}: invenTotal=${invenTotal}, invenInicial=${invenInicial.length}, temMaisItens=${temMaisItens}`);
 
             const invenHtml = invenInicial.length ? 
                 invenInicial.map(item => renderItemIcon(item)).join('') : 
