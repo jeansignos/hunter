@@ -737,6 +737,37 @@ def create_app(config_name=None):
             return "Cache de contas limpo com sucesso!"
         return "Erro ao limpar cache de contas."
 
+    @app.route("/debug-contas-lance")
+    def debug_contas_lance():
+        """Debug: verifica quantas contas com lance existem no cache"""
+        cache_completo = read_from_cache("contas_completas") or []
+        cache_teste = read_from_cache("contas_teste") or []
+        
+        total_completo = len(cache_completo)
+        total_teste = len(cache_teste)
+        
+        # Contar por tradeType
+        bidding_completo = sum(1 for c in cache_completo if c.get("tradeType") == 2)
+        listado_completo = sum(1 for c in cache_completo if c.get("tradeType") == 1)
+        sem_tipo_completo = sum(1 for c in cache_completo if c.get("tradeType") not in [1, 2])
+        
+        bidding_teste = sum(1 for c in cache_teste if c.get("tradeType") == 2)
+        listado_teste = sum(1 for c in cache_teste if c.get("tradeType") == 1)
+        
+        return jsonify({
+            "cache_completo": {
+                "total": total_completo,
+                "listado (tradeType=1)": listado_completo,
+                "bidding (tradeType=2)": bidding_completo,
+                "sem_tipo": sem_tipo_completo
+            },
+            "cache_teste": {
+                "total": total_teste,
+                "listado (tradeType=1)": listado_teste,
+                "bidding (tradeType=2)": bidding_teste
+            }
+        })
+
     return app
 
 
