@@ -198,7 +198,7 @@ def create_app(config_name=None):
             # NOVOS FILTROS
             "busca_nome": request.args.get("busca_nome"),
             "nome_jogador": request.args.get("nome_jogador"),
-            "filtro_status": request.args.get("filtro_status"),  # listado/bidding
+            "status_lance": request.args.get("status_lance"),  # listado/bidding
             # Treino
             "treino_constituicao": request.args.get("treino_constituicao", type=int),
             "treino_muscular": request.args.get("treino_muscular", type=int),
@@ -278,6 +278,15 @@ def create_app(config_name=None):
                 nome_conta = conta.get("name", conta.get("basic", {}).get("name", "")).lower()
                 nome_busca = filtros["nome_jogador"].lower()
                 if nome_busca not in nome_conta:
+                    continue
+            
+            # Filtro por status de lance (listado = venda direta, bidding = leilão)
+            status_lance = filtros.get("status_lance")
+            if status_lance:
+                trade_type = conta.get("tradeType", 1)
+                if status_lance == "bidding" and trade_type != 2:
+                    continue
+                elif status_lance == "listado" and trade_type != 1:
                     continue
             
             # Filtro de servidor
@@ -590,7 +599,7 @@ def create_app(config_name=None):
             # Extrair stats importantes
             stats = conta.get("stats", [])
             ataque_fisico = ataque_magico = critico = precisao = evasao = 0
-            aceleramento_mineracao = aumento_aconegro = 0
+            aceleramento_mineracao = aumento_aconegro = atk_habilidade = 0
             
             for stat in stats:
                 if isinstance(stat, dict):
@@ -611,6 +620,8 @@ def create_app(config_name=None):
                         aceleramento_mineracao = valor
                     elif "AUMENTO DE GANHO DE AÇO NEGRO" in stat_name:
                         aumento_aconegro = valor
+                    elif "DANO DE ATAQUE DE HABILIDADE" in stat_name or "ATK DE HAB" in stat_name:
+                        atk_habilidade = valor
             
             conta_formatada = {
                 "seq": conta.get("seq"),
@@ -621,6 +632,7 @@ def create_app(config_name=None):
                 "powerScore": conta.get("powerScore", conta.get("basic", {}).get("powerScore", 0)),
                 "price": price,
                 "price_brl": price_brl,
+                "tradeType": conta.get("tradeType", 1),
                 "equip": conta.get("equip", []),
                 "inven": conta.get("inven", []),
                 "inven_all": conta.get("inven_all", []),
@@ -634,12 +646,15 @@ def create_app(config_name=None):
                 "evasao": evasao,
                 "aceleramento_mineracao": aceleramento_mineracao,
                 "aumento_aconegro": aumento_aconegro,
+                "atk_habilidade": atk_habilidade,
                 "mina": conta.get("building", {}).get("mina", 0),
                 "codex": conta.get("codex", 0),
                 "potencial": conta.get("potencial", 0),
                 "pets": conta.get("spirit", {"epicos": 0, "lendarios": 0, "grade6": 0}),
                 "skills": conta.get("skills", {"epicas": 0, "lendarias": 0}),
                 "constituicao": conta.get("training", {}).get("constituicao", 0),
+                "training_details": conta.get("training", {"constituicao": 0, "inner_force": []}),
+                "stats": conta.get("stats", []),
                 "url": f"https://www.xdraco.com/nft/trade/{conta.get('seq')}",
                 "tickets": conta.get("tickets", []),
                 "crystals": conta.get("crystals", []),

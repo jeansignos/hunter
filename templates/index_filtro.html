@@ -2060,6 +2060,11 @@
         let espiritosAtivos = new Set();
         const MAX_ESPIRITOS = 13;
         
+        // Função para remover acentos de strings
+        function removerAcentos(str) {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+        
         function abrirModalEspiritos(event) {
             if (event) {
                 event.preventDefault();
@@ -2921,11 +2926,17 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 fragments.map(item => renderSpecialItem(item)).join('') : 
                 '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem fragmentos</div>';
             
+            // Badge dinâmico baseado no tradeType
+            const isBidding = conta.tradeType === 2;
+            const statusBadge = isBidding ? 
+                '<span class="card-status-badge badge-bidding">COM LANCE</span>' : 
+                '<span class="card-status-badge">LISTADO</span>';
+            
             // Estrutura do Card
             return `
             <div class="nft-card ${cardType}" id="card-${conta.seq}">
                 <div class="card-top-bar">
-                    <span class="card-status-badge">LISTADO</span>
+                    ${statusBadge}
                     <span class="card-price-top">${conta.price.toLocaleString()} WEMIX</span>
                 </div>
 

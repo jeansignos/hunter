@@ -305,6 +305,7 @@ def buscar_detalhes_conta(seq, transport_id):
         "inven_total": 0,
         "classe": "1",
         "price": 0,
+        "tradeType": 1,
         "tickets": [],
         "crystals": [],
         "fragments": []
@@ -334,6 +335,9 @@ def buscar_detalhes_conta(seq, transport_id):
                     detalhes["price"] = float(price_str) if price_str else 0
                 except:
                     detalhes["price"] = 0
+                
+                # tradeType: 1 = venda direta, 2 = leilão/bidding
+                detalhes["tradeType"] = int(data.get("tradeType", 1))
         
         classe = detalhes["classe"]
         
