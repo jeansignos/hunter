@@ -437,8 +437,7 @@ p.subtitle {
     display: none; 
     padding: 0 12px; 
     animation: fadeIn 0.3s ease;
-    min-height: 420px; /* Altura mínima baseada na aba de equipamentos */
-    max-height: 420px; /* Altura máxima para consistência */
+    height: 420px; /* Altura fixa para consistência entre abas */
     overflow-y: auto; /* Scroll se precisar */
 }
 .tab-content.active { 

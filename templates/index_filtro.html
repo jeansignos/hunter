@@ -1189,6 +1189,100 @@
 .cache-log-content .log-info {
     color: #667eea;
 }
+
+/* ========== FILTROS ATIVOS ========== */
+.filtros-ativos-area {
+    background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.filtros-ativos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filtros-ativos-titulo {
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.filtros-ativos-titulo i {
+    color: #667eea;
+    margin-right: 6px;
+}
+
+.btn-limpar-todos {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-limpar-todos:hover {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(229, 62, 62, 0.4);
+}
+
+.filtros-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filtro-tag {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    border: 1px solid #667eea;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.filtro-tag:hover {
+    background: linear-gradient(135deg, #4a5568 0%, #5a6678 100%);
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.filtro-tag .tag-label {
+    color: #a0aec0;
+    font-weight: 500;
+}
+
+.filtro-tag .tag-value {
+    color: #f6e05e;
+    font-weight: 600;
+}
+
+.filtro-tag .tag-remover {
+    color: #f56565;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 4px;
+    transition: color 0.2s ease;
+}
+
+.filtro-tag .tag-remover:hover {
+    color: #fc8181;
+}
     </style>
 </head>
 <body>
@@ -1298,8 +1392,10 @@
                         <option value="ataque_magico">Maior ATK Mágico</option>
                         <option value="price">Menor Preço</option>
                         <option value="price_desc">Maior Preço</option>
+                        {% if is_premium %}
                         <option value="aceleramento">Maior Mineração</option>
                         <option value="aconegro">Mais Aço Negro</option>
+                        {% endif %}
                         <option value="codex">Maior Codex</option>
                         <option value="mina">Maior Nível Mina</option>
                     </select>
@@ -1530,6 +1626,19 @@
                 <i class="fas fa-lock"></i> Com Lance <span class="badge-premium-mini">Premium</span>
             </button>
             {% endif %}
+        </div>
+        
+        <!-- Área de Filtros Ativos -->
+        <div id="filtros-ativos-area" class="filtros-ativos-area" style="display: none;">
+            <div class="filtros-ativos-header">
+                <span class="filtros-ativos-titulo"><i class="fas fa-filter"></i> Filtros Ativos:</span>
+                <button type="button" class="btn-limpar-todos" onclick="limparTodosFiltros()">
+                    <i class="fas fa-times-circle"></i> Limpar todos
+                </button>
+            </div>
+            <div id="filtros-tags" class="filtros-tags">
+                <!-- Tags de filtros ativos serão inseridas via JS -->
+            </div>
         </div>
         
         <!-- Área de Resultados -->
@@ -3344,6 +3453,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                         todasContas = data.contas || [];
                         totalContasFiltradas = data.total_filtrado || 0;
                         renderizarResultados(todasContas);
+                        atualizarFiltrosAtivos();
                         
                         // Mostrar notificação com status aplicados
                         const statusFiltros = Array.from(params.entries())
@@ -3439,6 +3549,161 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             });
             
             dropdown.classList.toggle('show');
+        }
+        
+        // ========== SISTEMA DE FILTROS ATIVOS ==========
+        function atualizarFiltrosAtivos() {
+            const area = document.getElementById('filtros-ativos-area');
+            const container = document.getElementById('filtros-tags');
+            if (!area || !container) return;
+            
+            container.innerHTML = '';
+            let temFiltros = false;
+            
+            // Mapeia campos de filtros para labels amigáveis
+            const camposFiltros = {
+                'busca_nome': { label: 'Nome', tipo: 'texto' },
+                'power_min': { label: 'Poder Mín', tipo: 'numero' },
+                'level_min': { label: 'Level Mín', tipo: 'numero' },
+                'mina_min': { label: 'Mina Nível', tipo: 'numero' },
+                'status_aceleramento': { label: 'Boost Mineração', tipo: 'percentual' },
+                'status_aconegro': { label: 'Aço Negro', tipo: 'percentual' },
+                'treino_constituicao': { label: 'Constituição', tipo: 'numero' },
+                'treino_muscular': { label: 'Muscular', tipo: 'numero' },
+                'treino_noveyin': { label: 'Nove Yin', tipo: 'numero' },
+                'treino_noveyang': { label: 'Nove Yang', tipo: 'numero' },
+                'treino_sapo': { label: 'Sapo', tipo: 'numero' },
+                'price_min': { label: 'Preço Mín', tipo: 'wemix' },
+                'price_max': { label: 'Preço Máx', tipo: 'wemix' },
+                'item_busca': { label: 'Item', tipo: 'texto' },
+                'equip_lend_trade_min': { label: 'Equip Lend. Trade', tipo: 'numero' },
+                'equip_epic_trade_min': { label: 'Equip Épico Trade', tipo: 'numero' },
+                'codex_min': { label: 'Codex Mín', tipo: 'numero' }
+            };
+            
+            // Verificar cada campo de filtro
+            for (const [campoId, config] of Object.entries(camposFiltros)) {
+                const el = document.getElementById(campoId);
+                if (el && el.value && el.value.trim() !== '') {
+                    let valor = el.value.trim();
+                    if (config.tipo === 'numero' && parseFloat(valor) <= 0) continue;
+                    if (config.tipo === 'percentual') valor += '%';
+                    if (config.tipo === 'wemix') valor += ' WEMIX';
+                    
+                    temFiltros = true;
+                    adicionarTagFiltro(container, campoId, config.label, valor);
+                }
+            }
+            
+            // Verificar classes selecionadas
+            const classesAtivas = document.querySelectorAll('.classe-btn.ativa');
+            if (classesAtivas.length > 0 && classesAtivas.length < 5) {
+                const nomes = Array.from(classesAtivas).map(btn => btn.title || btn.dataset.classe || 'Classe').join(', ');
+                temFiltros = true;
+                adicionarTagFiltro(container, 'classes', 'Classes', nomes, () => {
+                    document.querySelectorAll('.classe-btn').forEach(b => b.classList.remove('ativa'));
+                    atualizarFiltrosAtivos();
+                });
+            }
+            
+            // Verificar espíritos selecionados
+            if (typeof espiritosAtivos !== 'undefined' && espiritosAtivos.size > 0) {
+                temFiltros = true;
+                adicionarTagFiltro(container, 'espiritos', 'Espíritos', `${espiritosAtivos.size} selecionados`, () => {
+                    espiritosAtivos.clear();
+                    document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
+                    atualizarFiltrosAtivos();
+                });
+            }
+            
+            // Verificar status selecionados
+            if (typeof statusAtivos !== 'undefined' && statusAtivos.size > 0) {
+                temFiltros = true;
+                adicionarTagFiltro(container, 'status', 'Status', `${statusAtivos.size} selecionados`, () => {
+                    statusAtivos.clear();
+                    document.querySelectorAll('.btn-status-todos.ativo').forEach(b => b.classList.remove('ativo'));
+                    atualizarFiltrosAtivos();
+                });
+            }
+            
+            // Mostrar/ocultar área
+            area.style.display = temFiltros ? 'block' : 'none';
+        }
+        
+        function adicionarTagFiltro(container, campoId, label, valor, customRemover = null) {
+            const tag = document.createElement('div');
+            tag.className = 'filtro-tag';
+            tag.innerHTML = `
+                <span class="tag-label">${label}:</span>
+                <span class="tag-value">${valor}</span>
+                <span class="tag-remover" onclick="removerFiltroAtivo('${campoId}', this.closest('.filtro-tag'))">
+                    <i class="fas fa-times"></i>
+                </span>
+            `;
+            
+            if (customRemover) {
+                tag.querySelector('.tag-remover').onclick = function() {
+                    customRemover();
+                    this.closest('.filtro-tag').remove();
+                };
+            }
+            
+            container.appendChild(tag);
+        }
+        
+        function removerFiltroAtivo(campoId, tagElement) {
+            const el = document.getElementById(campoId);
+            if (el) {
+                el.value = '';
+                // Disparar evento de change para atualizar contadores
+                el.dispatchEvent(new Event('change'));
+            }
+            if (tagElement) tagElement.remove();
+            atualizarFiltrosAtivos();
+        }
+        
+        function limparTodosFiltros() {
+            // Limpar todos os inputs de texto e número
+            const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+            inputs.forEach(input => {
+                if (input.id && !input.id.includes('login') && !input.id.includes('register')) {
+                    input.value = '';
+                }
+            });
+            
+            // Limpar classes
+            document.querySelectorAll('.classe-btn').forEach(b => b.classList.remove('ativa'));
+            
+            // Limpar espíritos
+            if (typeof espiritosAtivos !== 'undefined') espiritosAtivos.clear();
+            document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
+            
+            // Limpar status
+            if (typeof statusAtivos !== 'undefined') statusAtivos.clear();
+            document.querySelectorAll('.btn-status-todos.ativo').forEach(b => b.classList.remove('ativo'));
+            
+            // Atualizar contadores
+            if (typeof atualizarCountMineracao === 'function') atualizarCountMineracao();
+            if (typeof atualizarCountTreino === 'function') atualizarCountTreino();
+            if (typeof atualizarCountCombate === 'function') atualizarCountCombate();
+            if (typeof atualizarCountPreco === 'function') atualizarCountPreco();
+            if (typeof atualizarCountGeral === 'function') atualizarCountGeral();
+            
+            // Esconder área de filtros ativos
+            const area = document.getElementById('filtros-ativos-area');
+            if (area) area.style.display = 'none';
+            
+            // Mostrar feedback
+            const btn = document.querySelector('.btn-limpar-todos');
+            if (btn) {
+                const textoOriginal = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Limpo!';
+                btn.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                setTimeout(() => {
+                    btn.innerHTML = textoOriginal;
+                    btn.style.background = '';
+                }, 1500);
+            }
         }
         
         // Fecha dropdowns ao clicar fora

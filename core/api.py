@@ -373,11 +373,17 @@ def buscar_detalhes_conta(seq, transport_id):
             if res.ok:
                 data = res.json().get("data", [])
                 if isinstance(data, list):
+                    # Itens comercializáveis (para exibição)
                     itens_filtrados = filtrar_itens_comercializaveis(data)
                     
-                    itens_para_frontend = []
+                    # IDs dos itens comercializáveis para marcar
+                    ids_comercializaveis = set()
                     for item in itens_filtrados:
-                        itens_para_frontend.append({
+                        ids_comercializaveis.add(item["itemID"])
+                    
+                    itens_comerciais_frontend = []
+                    for item in itens_filtrados:
+                        itens_comerciais_frontend.append({
                             "name": item["nome"],
                             "grade": item["grade"],
                             "tier": roman_to_int(item["tier"]),
@@ -387,11 +393,39 @@ def buscar_detalhes_conta(seq, transport_id):
                             "trade": True
                         })
                     
-                    itens_para_frontend.sort(key=lambda x: (-x["grade"], -x["tier"], -x["enhance"]))
+                    itens_comerciais_frontend.sort(key=lambda x: (-x["grade"], -x["tier"], -x["enhance"]))
                     
-                    detalhes["inven_all"] = itens_para_frontend
-                    detalhes["inven"] = itens_para_frontend[:12]
-                    detalhes["inven_total"] = len(itens_para_frontend)
+                    # TODOS os itens para busca (com flag trade)
+                    todos_itens = []
+                    for item in data:
+                        if not isinstance(item, dict):
+                            continue
+                        item_id = str(item.get("itemID", ""))
+                        item_name = item.get("itemName", "")
+                        if not item_name:
+                            continue
+                        
+                        grade = int(item.get("grade", "0")) if str(item.get("grade", "0")).isdigit() else 0
+                        tier_str = item.get("tier", "I")
+                        enhance = int(item.get("enhance", 0)) if str(item.get("enhance", 0)).isdigit() else 0
+                        quantidade = item.get("stack", 0) or 1
+                        imagem = item.get("itemPath", "")
+                        
+                        todos_itens.append({
+                            "name": item_name,
+                            "grade": grade,
+                            "tier": roman_to_int(tier_str),
+                            "enhance": enhance,
+                            "count": quantidade,
+                            "img": imagem,
+                            "trade": item_id in ids_comercializaveis
+                        })
+                    
+                    todos_itens.sort(key=lambda x: (-x["grade"], -x["tier"], -x["enhance"]))
+                    
+                    detalhes["inven_all"] = todos_itens
+                    detalhes["inven"] = itens_comerciais_frontend[:12]
+                    detalhes["inven_total"] = len(itens_comerciais_frontend)
                     
                     bilhetes, cristais, fragmentos = filtrar_itens_especiais(data)
                     detalhes["tickets"] = bilhetes

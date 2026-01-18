@@ -57,9 +57,18 @@ def carregar_detalhes_com_cache(conta):
     cache_key = f"detalhes_{seq}_equip"
     cached = read_from_cache(cache_key)
     
-    # Verificar se o cache tem os campos necessários (tradeType foi adicionado depois)
-    # Se não tiver, ignorar cache e buscar da API novamente
+    # Verificar se o cache tem os campos necessários
+    # tradeType: foi adicionado depois para filtro "Com Lance"
+    # inven_all: precisa ter TODOS os itens com campo "trade" para busca funcionar
+    cache_valido = False
     if cached and "tradeType" in cached:
+        inven_all = cached.get("inven_all", [])
+        # Verifica se inven_all tem a nova estrutura com campo "trade"
+        # e se tem mais itens que apenas os comercializáveis
+        if inven_all and len(inven_all) > 0 and isinstance(inven_all[0], dict) and "trade" in inven_all[0]:
+            cache_valido = True
+    
+    if cache_valido:
         return {
             "conta": conta,
             "detalhes": cached
