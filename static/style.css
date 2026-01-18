@@ -441,31 +441,31 @@ p.subtitle {
 /* Avatar Section (Diamond) */
 .card-avatar-section {
     position: relative;
-    height: 140px; /* Aumentei de 110px para 140px para caber o novo tamanho */
+    height: 110px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .class-name-vertical {
     position: absolute;
-    left: 15px;
+    left: 10px;
     top: 0;
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
     color: rgba(255,255,255,0.15);
     font-weight: 900;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     height: 100%;
     text-transform: uppercase;
     user-select: none;
 }
 
 .diamond-shape {
-    width: 76px;
-    height: 76px;
+    width: 60px;
+    height: 60px;
     transform: rotate(45deg);
     display: flex; 
     justify-content: center; 
@@ -498,7 +498,7 @@ p.subtitle {
 /* Info Principal */
 .card-main-info { 
     text-align: center; 
-    margin-bottom: 15px; 
+    margin-bottom: 10px; 
     position: relative; 
     z-index: 2; 
 }
@@ -511,12 +511,12 @@ p.subtitle {
     margin-bottom: 5px; 
 }
 .card-power { 
-    font-size: 2.2rem; 
+    font-size: 1.8rem; 
     font-weight: 800; 
     color: #fff; 
     text-shadow: 0 3px 6px rgba(0,0,0,0.8);
     line-height: 1;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 .card-player-name { 
     color: var(--blue-neon); 
@@ -531,9 +531,9 @@ p.subtitle {
 .card-stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px 5px;
+    gap: 8px 3px;
     padding: 0 5px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .stat-box { 
@@ -541,9 +541,9 @@ p.subtitle {
 }
 .stat-box label { 
     display: block; 
-    font-size: 0.74rem; 
+    font-size: 0.65rem; 
     color: #666; 
-    margin-bottom: 2px; 
+    margin-bottom: 1px; 
     text-transform: uppercase; 
 }
 .stat-box span { 

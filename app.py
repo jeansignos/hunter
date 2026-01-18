@@ -620,7 +620,7 @@ def create_app(config_name=None):
                         aceleramento_mineracao = valor
                     elif "AUMENTO DE GANHO DE AÇO NEGRO" in stat_name:
                         aumento_aconegro = valor
-                    elif "DANO DE ATAQUE DE HABILIDADE" in stat_name or "ATK DE HAB" in stat_name:
+                    elif "DANO DE ATAQUE" in stat_name and "HABILIDADE" in stat_name:
                         atk_habilidade = valor
             
             conta_formatada = {
