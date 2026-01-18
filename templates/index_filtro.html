@@ -3857,8 +3857,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                         mostrarNotificacao('Carregamento de teste iniciado. Aguarde...', 'info');
                         addCacheLog('Carregamento de teste iniciado...', 'info');
                         
-                        // Monitorar progresso até concluir
-                        monitorarCarregamento('teste');
+                        // Delay de 2 segundos para garantir que a thread começou
+                        setTimeout(() => monitorarCarregamento('teste', 0), 2000);
                     } else {
                         botoesCache.forEach(btn => btn.disabled = false);
                         mostrarNotificacao(d.message || 'Erro ao iniciar carregamento', 'error');
@@ -3892,12 +3892,12 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 .then(d => { 
                     if (d.success) {
                         // O carregamento foi INICIADO (não concluído)
-                        // Começar a monitorar o progresso
+                        // Começar a monitorar o progresso após um pequeno delay
                         mostrarNotificacao('Carregamento completo iniciado. Aguarde...', 'info');
-                        addCacheLog('Carregamento iniciado, monitorando progresso...', 'info');
+                        addCacheLog('Carregamento iniciado, aguardando início...', 'info');
                         
-                        // Monitorar progresso até concluir
-                        monitorarCarregamento('completas');
+                        // Delay de 2 segundos para garantir que a thread começou
+                        setTimeout(() => monitorarCarregamento('completas', 0), 2000);
                     } else {
                         botoesCache.forEach(btn => btn.disabled = false);
                         mostrarNotificacao(d.message || 'Erro ao iniciar carregamento', 'error');
@@ -3915,7 +3915,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
         
         // Nova função para monitorar carregamento
-        function monitorarCarregamento(tipo) {
+        // tentativas: contador para evitar falso negativo no início
+        function monitorarCarregamento(tipo, tentativas = 0) {
             fetch('/status-carregamento')
                 .then(r => r.json())
                 .then(data => {
@@ -3930,12 +3931,24 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                             if (info) info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${prog.atual}/${prog.total} (${pct}%)</span>`;
                             addCacheLog(`Processando ${prog.atual} de ${prog.total} contas (${pct}%)`, 'info');
                         } else {
-                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
+                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Iniciando carregamento...</span>";
                         }
                         // Verificar novamente em 3 segundos
-                        setTimeout(() => monitorarCarregamento(tipo), 3000);
+                        setTimeout(() => monitorarCarregamento(tipo, 0), 3000);
                     } else {
-                        // Carregamento concluído - reabilitar botões
+                        // Não está carregando - mas pode ser que ainda não começou!
+                        // Se temos menos de 10 tentativas e não há cache ainda, esperar mais
+                        const cacheExiste = (tipo === 'completas' && data.tem_cache_completo && data.total_completo > 0) ||
+                                           (tipo === 'teste' && data.tem_cache_teste && data.total_teste > 0);
+                        
+                        if (!cacheExiste && tentativas < 10) {
+                            // Ainda esperando começar - tentar novamente
+                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Aguardando início...</span>";
+                            setTimeout(() => monitorarCarregamento(tipo, tentativas + 1), 2000);
+                            return;
+                        }
+                        
+                        // Carregamento realmente concluído - reabilitar botões
                         botoesCache.forEach(btn => btn.disabled = false);
                         
                         if (tipo === 'completas' && data.tem_cache_completo && data.total_completo > 0) {
@@ -3960,7 +3973,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 .catch(err => {
                     console.error('Erro ao monitorar:', err);
                     // Tentar novamente em 5 segundos
-                    setTimeout(() => monitorarCarregamento(tipo), 5000);
+                    setTimeout(() => monitorarCarregamento(tipo, tentativas), 5000);
                 });
         }
 
