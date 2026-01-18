@@ -335,10 +335,6 @@ p.subtitle {
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     margin-top: 25px;
     overflow: hidden;
-    /* Altura fixa para consistência entre cards */
-    height: 620px;
-    min-height: 620px;
-    max-height: 620px;
 }
 
 .nft-card:hover {
@@ -441,10 +437,6 @@ p.subtitle {
     display: none; 
     padding: 0 12px; 
     animation: fadeIn 0.3s ease;
-    height: 380px; /* Altura fixa para consistência entre abas */
-    max-height: 380px;
-    overflow-y: auto; /* Scroll se precisar */
-    flex-shrink: 0;
 }
 .tab-content.active { 
     display: block; 
