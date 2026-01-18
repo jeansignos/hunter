@@ -340,7 +340,7 @@ def create_app(config_name=None):
             
             # NOVO FILTRO: Equipamentos Trade (comercializáveis com balança)
             if filtros.get("equip_lend_trade_min") or filtros.get("equip_epic_trade_min"):
-                equipamentos = conta.get("equip_list", [])
+                equipamentos = conta.get("equip", [])
                 lend_trade_count = sum(1 for e in equipamentos if e.get("trade") and e.get("grade") == 5)
                 epic_trade_count = sum(1 for e in equipamentos if e.get("trade") and e.get("grade") == 4)
                 

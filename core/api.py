@@ -179,7 +179,8 @@ def buscar_equipamentos_equipados(seq):
 
 def buscar_spirit_detalhado(transport_id):
     """Busca espíritos detalhados"""
-    url = f"https://webapi.mir4global.com/nft/character/spirit?transportID={transport_id}&languageCode=pt"
+    # Usando languageCode=en para que os nomes batam com o filtro HTML (em inglês)
+    url = f"https://webapi.mir4global.com/nft/character/spirit?transportID={transport_id}&languageCode=en"
     
     try:
         res = session.get(url, timeout=10)
