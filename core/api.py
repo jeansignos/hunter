@@ -306,6 +306,7 @@ def buscar_detalhes_conta(seq, transport_id):
         "classe": "1",
         "price": 0,
         "tradeType": 1,
+        "sealedTS": 0,
         "tickets": [],
         "crystals": [],
         "fragments": []
@@ -338,6 +339,9 @@ def buscar_detalhes_conta(seq, transport_id):
                 
                 # tradeType: 1 = venda direta, 2 = leilão/bidding
                 detalhes["tradeType"] = int(data.get("tradeType", 1))
+                
+                # sealedTS: timestamp de quando foi selado (para calcular tempo de leilão)
+                detalhes["sealedTS"] = data.get("sealedTS", 0)
         
         classe = detalhes["classe"]
         

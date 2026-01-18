@@ -633,6 +633,7 @@ def create_app(config_name=None):
                 "price": price,
                 "price_brl": price_brl,
                 "tradeType": conta.get("tradeType", 1),
+                "sealedTS": conta.get("sealedTS", 0),
                 "equip": conta.get("equip", []),
                 "inven": conta.get("inven", []),
                 "inven_all": conta.get("inven_all", []),

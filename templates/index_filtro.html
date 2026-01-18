@@ -609,6 +609,39 @@
             font-weight: bold;
         }
         
+        /* Timer de Leilão no Card */
+        .card-timer {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        .card-timer i {
+            font-size: 0.6rem;
+        }
+        
+        .card-timer.timer-expired {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        }
+        
+        /* Ajustar top-bar para ter timer no meio */
+        .card-top-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-price-top {
+            margin-left: auto;
+        }
+        
         /* ============ ESTILOS ANTERIORES ============ */
         .carregar-mais-btn {
             width: 100%;
@@ -2716,6 +2749,36 @@
             });
         }
         
+        // --- FUNÇÃO PARA CALCULAR TEMPO RESTANTE DO LEILÃO ---
+        function calcularTempoRestanteLeilao(sealedTS) {
+            if (!sealedTS || sealedTS === 0) return null;
+            
+            // Leilões no MIR4 duram 7 dias (168 horas) após o sealedTS
+            const DURACAO_LEILAO_SEGUNDOS = 7 * 24 * 60 * 60; // 7 dias em segundos
+            const agora = Math.floor(Date.now() / 1000); // Timestamp atual em segundos
+            const fimLeilao = sealedTS + DURACAO_LEILAO_SEGUNDOS;
+            const segundosRestantes = fimLeilao - agora;
+            
+            if (segundosRestantes <= 0) {
+                return { texto: 'Encerrado', expirado: true };
+            }
+            
+            const dias = Math.floor(segundosRestantes / (24 * 60 * 60));
+            const horas = Math.floor((segundosRestantes % (24 * 60 * 60)) / (60 * 60));
+            const minutos = Math.floor((segundosRestantes % (60 * 60)) / 60);
+            
+            let texto = '';
+            if (dias > 0) {
+                texto = `${dias}d ${horas}h`;
+            } else if (horas > 0) {
+                texto = `${horas}h ${minutos}m`;
+            } else {
+                texto = `${minutos}m`;
+            }
+            
+            return { texto, expirado: false, segundos: segundosRestantes };
+        }
+        
         // --- CONSTRUTOR DO CARD ---
         function criarCardConta(conta) {
             // Lógica de cores por faixa de poder
@@ -2929,6 +2992,17 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             
             // Badge dinâmico baseado no tradeType
             const isBidding = conta.tradeType === 2;
+            
+            // Calcular tempo restante do leilão
+            let timerHtml = '';
+            if (isBidding && conta.sealedTS) {
+                const tempoRestante = calcularTempoRestanteLeilao(conta.sealedTS);
+                if (tempoRestante) {
+                    const timerClass = tempoRestante.expirado ? 'timer-expired' : '';
+                    timerHtml = `<span class="card-timer ${timerClass}" data-sealed="${conta.sealedTS}"><i class="fas fa-clock"></i> ${tempoRestante.texto}</span>`;
+                }
+            }
+            
             const statusBadge = isBidding ? 
                 '<span class="card-status-badge badge-bidding">COM LANCE</span>' : 
                 '<span class="card-status-badge">LISTADO</span>';
@@ -2938,6 +3012,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             <div class="nft-card ${cardType}" id="card-${conta.seq}">
                 <div class="card-top-bar">
                     ${statusBadge}
+                    ${timerHtml}
                     <span class="card-price-top">${conta.price.toLocaleString()} WEMIX</span>
                 </div>
 
