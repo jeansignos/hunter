@@ -3929,9 +3929,12 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                         if (prog.atual > 0 && prog.total > 0) {
                             const pct = Math.round((prog.atual / prog.total) * 100);
                             if (info) info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${prog.atual}/${prog.total} (${pct}%)</span>`;
-                            addCacheLog(`Processando ${prog.atual} de ${prog.total} contas (${pct}%)`, 'info');
+                            // Só adiciona log a cada 10% para não poluir
+                            if (pct % 10 === 0 || prog.atual === prog.total) {
+                                addCacheLog(`Processando ${prog.atual} de ${prog.total} contas (${pct}%)`, 'info');
+                            }
                         } else {
-                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Iniciando carregamento...</span>";
+                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Buscando lista de contas...</span>";
                         }
                         // Verificar novamente em 3 segundos
                         setTimeout(() => monitorarCarregamento(tipo, 0), 3000);
@@ -3942,8 +3945,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                                            (tipo === 'teste' && data.tem_cache_teste && data.total_teste > 0);
                         
                         if (!cacheExiste && tentativas < 10) {
-                            // Ainda esperando começar - tentar novamente
-                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Aguardando início...</span>";
+                            // Ainda esperando thread iniciar - NÃO adicionar log para não poluir
+                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Iniciando...</span>";
                             setTimeout(() => monitorarCarregamento(tipo, tentativas + 1), 2000);
                             return;
                         }
