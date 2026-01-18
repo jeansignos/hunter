@@ -17,7 +17,7 @@
             background: #1a202c;
             border-radius: 10px;
             margin-bottom: 15px;
-            align-items: flex-start;
+            align-items: flex-end; /* Alinhar elementos pela base */
             justify-content: center;
         }
         
@@ -28,7 +28,7 @@
             display: flex;
             flex-direction: column;
             gap: 3px;
-            align-self: center; /* Alinhar verticalmente com outros botões */
+            align-self: flex-end; /* Alinhar pela base com outros botões */
         }
         
         .mini-dropdown-btn {
@@ -45,6 +45,8 @@
             justify-content: space-between;
             gap: 8px;
             transition: all 0.2s ease;
+            height: 36px; /* Altura fixa igual aos outros botões */
+            box-sizing: border-box;
         }
         
         .mini-dropdown-btn:hover {
@@ -3836,7 +3838,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
 
         function carregarCacheTeste() {
-            addCacheLog("Iniciando carregamento de 10 contas...", "info");
+            addCacheLog("Iniciando carregamento de teste...", "info");
             if(!confirm("Carregar 10 contas de teste?")) return;
             addCacheLog('Iniciando carregamento de 10 contas...', 'info');
             
@@ -3850,16 +3852,16 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             fetch('/carregar-teste', {method: 'POST', headers: {'X-CSRFToken': document.querySelector('input[name=csrf_token]')?.value || ''}})
                 .then(r => r.json())
                 .then(d => { 
-                    // Reabilitar botões
-                    botoesCache.forEach(btn => btn.disabled = false);
-                    
-                    if (d.success && d.contas_carregadas > 0) {
-                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas de teste`, 'success');
-                        addCacheLog(`✅ ${d.contas_carregadas} contas carregadas`, 'success');
-                        // Atualizar status e selecionar cache teste
-                        verificarStatusCache(true); // true = forçar busca após carregar
+                    if (d.success) {
+                        // O carregamento foi INICIADO
+                        mostrarNotificacao('Carregamento de teste iniciado. Aguarde...', 'info');
+                        addCacheLog('Carregamento de teste iniciado...', 'info');
+                        
+                        // Monitorar progresso até concluir
+                        monitorarCarregamento('teste');
                     } else {
-                        mostrarNotificacao(d.message || 'Erro ao carregar cache teste', 'error');
+                        botoesCache.forEach(btn => btn.disabled = false);
+                        mostrarNotificacao(d.message || 'Erro ao iniciar carregamento', 'error');
                         verificarStatusCache(false);
                     }
                 })
@@ -3879,7 +3881,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             addCacheLog('Iniciando carregamento completo...', 'info');
             
             // Mostrar status de carregamento
-            const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando todas as contas...</span>";
+            const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Iniciando carregamento completo...</span>";
             
             // Desabilitar botões durante o carregamento
             const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
@@ -3888,16 +3890,17 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             fetch('/carregar-completo', {method: 'POST', headers: {'X-CSRFToken': document.querySelector('input[name=csrf_token]')?.value || ''}})
                 .then(r => r.json())
                 .then(d => { 
-                    // Reabilitar botões
-                    botoesCache.forEach(btn => btn.disabled = false);
-                    
-                    if (d.success && d.contas_carregadas > 0) {
-                        mostrarNotificacao(`Carregadas ${d.contas_carregadas} contas completas`, 'success');
-                        addCacheLog(`✅ ${d.contas_carregadas} contas completas carregadas`, 'success');
-                        // Atualizar status e selecionar cache completo
-                        verificarStatusCache(true); // true = forçar busca após carregar
+                    if (d.success) {
+                        // O carregamento foi INICIADO (não concluído)
+                        // Começar a monitorar o progresso
+                        mostrarNotificacao('Carregamento completo iniciado. Aguarde...', 'info');
+                        addCacheLog('Carregamento iniciado, monitorando progresso...', 'info');
+                        
+                        // Monitorar progresso até concluir
+                        monitorarCarregamento('completas');
                     } else {
-                        mostrarNotificacao(d.message || 'Erro ao carregar cache completo', 'error');
+                        botoesCache.forEach(btn => btn.disabled = false);
+                        mostrarNotificacao(d.message || 'Erro ao iniciar carregamento', 'error');
                         verificarStatusCache(false);
                     }
                 })
@@ -3909,6 +3912,57 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     addCacheLog('❌ Erro de conexão', 'error');
                     verificarStatusCache(false);
                 });
+        }
+        
+        // Nova função para monitorar carregamento
+        function monitorarCarregamento(tipo) {
+            fetch('/status-carregamento')
+                .then(r => r.json())
+                .then(data => {
+                    const info = document.getElementById('cache-info');
+                    const botoesCache = document.querySelectorAll('.cache-type-btn, .btn-buscar');
+                    
+                    if (data.carregando) {
+                        // Ainda carregando - mostrar progresso
+                        const prog = data.progresso || {};
+                        if (prog.atual > 0 && prog.total > 0) {
+                            const pct = Math.round((prog.atual / prog.total) * 100);
+                            if (info) info.innerHTML = `Status: <span style='color: #f6e05e'>🔄 Carregando... ${prog.atual}/${prog.total} (${pct}%)</span>`;
+                            addCacheLog(`Processando ${prog.atual} de ${prog.total} contas (${pct}%)`, 'info');
+                        } else {
+                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Carregando...</span>";
+                        }
+                        // Verificar novamente em 3 segundos
+                        setTimeout(() => monitorarCarregamento(tipo), 3000);
+                    } else {
+                        // Carregamento concluído - reabilitar botões
+                        botoesCache.forEach(btn => btn.disabled = false);
+                        
+                        if (tipo === 'completas' && data.tem_cache_completo && data.total_completo > 0) {
+                            if (info) info.innerHTML = `Status: <span style='color: #48bb78'>✅ Cache Completo (${data.total_completo} contas)</span>`;
+                            addCacheLog(`✅ Carregamento concluído: ${data.total_completo} contas`, 'success');
+                            mostrarNotificacao(`Cache completo carregado: ${data.total_completo} contas`, 'success');
+                            selecionarCache('completas');
+                            buscarContas();
+                        } else if (tipo === 'teste' && data.tem_cache_teste && data.total_teste > 0) {
+                            if (info) info.innerHTML = `Status: <span style='color: #ed8936'>⚠️ Cache Teste (${data.total_teste} contas)</span>`;
+                            addCacheLog(`✅ Teste concluído: ${data.total_teste} contas`, 'success');
+                            mostrarNotificacao(`Cache teste carregado: ${data.total_teste} contas`, 'success');
+                            selecionarCache('teste');
+                            buscarContas();
+                        } else {
+                            if (info) info.innerHTML = "Status: <span style='color: #f56565'>❌ Falha no carregamento</span>";
+                            addCacheLog('❌ Carregamento falhou ou cache vazio', 'error');
+                            mostrarNotificacao('Carregamento falhou. Tente novamente.', 'error');
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro ao monitorar:', err);
+                    // Tentar novamente em 5 segundos
+                    setTimeout(() => monitorarCarregamento(tipo), 5000);
+                });
+        }
         }
 
         // Atualize a função verificarStatusCache
