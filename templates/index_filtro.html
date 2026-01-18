@@ -676,25 +676,44 @@
         
         .user-nav {
             display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             gap: 10px;
             align-items: center;
-            padding: 10px;
+            justify-content: flex-start;
+            padding: 10px 15px;
             background: #2d3748;
             border-radius: 8px;
             margin-bottom: 15px;
         }
         
-        .user-nav a {
-            color: #a0aec0;
+        .user-nav a,
+        .user-nav .btn-auth {
+            color: #e2e8f0;
             text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 6px;
             transition: all 0.3s ease;
+            background: #4a5568;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
         }
         
-        .user-nav a:hover {
-            background: #4a5568;
+        .user-nav a:hover,
+        .user-nav .btn-auth:hover {
+            background: #667eea;
             color: white;
+        }
+        
+        .user-nav .user-status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
         }
         
         /* Dropdown colapsável de Filtros */
@@ -1435,17 +1454,15 @@
                     <i class="fas fa-search"></i> Buscar
                 </button>
                 
-                {% if is_premium %}
-                <!-- Botões Cache (só premium) -->
+                {% if is_admin %}
+                <!-- Botões Cache (só admin) -->
                 <button type="button" class="btn-acao-compacto" onclick="carregarCacheTeste()" style="background: #333;">
                     <i class="fas fa-database"></i> Cache 10
                 </button>
                 <button type="button" class="btn-acao-compacto" onclick="carregarCacheCompleto()" style="background: #333;">
                     <i class="fas fa-database"></i> Cache Full
                 </button>
-                {% endif %}
                 
-                {% if is_admin %}
                 <!-- Log de Cache -->
                 <div class="cache-log-container" id="cache-log-container" style="margin-top: 10px; max-width: 300px;">
                     <div class="cache-log-header" onclick="toggleCacheLog()">
