@@ -57,16 +57,20 @@ def carregar_detalhes_com_cache(conta):
     cache_key = f"detalhes_{seq}_equip"
     cached = read_from_cache(cache_key)
     
-    if cached:
+    # Verificar se o cache tem os campos necessários (tradeType foi adicionado depois)
+    # Se não tiver, ignorar cache e buscar da API novamente
+    if cached and "tradeType" in cached:
         return {
             "conta": conta,
             "detalhes": cached
         }
     
-    # Buscar detalhes da API
+    # Buscar detalhes da API (cache inexistente ou incompleto)
     detalhes = buscar_detalhes_conta(seq, transport_id)
     
     if detalhes:
+        # Salvar no cache para próximas consultas
+        save_to_cache(cache_key, detalhes, expiry_minutes=720)
         return {
             "conta": conta,
             "detalhes": detalhes
