@@ -149,11 +149,11 @@ def carregar_contas_teste():
             contas_detalhadas_global = resultados
         
         # Salvar no cache
-        save_to_cache("contas_teste", resultados, expiry_minutes=60)
+        save_to_cache("contas_teste", resultados, expiry_minutes=720)
         
         # Salvar status disponíveis
         status_lista = list(status_coletados)
-        save_to_cache("status_disponiveis", status_lista, expiry_minutes=120)
+        save_to_cache("status_disponiveis", status_lista, expiry_minutes=720)
         
         print(f"[TESTE] Carregamento concluído: {len(resultados)} contas")
         
@@ -259,11 +259,11 @@ def carregar_contas_completas(force=False):
             ultimo_hash_contas = novo_hash
         
         # Salvar no cache
-        save_to_cache("contas_completas", resultados, expiry_minutes=60)
+        save_to_cache("contas_completas", resultados, expiry_minutes=720)
         
         # Salvar status disponíveis
         status_lista = list(status_coletados)
-        save_to_cache("status_disponiveis", status_lista, expiry_minutes=120)
+        save_to_cache("status_disponiveis", status_lista, expiry_minutes=720)
         
         # Salvar status do carregamento
         status = {

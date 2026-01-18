@@ -437,7 +437,9 @@ p.subtitle {
     display: none; 
     padding: 0 12px; 
     animation: fadeIn 0.3s ease;
-    min-height: 350px; /* Altura mínima para manter cards do mesmo tamanho */
+    min-height: 420px; /* Altura mínima baseada na aba de equipamentos */
+    max-height: 420px; /* Altura máxima para consistência */
+    overflow-y: auto; /* Scroll se precisar */
 }
 .tab-content.active { 
     display: block; 

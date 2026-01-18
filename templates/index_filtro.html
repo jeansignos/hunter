@@ -2477,13 +2477,37 @@
                 }, 10);
                 
                 setTimeout(() => {
-                    document.getElementById('buscar-status-modal')?.focus();
+                    const inputBusca = document.getElementById('buscar-status-modal');
+                    if (inputBusca) {
+                        inputBusca.focus();
+                        // Adicionar listener de busca
+                        inputBusca.oninput = function() {
+                            filtrarStatusNoModal(this.value);
+                        };
+                    }
                 }, 50);
                 
             } catch (error) {
                 console.error('Erro ao abrir modal de status:', error);
                 mostrarNotificacao('Erro ao carregar status', 'error');
             }
+        }
+        
+        function filtrarStatusNoModal(termo) {
+            const container = document.getElementById('status-container');
+            const itens = container.querySelectorAll('.status-item-modal');
+            const termoLower = termo.toLowerCase().trim();
+            
+            itens.forEach(item => {
+                const nomeEl = item.querySelector('.status-name-modal');
+                const nome = nomeEl ? nomeEl.textContent.toLowerCase() : '';
+                
+                if (termoLower === '' || nome.includes(termoLower)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         function fecharModalTodosStatus() {
