@@ -28,11 +28,7 @@
             display: flex;
             flex-direction: column;
             gap: 3px;
-        }
-        
-        .mini-dropdown::before {
-            content: '';
-            height: 12px; /* Espaço para alinhar com labels dos outros filtros */
+            align-self: center; /* Alinhar verticalmente com outros botões */
         }
         
         .mini-dropdown-btn {
@@ -2036,6 +2032,25 @@
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
+            // Listener para fechar modais com ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Fechar todos os modais abertos
+                    const modais = document.querySelectorAll('.modal');
+                    modais.forEach(modal => {
+                        if (modal.style.display === 'block' || modal.style.display === 'flex') {
+                            modal.style.display = 'none';
+                            modal.style.opacity = '0';
+                        }
+                    });
+                    document.body.style.overflow = 'auto';
+                    
+                    // Fechar mini-dropdowns
+                    const dropdowns = document.querySelectorAll('.mini-dropdown-content.show');
+                    dropdowns.forEach(dd => dd.classList.remove('show'));
+                }
+            });
+            
             // Verificar cache e carregar vitrine automaticamente
             verificarStatusCache().then(data => {
                 if (data && (data.tem_cache_completo || data.tem_cache_teste)) {

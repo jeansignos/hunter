@@ -297,6 +297,10 @@ p.subtitle {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
     
     /* O SEGREDO ESTÁ AQUI EMBAIXO: */
     align-items: start; /* Isso impede que os vizinhos estiquem junto */
@@ -432,7 +436,8 @@ p.subtitle {
 .tab-content { 
     display: none; 
     padding: 0 12px; 
-    animation: fadeIn 0.3s ease; 
+    animation: fadeIn 0.3s ease;
+    min-height: 350px; /* Altura mínima para manter cards do mesmo tamanho */
 }
 .tab-content.active { 
     display: block; 
