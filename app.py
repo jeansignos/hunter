@@ -322,13 +322,11 @@ def create_app(config_name=None):
             if status_lance:
                 nft_id = str(conta.get("nftID", ""))
                 if status_lance == "bidding":
-                    # Usar dados do wemixplay para verificar se tem bid ativo
+                    # Aba "Com Lance" (Premium) - mostra APENAS contas com bid ativo
                     if nft_id not in nft_ids_com_bid:
                         continue
-                elif status_lance == "listado":
-                    # Mostrar apenas contas SEM bid ativo
-                    if nft_id in nft_ids_com_bid:
-                        continue
+                # Aba "Listado" mostra TODAS as contas (incluindo as com bid)
+                # O badge será atualizado no frontend baseado em has_active_bid
             
             # Filtro de servidor
             world_name = conta.get("worldName", conta.get("basic", {}).get("worldName", ""))
@@ -628,6 +626,14 @@ def create_app(config_name=None):
         
         wemix_brl = get_wemix_brl_price()
         
+        # Criar lookup de dados de bid para contas ativas
+        bid_data_by_nft = {}
+        if nft_ids_com_bid:
+            from core.api import obter_contas_com_bid_cached
+            contas_bid, _, _ = obter_contas_com_bid_cached()
+            for bid in contas_bid:
+                bid_data_by_nft[bid["nftID"]] = bid
+
         # Formatar contas para resposta
         contas_formatadas = []
         for conta in contas_paginadas:
@@ -677,7 +683,8 @@ def create_app(config_name=None):
                 "sealedTS": conta.get("sealedTS", 0),
                 "nftID": conta.get("nftID", ""),
                 "bid_count": conta.get("bid_count", 0),
-                "auctionEndTime": conta.get("auctionEndTime", 0),
+                "auctionEndTime": bid_data_by_nft.get(str(conta.get("nftID", "")), {}).get("auctionEndTime", conta.get("auctionEndTime", 0)),
+                "has_active_bid": str(conta.get("nftID", "")) in nft_ids_com_bid,
                 "equip": conta.get("equip", []),
                 "inven": conta.get("inven", []),
                 "inven_all": conta.get("inven_all", []),

@@ -3206,27 +3206,32 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 fragments.map(item => renderSpecialItem(item)).join('') : 
                 '<div style="text-align:center; padding:20px; color:#718096; font-size:0.9rem;">Sem fragmentos</div>';
             
-            // Badge dinâmico baseado no tradeType
-            const isBidding = conta.tradeType === 2;
+            // Badge dinâmico baseado no has_active_bid (dados em tempo real do wemixplay)
+            const hasActiveBid = conta.has_active_bid === true;
             
-            // Calcular tempo restante do leilão
+            // Calcular tempo restante do leilão usando auctionEndTime do wemixplay
             let timerHtml = '';
-            if (isBidding && conta.sealedTS) {
-                const tempoRestante = calcularTempoRestanteLeilao(conta.sealedTS);
-                if (tempoRestante) {
-                    const timerClass = tempoRestante.expirado ? 'timer-expired' : '';
-                    timerHtml = `<span class="card-timer ${timerClass}" data-sealed="${conta.sealedTS}"><i class="fas fa-clock"></i> ${tempoRestante.texto}</span>`;
+            if (hasActiveBid && conta.auctionEndTime) {
+                const now = Math.floor(Date.now() / 1000);
+                const tempoRestante = conta.auctionEndTime - now;
+                if (tempoRestante > 0) {
+                    const horas = Math.floor(tempoRestante / 3600);
+                    const minutos = Math.floor((tempoRestante % 3600) / 60);
+                    const segundos = tempoRestante % 60;
+                    const textoTimer = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+                    timerHtml = `<span class="card-timer" data-auction-end="${conta.auctionEndTime}"><i class="fas fa-clock"></i> ${textoTimer}</span>`;
+                } else {
+                    timerHtml = `<span class="card-timer timer-expired"><i class="fas fa-clock"></i> EXPIRADO</span>`;
                 }
             }
             
-            const bidCountText = conta.bid_count > 0 ? ` (${conta.bid_count})` : '';
-            const statusBadge = isBidding ? 
-                `<span class="card-status-badge badge-bidding">COM LANCE${bidCountText}</span>` : 
+            const statusBadge = hasActiveBid ? 
+                `<span class="card-status-badge badge-bidding">COM LANCE</span>` : 
                 '<span class="card-status-badge">LISTADO</span>';
             
             // Estrutura do Card
             return `
-            <div class="nft-card ${cardType}" id="card-${conta.seq}">
+            <div class="nft-card ${cardType}" id="card-${conta.seq}" data-nft-id="${conta.nftID}">
                 <div class="card-top-bar">
                     ${statusBadge}
                     ${timerHtml}
@@ -4256,6 +4261,54 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 icon.className = 'fas fa-chevron-down';
             }
         }
+        // Atualizar timers de leilão em tempo real
+        function atualizarTimersLeilao() {
+            const timers = document.querySelectorAll(".card-timer[data-auction-end]");
+            const now = Math.floor(Date.now() / 1000);
+            timers.forEach(timer => {
+                const auctionEnd = parseInt(timer.getAttribute("data-auction-end"));
+                const tempoRestante = auctionEnd - now;
+                if (tempoRestante > 0) {
+                    const horas = Math.floor(tempoRestante / 3600);
+                    const minutos = Math.floor((tempoRestante % 3600) / 60);
+                    const segundos = tempoRestante % 60;
+                    const texto = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
+                    timer.innerHTML = `<i class="fas fa-clock"></i> ${texto}`;
+                    timer.classList.remove("timer-expired");
+                } else {
+                    timer.innerHTML = `<i class="fas fa-clock"></i> VERIFICANDO...`;
+                    timer.classList.add("timer-expired");
+                    // Verificar se conta ainda está ativa
+                    const card = timer.closest(".nft-card");
+                    if (card) {
+                        const nftId = card.querySelector("[data-nft-id]")?.getAttribute("data-nft-id");
+                        if (nftId) verificarContaAinda(nftId, card);
+                    }
+                }
+            });
+        }
+        
+        // Verificar se conta ainda está ativa quando timer zerar
+        async function verificarContaAinda(nftId, card) {
+            try {
+                const res = await fetch(`/api/verificar-conta-ativa/${nftId}`);
+                const data = await res.json();
+                const timer = card.querySelector(".card-timer");
+                if (data.ativa) {
+                    // Teve novo lance, atualizar timer
+                    timer.setAttribute("data-auction-end", data.conta.auctionEndTime);
+                    timer.classList.remove("timer-expired");
+                } else {
+                    timer.innerHTML = `<i class="fas fa-check"></i> FINALIZADO`;
+                }
+            } catch (e) {
+                console.error("Erro ao verificar conta:", e);
+            }
+        }
+        
+        // Iniciar atualização a cada segundo
+        setInterval(atualizarTimersLeilao, 1000);
+
     </script>
 
 <!-- ===== MODAL DE LOGIN ===== -->
