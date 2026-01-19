@@ -294,9 +294,9 @@ def create_app(config_name=None):
         # Buscar nftIDs com bid ativo do wemixplay (se filtro bidding estiver ativo)
         nft_ids_com_bid = set()
         if filtros.get("status_lance") in ["bidding", "listado"]:
-            from core.api import obter_nft_ids_com_bid
+            from core.api import obter_contas_com_bid_cached
             try:
-                nft_ids_com_bid = obter_nft_ids_com_bid()
+                _, nft_ids_com_bid, _ = obter_contas_com_bid_cached()
                 print(f"[FILTRO] {len(nft_ids_com_bid)} contas com bid ativo no wemixplay")
             except Exception as e:
                 print(f"[FILTRO] Erro ao buscar nftIDs com bid: {e}")
@@ -677,6 +677,7 @@ def create_app(config_name=None):
                 "sealedTS": conta.get("sealedTS", 0),
                 "nftID": conta.get("nftID", ""),
                 "bid_count": conta.get("bid_count", 0),
+                "auctionEndTime": conta.get("auctionEndTime", 0),
                 "equip": conta.get("equip", []),
                 "inven": conta.get("inven", []),
                 "inven_all": conta.get("inven_all", []),
@@ -782,17 +783,51 @@ def create_app(config_name=None):
 
     @app.route("/api/contas-com-bid")
     def api_contas_com_bid():
-        """Retorna lista de contas com bid ativo do wemixplay"""
-        from core.api import buscar_contas_com_bid_wemixplay
+        """Retorna lista de contas com bid ativo do wemixplay (com cache de 20 min)"""
+        from core.api import obter_contas_com_bid_cached, get_cache_bid_status
+        force = request.args.get("force", "false").lower() == "true"
         try:
-            contas = buscar_contas_com_bid_wemixplay()
-            # Criar set de nftIDs para verificação rápida
-            nft_ids_com_bid = {c["nftID"] for c in contas}
+            contas, nft_ids, from_cache = obter_contas_com_bid_cached(force_refresh=force)
+            cache_status = get_cache_bid_status()
             return jsonify({
                 "success": True,
                 "total": len(contas),
                 "contas": contas,
-                "nftIDs": list(nft_ids_com_bid)
+                "nftIDs": list(nft_ids),
+                "from_cache": from_cache,
+                "cache": cache_status
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
+
+    @app.route("/api/verificar-conta-ativa/<nft_id>")
+    def api_verificar_conta_ativa(nft_id):
+        """Verifica se conta ainda está em leilão (para quando cronômetro zerar)"""
+        from core.api import verificar_conta_ainda_ativa
+        try:
+            resultado = verificar_conta_ainda_ativa(nft_id)
+            return jsonify({
+                "success": True,
+                **resultado
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
+
+    @app.route("/api/cache-bid-status")
+    def api_cache_bid_status():
+        """Retorna status do cache de bids"""
+        from core.api import get_cache_bid_status
+        try:
+            status = get_cache_bid_status()
+            return jsonify({
+                "success": True,
+                **status
             })
         except Exception as e:
             return jsonify({

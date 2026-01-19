@@ -758,3 +758,110 @@ def obter_nft_ids_com_bid():
     """
     contas = buscar_contas_com_bid_wemixplay()
     return {conta['nftID'] for conta in contas}
+
+
+# Cache global para contas com bid (evita requisições excessivas)
+_cache_contas_bid = {
+    "data": [],
+    "nft_ids": set(),
+    "timestamp": 0,
+    "ttl": 1200  # 20 minutos em segundos
+}
+
+
+def obter_contas_com_bid_cached(force_refresh=False):
+    """
+    Retorna contas com bid do cache, atualizando se necessário.
+    Cache expira a cada 20 minutos.
+    
+    Args:
+        force_refresh: Se True, força atualização mesmo se cache válido
+    
+    Returns:
+        tuple: (lista_contas, set_nft_ids, from_cache)
+    """
+    import time
+    global _cache_contas_bid
+    
+    now = time.time()
+    cache_age = now - _cache_contas_bid["timestamp"]
+    cache_valid = cache_age < _cache_contas_bid["ttl"]
+    
+    if not force_refresh and cache_valid and _cache_contas_bid["data"]:
+        print(f"[CACHE BID] Usando cache (idade: {int(cache_age)}s)")
+        return _cache_contas_bid["data"], _cache_contas_bid["nft_ids"], True
+    
+    # Atualizar cache
+    print(f"[CACHE BID] Atualizando cache... (force={force_refresh}, valid={cache_valid})")
+    contas = buscar_contas_com_bid_wemixplay()
+    nft_ids = {c['nftID'] for c in contas}
+    
+    _cache_contas_bid["data"] = contas
+    _cache_contas_bid["nft_ids"] = nft_ids
+    _cache_contas_bid["timestamp"] = now
+    
+    return contas, nft_ids, False
+
+
+def verificar_conta_ainda_ativa(nft_id):
+    """
+    Verifica se uma conta específica ainda está com bid ativo.
+    Útil para verificar quando o cronômetro zerar.
+    
+    Returns:
+        dict: {
+            "ativa": True/False,
+            "conta": dados da conta se ativa,
+            "tempo_restante": segundos restantes,
+            "status": "vendida" | "com_lance" | "sem_lance"
+        }
+    """
+    import time
+    
+    # Força refresh para ter dados em tempo real
+    contas, nft_ids, _ = obter_contas_com_bid_cached(force_refresh=True)
+    
+    nft_id_str = str(nft_id)
+    
+    if nft_id_str in nft_ids:
+        # Encontrar dados da conta
+        for conta in contas:
+            if conta['nftID'] == nft_id_str:
+                auction_end = conta.get('auctionEndTime', 0)
+                tempo_restante = max(0, auction_end - int(time.time()))
+                
+                return {
+                    "ativa": True,
+                    "conta": conta,
+                    "tempo_restante": tempo_restante,
+                    "status": "com_lance",
+                    "message": f"Conta ainda em leilão. Tempo restante: {tempo_restante}s"
+                }
+    
+    # Não está na lista de bids ativos
+    # Pode ter sido vendida ou o lance expirou sem novos lances
+    return {
+        "ativa": False,
+        "conta": None,
+        "tempo_restante": 0,
+        "status": "finalizada",
+        "message": "Conta não encontrada nos leilões ativos. Foi vendida ou expirou."
+    }
+
+
+def get_cache_bid_status():
+    """Retorna status do cache de bids"""
+    import time
+    global _cache_contas_bid
+    
+    now = time.time()
+    cache_age = now - _cache_contas_bid["timestamp"]
+    
+    return {
+        "total_contas": len(_cache_contas_bid["data"]),
+        "idade_segundos": int(cache_age),
+        "ttl_segundos": _cache_contas_bid["ttl"],
+        "expira_em": max(0, _cache_contas_bid["ttl"] - int(cache_age)),
+        "valido": cache_age < _cache_contas_bid["ttl"],
+        "ultima_atualizacao": _cache_contas_bid["timestamp"]
+    }
