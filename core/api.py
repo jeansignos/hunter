@@ -765,7 +765,7 @@ _cache_contas_bid = {
     "data": [],
     "nft_ids": set(),
     "timestamp": 0,
-    "ttl": 1200  # 20 minutos em segundos
+    "ttl": 1800  # 30 minutos em segundos
 }
 
 

@@ -4042,7 +4042,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                         
                         if (!cacheExiste && tentativas < 10) {
                             // Ainda esperando thread iniciar - NÃO adicionar log para não poluir
-                            if (info) info.innerHTML = "Status: <span style='color: #f6e05e'>🔄 Iniciando...</span>";
+                            // Removido: não mostrar "Iniciando" para evitar alternância com progresso
                             setTimeout(() => monitorarCarregamento(tipo, tentativas + 1), 2000);
                             return;
                         }
