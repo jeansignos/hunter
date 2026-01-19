@@ -306,39 +306,9 @@ def create_app(config_name=None):
                 for bid in contas_bid_wemixplay:
                     bid_data_lookup[str(bid.get('nftID', ''))] = bid
                 
-                # Se for filtro "Com Lance", injetar contas do wemixplay que não estão no cache
-                if filtros.get("status_lance") == "bidding":
-                    # Coletar nftIDs que já temos no cache
-                    nft_ids_no_cache = {str(c.get('nftID', '')) for c in contas_filtradas_cache if c.get('nftID')}
-                    
-                    # Adicionar contas do wemixplay que não estão no cache
-                    for bid in contas_bid_wemixplay:
-                        nft_id = str(bid.get('nftID', ''))
-                        if nft_id and nft_id not in nft_ids_no_cache:
-                            # Criar entrada básica para conta do wemixplay
-                            conta_wemix = {
-                                'seq': None,  # Não temos seq
-                                'nftID': nft_id,
-                                'name': bid.get('name', 'Conta com Lance'),
-                                'price': bid.get('price', 0),
-                                'auctionEndTime': bid.get('auctionEndTime', 0),
-                                'has_active_bid': True,
-                                'tradeType': 2,  # Em leilão
-                                'class': '1',  # Desconhecido
-                                'level': 0,
-                                'powerScore': 0,
-                                'worldName': '',
-                                'basic': {'name': bid.get('name', 'Conta com Lance')},
-                                'equip': [],
-                                'inven': [],
-                                'inven_all': [],
-                                'spirit_list': [],
-                                'skills_list': [],
-                                'stats': [],
-                                'from_wemixplay': True  # Marcador
-                            }
-                            contas_filtradas_cache.append(conta_wemix)
-                            print(f"[FILTRO] Adicionada conta do wemixplay: {bid.get('name')} (nftID: {nft_id})")
+                # Nota: Contas com lance só aparecem se estiverem no cache
+                # (não injetamos contas do wemixplay sem detalhes)
+                pass
             except Exception as e:
                 print(f"[FILTRO] Erro ao buscar nftIDs com bid: {e}")
                 import traceback
