@@ -1415,7 +1415,7 @@
                 {% endif %}
                 <div class="user-status">
                     {% if is_premium %}
-                        <span class="premium-user"><i class="fas fa-crown"></i> Premium</span>
+                        <span class="premium-user"><i class="fas fa-crown"></i> Premium ({{ current_user.premium_days_remaining }} dias)</span>
                     {% else %}
                         <button type="button" onclick="abrirModalPremium()" class="btn-seja-premium">
                             <i class="fas fa-crown"></i> Seja Premium

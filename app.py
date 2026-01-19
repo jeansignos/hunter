@@ -399,39 +399,61 @@ def create_app(config_name=None):
                             for nft_id in nft_ids_ainda_faltando:
                                 bid_info = bid_data_lookup.get(nft_id, {})
                                 if bid_info:
-                                    # Criar entrada usando dados do wemixplay
-                                    conta_wemix = {
-                                        "seq": bid_info.get("seq"),
-                                        "transportID": bid_info.get("transportID", bid_info.get("seq")),
-                                        "nftID": nft_id,
-                                        "name": bid_info.get("name", ""),
-                                        "powerScore": bid_info.get("powerScore", 0),
-                                        "level": bid_info.get("level", 0),
-                                        "class": str(bid_info.get("class", "1")),
-                                        "worldName": bid_info.get("server", ""),
-                                        "price": bid_info.get("price", 0),
-                                        "auctionEndTime": bid_info.get("auctionEndTime", 0),
-                                        "has_active_bid": True,
-                                        "from_wemixplay": True,
-                                        "basic": {
-                                            "name": bid_info.get("name", ""),
-                                            "powerScore": bid_info.get("powerScore", 0),
-                                            "level": bid_info.get("level", 0),
-                                            "class": str(bid_info.get("class", "1")),
-                                            "worldName": bid_info.get("server", "")
-                                        },
-                                        "stats": [],
-                                        "equip": [],
-                                        "spirit_list": [],
-                                        "skills_list": [],
-                                        "inven": [],
-                                        "codex": 0,
-                                        "potencial": 0,
-                                        "training": {},
-                                        "building": {"mina": 0}
-                                    }
-                                    contas_com_detalhes.append(conta_wemix)
-                                    print(f"[FILTRO] Conta {nft_id} ({bid_info.get('name', '?')}) adicionada do wemixplay")
+                                    # Buscar detalhes completos do xDraco usando o seq
+                                    seq = bid_info.get("seq")
+                                    transport_id = bid_info.get("transportID", seq)
+                                    
+                                    if seq:
+                                        from core.api import buscar_detalhes_conta
+                                        try:
+                                            print(f"[FILTRO] Buscando detalhes da conta {nft_id} (seq={seq})...")
+                                            detalhes = buscar_detalhes_conta(seq, transport_id)
+                                            
+                                            if detalhes and detalhes.get("basic", {}).get("name"):
+                                                # Conta encontrada com detalhes completos
+                                                detalhes["nftID"] = nft_id
+                                                detalhes["price"] = bid_info.get("price", 0)
+                                                detalhes["auctionEndTime"] = bid_info.get("auctionEndTime", 0)
+                                                detalhes["has_active_bid"] = True
+                                                detalhes["from_wemixplay"] = True
+                                                contas_com_detalhes.append(detalhes)
+                                                print(f"[FILTRO] Conta {nft_id} ({detalhes.get('basic', {}).get('name', '?')}) - detalhes completos carregados!")
+                                            else:
+                                                # Fallback para dados básicos
+                                                conta_wemix = {
+                                                    "seq": seq,
+                                                    "transportID": transport_id,
+                                                    "nftID": nft_id,
+                                                    "name": bid_info.get("name", ""),
+                                                    "powerScore": bid_info.get("powerScore", 0),
+                                                    "level": bid_info.get("level", 0),
+                                                    "class": str(bid_info.get("class", "1")),
+                                                    "worldName": bid_info.get("server", ""),
+                                                    "price": bid_info.get("price", 0),
+                                                    "auctionEndTime": bid_info.get("auctionEndTime", 0),
+                                                    "has_active_bid": True,
+                                                    "from_wemixplay": True,
+                                                    "basic": {
+                                                        "name": bid_info.get("name", ""),
+                                                        "powerScore": bid_info.get("powerScore", 0),
+                                                        "level": bid_info.get("level", 0),
+                                                        "class": str(bid_info.get("class", "1")),
+                                                        "worldName": bid_info.get("server", "")
+                                                    },
+                                                    "stats": [],
+                                                    "equip": [],
+                                                    "spirit_list": [],
+                                                    "skills_list": [],
+                                                    "inven": [],
+                                                    "codex": 0,
+                                                    "potencial": 0,
+                                                    "training": {},
+                                                    "building": {"mina": 0}
+                                                }
+                                                contas_com_detalhes.append(conta_wemix)
+                                                print(f"[FILTRO] Conta {nft_id} ({bid_info.get('name', '?')}) - apenas dados básicos")
+                                        except Exception as e:
+                                            print(f"[FILTRO] Erro ao buscar detalhes de {nft_id}: {e}")
                             
                             print(f"[FILTRO] Total: {len(nft_map)} do xDraco + {len(nft_ids_ainda_faltando)} do wemixplay")
                         
