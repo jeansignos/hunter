@@ -1563,7 +1563,8 @@
                         </div>
                         <div class="input-row">
                             <label>Itens Épicos/Lend.</label>
-                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" onchange="atualizarCountNivel()">
+                            <input type="number" id="itens_comercio_min" placeholder="0" min="0" max="10" onchange="atualizarCountNivel()">
+                            <span style="color:#718096;font-size:0.65rem;">máx 10</span>
                         </div>
                         <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-nivel')">Aplicar</button>
                     </div>
@@ -3645,7 +3646,9 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 'item_busca': { label: 'Item', tipo: 'texto' },
                 'equip_lend_trade_min': { label: 'Equip Lend. Trade', tipo: 'numero' },
                 'equip_epic_trade_min': { label: 'Equip Épico Trade', tipo: 'numero' },
-                'codex_min': { label: 'Codex Mín', tipo: 'numero' }
+                'codex_min': { label: 'Codex Mín', tipo: 'numero' },
+                'potencial_min': { label: 'Potencial Mín', tipo: 'numero' },
+                'itens_comercio_min': { label: 'Itens Épicos/Lend', tipo: 'numero' }
             };
             
             // Verificar cada campo de filtro
@@ -4022,7 +4025,11 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                         if (tipo === 'completas' && data.tem_cache_completo && data.total_completo > 0) {
                             if (info) info.innerHTML = `Status: <span style='color: #48bb78'>✅ Cache Completo (${data.total_completo} contas)</span>`;
                             addCacheLog(`✅ Carregamento concluído: ${data.total_completo} contas`, 'success');
-                            mostrarNotificacao(`Cache completo carregado: ${data.total_completo} contas`, 'success');
+                            // Só mostrar notificação se ainda não foi mostrada nessa sessão
+                            if (!window.cacheNotificado) {
+                                mostrarNotificacao(`Cache completo carregado: ${data.total_completo} contas`, 'success');
+                                window.cacheNotificado = true;
+                            }
                             selecionarCache('completas');
                             buscarContas();
                         } else if (tipo === 'teste' && data.tem_cache_teste && data.total_teste > 0) {

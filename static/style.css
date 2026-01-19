@@ -335,6 +335,8 @@ p.subtitle {
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     margin-top: 25px;
     overflow: hidden;
+    max-width: 320px;
+    width: 100%;
 }
 
 .nft-card:hover {
@@ -437,6 +439,7 @@ p.subtitle {
     display: none; 
     padding: 0 12px; 
     animation: fadeIn 0.3s ease;
+    min-height: 320px;  /* Altura mínima para padronizar cards */
 }
 .tab-content.active { 
     display: block; 
