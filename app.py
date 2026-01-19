@@ -293,13 +293,56 @@ def create_app(config_name=None):
         
         # Buscar nftIDs com bid ativo do wemixplay (se filtro bidding estiver ativo)
         nft_ids_com_bid = set()
+        contas_bid_wemixplay = []
+        bid_data_lookup = {}
+        
         if filtros.get("status_lance") in ["bidding", "listado"]:
             from core.api import obter_contas_com_bid_cached
             try:
-                _, nft_ids_com_bid, _ = obter_contas_com_bid_cached()
+                contas_bid_wemixplay, nft_ids_com_bid, _ = obter_contas_com_bid_cached()
                 print(f"[FILTRO] {len(nft_ids_com_bid)} contas com bid ativo no wemixplay")
+                
+                # Criar lookup de dados do wemixplay por nftID
+                for bid in contas_bid_wemixplay:
+                    bid_data_lookup[str(bid.get('nftID', ''))] = bid
+                
+                # Se for filtro "Com Lance", injetar contas do wemixplay que não estão no cache
+                if filtros.get("status_lance") == "bidding":
+                    # Coletar nftIDs que já temos no cache
+                    nft_ids_no_cache = {str(c.get('nftID', '')) for c in contas_filtradas_cache if c.get('nftID')}
+                    
+                    # Adicionar contas do wemixplay que não estão no cache
+                    for bid in contas_bid_wemixplay:
+                        nft_id = str(bid.get('nftID', ''))
+                        if nft_id and nft_id not in nft_ids_no_cache:
+                            # Criar entrada básica para conta do wemixplay
+                            conta_wemix = {
+                                'seq': None,  # Não temos seq
+                                'nftID': nft_id,
+                                'name': bid.get('name', 'Conta com Lance'),
+                                'price': bid.get('price', 0),
+                                'auctionEndTime': bid.get('auctionEndTime', 0),
+                                'has_active_bid': True,
+                                'tradeType': 2,  # Em leilão
+                                'class': '1',  # Desconhecido
+                                'level': 0,
+                                'powerScore': 0,
+                                'worldName': '',
+                                'basic': {'name': bid.get('name', 'Conta com Lance')},
+                                'equip': [],
+                                'inven': [],
+                                'inven_all': [],
+                                'spirit_list': [],
+                                'skills_list': [],
+                                'stats': [],
+                                'from_wemixplay': True  # Marcador
+                            }
+                            contas_filtradas_cache.append(conta_wemix)
+                            print(f"[FILTRO] Adicionada conta do wemixplay: {bid.get('name')} (nftID: {nft_id})")
             except Exception as e:
                 print(f"[FILTRO] Erro ao buscar nftIDs com bid: {e}")
+                import traceback
+                traceback.print_exc()
 
         # Aplicar filtros
         contas_filtradas = []
@@ -710,7 +753,8 @@ def create_app(config_name=None):
                 "url": f"https://www.xdraco.com/nft/trade/{conta.get('seq')}",
                 "tickets": conta.get("tickets", []),
                 "crystals": conta.get("crystals", []),
-                "fragments": conta.get("fragments", [])
+                "fragments": conta.get("fragments", []),
+                "from_wemixplay": conta.get("from_wemixplay", False)
             }
             contas_formatadas.append(conta_formatada)
         

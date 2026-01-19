@@ -2003,3 +2003,80 @@ h2, h3, h4 {
     display: flex;
     flex-direction: column;
 }
+
+/* ===== CORREÇÕES PARA BADGES NÃO SEREM CORTADOS ===== */
+
+/* Items grid precisa de padding extra para badges não serem cortados */
+.items-grid {
+    padding: 20px !important;
+    overflow: visible !important;
+}
+
+/* Tab content precisa permitir overflow para badges */
+.tab-content {
+    overflow: visible !important;
+}
+
+/* Seção de conteúdo do card precisa permitir overflow */
+.nft-card .tab-content,
+.nft-card .items-grid {
+    overflow: visible !important;
+}
+
+/* ===== CORREÇÕES MOBILE ===== */
+@media (max-width: 768px) {
+    /* Grid mobile: 3 colunas com itens menores */
+    .items-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px !important;
+        padding: 15px !important;
+    }
+    
+    /* Itens menores no mobile */
+    .item-circle {
+        width: 55px !important;
+        height: 55px !important;
+        min-width: 55px !important;
+        min-height: 55px !important;
+    }
+    
+    /* Badges menores no mobile */
+    .badge-enhance, .badge-tier {
+        font-size: 9px !important;
+        padding: 2px 4px !important;
+        min-width: 16px !important;
+    }
+    
+    .badge-trade {
+        width: 20px !important;
+        height: 20px !important;
+        top: -6px !important;
+        right: -6px !important;
+        background-size: 12px 12px, cover !important;
+    }
+    
+    /* Garante que imagens de fundo funcionem no mobile */
+    .item-circle[style*="background-image"] {
+        background-size: cover !important;
+        background-position: center !important;
+    }
+    
+    /* Cards no mobile */
+    .nft-card {
+        max-width: 100% !important;
+        margin: 10px 5px !important;
+    }
+    
+    /* Section titles menores */
+    .section-title {
+        font-size: 0.9rem !important;
+        margin: 10px 0 8px 0 !important;
+    }
+}
+
+/* ===== GARANTIR QUE IMAGENS CARREGUEM ===== */
+.item-circle {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
