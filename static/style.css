@@ -2082,3 +2082,42 @@ h2, h3, h4 {
     background-position: center !important;
     background-repeat: no-repeat !important;
 }
+
+/* ===== CORREÇÃO: ITENS NÃO VAZAM DO CARD ===== */
+/* Apenas o ribbon precisa de overflow visible, não o conteúdo do card */
+.nft-card {
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Permitir que APENAS a área do top-bar tenha overflow visible para o ribbon */
+.nft-card .card-top-bar {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 10;
+}
+
+/* O conteúdo das abas (tabs) precisa esconder overflow */
+.nft-card .tab-content {
+    overflow: hidden !important;
+}
+
+/* Items grid deve ter overflow hidden para não vazar */
+.nft-card .items-grid {
+    overflow: hidden !important;
+    padding: 10px !important;
+}
+
+/* Garantir que item-circle não vaze */
+.item-circle {
+    overflow: hidden !important;
+}
+
+/* Badges dos itens precisam ficar dentro do círculo */
+.item-circle .badge-enhance,
+.item-circle .badge-tier,
+.item-circle .badge-trade,
+.item-circle .badge-count {
+    position: absolute;
+    z-index: 5;
+}

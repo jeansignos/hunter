@@ -688,11 +688,11 @@
         
         /* Garantir que o ribbon apareça fora do card */
         .nft-card {
-            overflow: visible !important;
+            overflow: hidden !important; /* Corrigido para nao vazar */
         }
         
         .card-top-bar {
-            overflow: visible !important;
+            overflow: hidden !important; /* Corrigido para nao vazar */
             position: relative;
         }
         
@@ -3777,6 +3777,19 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 const descricao = statusPreenchidos <= 2 ? statusNomes.join(', ') : `${statusPreenchidos} status`;
                 adicionarTagFiltro(container, 'status_filtros', 'Status', descricao, () => {
                     statusInputs.forEach(input => input.value = '');
+                    atualizarFiltrosAtivos();
+                });
+            }
+            
+            // Verificar itens selecionados
+            if (typeof filtrosItensAtivos !== 'undefined' && Object.keys(filtrosItensAtivos).length > 0) {
+                const totalItens = Object.keys(filtrosItensAtivos).length;
+                const nomesItens = Object.values(filtrosItensAtivos).map(i => i.nome).slice(0, 2);
+                const descricao = totalItens <= 2 ? nomesItens.join(', ') : `${totalItens} itens`;
+                temFiltros = true;
+                adicionarTagFiltro(container, 'filtro_itens', 'Itens', descricao, () => {
+                    filtrosItensAtivos = {};
+                    atualizarItensSelecionados();
                     atualizarFiltrosAtivos();
                 });
             }

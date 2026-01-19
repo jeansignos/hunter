@@ -177,3 +177,43 @@ EXCLUIR_PALAVRAS = [
     "Ingrediente de", "Material de", "Componente de",
     "Moeda de", "Ficha de", "Selo de", "Emblema de"
 ]
+
+# ==================== LISTA FIXA DE STATUS PARA FILTROS ====================
+TODOS_STATUS_FILTROS = [
+    "Aceleramento de Tempo de Mineração",
+    "Aumento de Ganho de Aço Negro",
+    "ATAQUE FÍSICO",
+    "ATAQUE de feitiço",
+    "Ataque MÁGICO",
+    "CRÍTICO",
+    "Penetração de Armadura",
+    "Aumento de PRECISÃO",
+    "EVASÃO",
+    "Aumento da Taxa de EVASÃO",
+    "Aumento de Afinidade",
+    "Aumento de EVA",
+    "HP",
+    "MP",
+    "DEF",
+    "Resistência a Habilidades",
+    "Dano Contra BOSS",
+    "Dano Contra JOGADORES",
+    "Velocidade de ATQ",
+    "Velocidade de Movimento",
+    "Resistência a Efeitos de Interrupção",
+    "Redução de tempo de recarga da habilidade",
+    "Aumento de EXP PvE",
+    "Aumento de EXP da Técnica de Energia Interior",
+    "Aumento de EXP de Cultivo Mágico",
+    "Habilidade de Colheita",
+    "Aumento de Ganho de Cobre",
+    "Aumento de Ganho de Energia Sombria",
+    "MIRA",
+    "PRECISÃO",
+    "Redução de Dano MÁGICO",
+    "Redução de Dano FÍSICO",
+    "Absorção de DANO",
+    "Taxa de Absorção de DANO",
+    "Aumento de Dano em Ataque a Distância",
+    "Redução de Dano a Distância Recebido"
+]
