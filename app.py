@@ -253,10 +253,36 @@ def create_app(config_name=None):
         cache_key = "contas_completas" if cache_tipo == "completas" else "contas_teste"
         contas_com_detalhes = read_from_cache(cache_key) or []
         
+        # Se não tem cache, busca diretamente da API (modo básico)
+        if not contas_com_detalhes:
+            from core.api import buscar_todas_contas
+            try:
+                contas_api = buscar_todas_contas(max_paginas=1)  # Só primeira página
+                if contas_api:
+                    # Formatar contas da API para o mesmo formato do cache
+                    contas_com_detalhes = []
+                    for c in contas_api[:20]:  # Máximo 20 contas sem cache
+                        conta_formatada = {
+                            "seq": c.get("seq"),
+                            "transportID": c.get("transportID"),
+                            "class": c.get("class", 1),
+                            "name": c.get("characterName", ""),
+                            "worldName": c.get("worldName", ""),
+                            "lv": c.get("lv", 1),
+                            "powerScore": c.get("powerScore", 0),
+                            "price": c.get("price", 0),
+                            "tradeType": c.get("tradeType", 1),
+                            "basic": c,
+                            "sem_cache": True  # Marcador para indicar dados básicos
+                        }
+                        contas_com_detalhes.append(conta_formatada)
+            except Exception as e:
+                print(f"Erro ao buscar da API: {e}")
+        
         if not contas_com_detalhes:
             return jsonify({
                 "success": False,
-                "error": "Cache ainda não carregado. Por favor, clique em 'Carregar 10 contas (Teste)' ou 'Carregar Todas'.",
+                "error": "Não foi possível carregar contas. Tente novamente.",
                 "cache_carregando": False
             })
         
