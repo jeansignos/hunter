@@ -79,14 +79,13 @@ def buscar_lista_contas(page=1):
     return None
 
 
-def buscar_todas_contas():
-    """Busca TODAS as contas disponíveis"""
+def buscar_todas_contas(max_paginas=100):
+    """Busca contas disponíveis (limitado por max_paginas)"""
     import time
     
-    print("Iniciando busca de TODAS as contas...")
+    print(f"Iniciando busca de contas (max {max_paginas} páginas)...")
     todas_contas = []
     pagina = 1
-    max_paginas = 100
     
     while pagina <= max_paginas:
         print(f"Buscando página {pagina}...")
