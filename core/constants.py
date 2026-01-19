@@ -281,8 +281,11 @@ EXCLUIR_PALAVRAS = [
     # === FRAGMENTOS DE PEDRA DE APRIMORAMENTO ===
     "Fragmento de Pedra de Aprimoramento do Dragão Divino Incomum",
     "Fragmento de Pedra de Aprimoramento do Dragão Divino Épico",
+    "Fragmento de Pedra de Aprimoramento do Dragão Divino Raro",
+    "Fragmento de Pedra de Aprimoramento do Dragão Divino Lendário",
     "Fragmento de Pedra de Aprimoramento de Artefato de Dragão do Dragão Divino Épico",
     "Fragmento de Pedra de Aprimoramento de Artefato de Dragão do Dragão Divino Raro",
+    "Fragmento de Pedra de Aprimoramento de Artefato de Dragão do Dragão Divino Lendário",
     "Cetro Majestoso de Dragão Negro Lendário",
     "Pequena Pílula de Yin Lendária",
     "Bastão de Sarmati Divino Incomum",

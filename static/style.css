@@ -721,9 +721,9 @@ p.subtitle {
 /* Tier (IV) - POSICIONADO NO CANTO INFERIOR ESQUERDO */
 .badge-tier {
     top: auto;          /* Solta do topo */
-    bottom: -8px;       /* Fixa embaixo (negativo para sair um pouco) */
-    left: -8px;         /* Fixa na esquerda (negativo para sair um pouco) */
-    right: auto;        /* Solta da direita */
+    bottom: -8px;       /* Fixa embaixo */
+    left: auto;         /* Solta da esquerda */
+    right: -8px;        /* Fixa na direita */
     
     /* Mantendo o estilo visual */
     position: absolute;

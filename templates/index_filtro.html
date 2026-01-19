@@ -2216,6 +2216,7 @@
     <script>
         // --- CONFIGURAÇÕES GLOBAIS ---
         const ICONS_PATH = "{{ url_for('static', filename='icons/') }}";
+        const isPremium = {{ 'true' if is_premium else 'false' }};
         let cacheTipo = 'completas'; // Começa com teste
         let paginaAtual = 0;
         let todasContas = [];
@@ -2531,13 +2532,20 @@
             return filtros;
         }
 
+        // Função para remover acentos
+        function removerAcentos(str) {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+        
         function filtrarStatus() {
-            const busca = document.getElementById('busca-status')?.value.toLowerCase() || '';
+            const buscaOriginal = document.getElementById('busca-status')?.value.toLowerCase() || '';
+            const busca = removerAcentos(buscaOriginal);
             const items = document.querySelectorAll('#lista-status .status-item');
             
             items.forEach(item => {
                 const nome = item.getAttribute('data-nome');
-                if (nome.includes(busca)) {
+                const nomeNormalizado = removerAcentos(nome);
+                if (nomeNormalizado.includes(busca)) {
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
@@ -2723,13 +2731,14 @@
         function filtrarStatusNoModal(termo) {
             const container = document.getElementById('status-container');
             const itens = container.querySelectorAll('.status-item-modal');
-            const termoLower = termo.toLowerCase().trim();
+            const termoNormalizado = removerAcentos(termo.toLowerCase().trim());
             
             itens.forEach(item => {
                 const nomeEl = item.querySelector('.status-name-modal');
                 const nome = nomeEl ? nomeEl.textContent.toLowerCase() : '';
+                const nomeNormalizado = removerAcentos(nome);
                 
-                if (termoLower === '' || nome.includes(termoLower)) {
+                if (termoNormalizado === '' || nomeNormalizado.includes(termoNormalizado)) {
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
@@ -2918,7 +2927,7 @@
             const tierHtml = item.tier > 0 ? `<div class="badge-tier">${tiers[item.tier] || 'I'}</div>` : '';
             
             // Trade - Agora usando imagem personalizada
-            const tradeHtml = item.trade ? `<div class="badge-trade" title="Item Negociável"></div>` : '';
+            const tradeHtml = (isPremium && item.trade) ? `<div class="badge-trade" title="Item Negociável"></div>` : '';
             
             // Quantidade
             const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
@@ -3209,11 +3218,11 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             `;
 
             // Aba 3: Inventário - VERSÃO CORRIGIDA
-            const inven = conta.inven_all || []; // Todos os itens
-            const invenInicial = conta.inven || []; // Primeiros 12 itens
-
+            // Usar APENAS itens comercializáveis (trade=true)
+            const itensComercializaveis = (conta.inven_all || []).filter(item => item.trade === true);
+            const invenInicial = itensComercializaveis.slice(0, 12); // Primeiros 12 itens comercializáveis
             // IMPORTANTE: invenTotal deve vir do backend se disponível
-            const invenTotal = conta.inven_total || inven.length || 0;
+            const invenTotal = itensComercializaveis.length;
 
             // Verificar se temos mais itens do que os iniciais
             const temMaisItens = invenTotal > invenInicial.length;
@@ -3291,7 +3300,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     <button class="card-tab-btn active" onclick="switchCardTab(this, ${conta.seq}, 0)"><i class="fas fa-home"></i></button>
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 1)"><i class="fas fa-tshirt"></i></button>
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 2)"><i class="fas fa-dumbbell"></i></button>
-                    <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 3)"><i class="fas fa-box-open"></i></button>
+${isPremium ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 3)"><i class="fas fa-box-open"></i></button>' : ''}
                     <!-- NOVOS BOTÕES DAS ABAS ESPECIAIS -->
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 4)"><i class="fas fa-ticket-alt"></i></button>
                     <button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 5)"><i class="fas fa-gem"></i></button>
@@ -3310,9 +3319,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     ${tab2Content}
                 </div>
 
-                <div class="tab-content" data-tab="3">
-                    ${tab3Content}
-                </div>
+${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' : ''}
 
                 <!-- NOVAS ABAS ESPECIAIS -->
                 <div class="tab-content" data-tab="4">
@@ -3412,7 +3419,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             }
             
             // Usar inven_all que tem TODOS os itens
-            const todosItens = conta.inven_all || [];
+            const todosItens = (conta.inven_all || []).filter(item => item.trade === true);
             const itensJaMostrados = container.querySelectorAll('.item-circle').length;
             
             if (itensJaMostrados >= todosItens.length) {
