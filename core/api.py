@@ -767,12 +767,39 @@ def buscar_contas_com_bid_wemixplay():
                         # Tempo do leilão
                         auction_end_time = nft.get('auctionEndTime', 0)
                         
+                        # Extrair seq da external_url (formato: .../trade/XXXXXX)
+                        external_url = nft.get('metaData', {}).get('external_url', '')
+                        seq = None
+                        if '/trade/' in external_url:
+                            try:
+                                seq = int(external_url.split('/trade/')[-1])
+                            except:
+                                pass
+                        
+                        # Extrair dados dos atributos do metadata
+                        attrs = {a.get('key'): a.get('value') for a in nft.get('metaData', {}).get('attributes', [])}
+                        
+                        # Mapear classe para número
+                        class_map = {
+                            'Warrior': '1', 'Sorcerer': '2', 'Taoist': '3',
+                            'Arbalist': '4', 'Lancer': '5', 'Darkist': '6'
+                        }
+                        classe = class_map.get(attrs.get('Class', ''), '1')
+                        
                         ongoing_bids.append({
                             'nftID': tid,
+                            'seq': seq,
+                            'transportID': seq,  # Mesmo que seq para xDraco
                             'name': nft_name,
                             'price': price,
                             'auctionEndTime': auction_end_time,
-                            'has_bid': True
+                            'has_bid': True,
+                            # Dados extras do metadata
+                            'level': attrs.get('Level', 0),
+                            'powerScore': attrs.get('PowerScore', 0),
+                            'class': classe,
+                            'server': attrs.get('Server', ''),
+                            'nftEnhancement': attrs.get('NFTEnhancement', 0)
                         })
                 
                 print(f"[WEMIXPLAY API] Encontradas {len(ongoing_bids)} contas com bid ativo")

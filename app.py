@@ -390,7 +390,50 @@ def create_app(config_name=None):
                             contas_com_detalhes.append(conta_basica_completa)
                             print(f"[FILTRO] Conta {nft_id} ({conta_basica.get('characterName', '?')}) adicionada com dados básicos")
                         
-                        print(f"[FILTRO] {len(nft_map)} contas adicionadas rapidamente")
+                        print(f"[FILTRO] {len(nft_map)} contas adicionadas do xDraco")
+                        
+                        # PASSO 3: Para contas que NÃO foram encontradas no xDraco, usar dados do wemixplay
+                        nft_ids_ainda_faltando = nft_ids_faltantes - set(nft_map.keys())
+                        if nft_ids_ainda_faltando:
+                            print(f"[FILTRO] {len(nft_ids_ainda_faltando)} contas não encontradas no xDraco, usando dados do wemixplay...")
+                            for nft_id in nft_ids_ainda_faltando:
+                                bid_info = bid_data_lookup.get(nft_id, {})
+                                if bid_info:
+                                    # Criar entrada usando dados do wemixplay
+                                    conta_wemix = {
+                                        "seq": bid_info.get("seq"),
+                                        "transportID": bid_info.get("transportID", bid_info.get("seq")),
+                                        "nftID": nft_id,
+                                        "name": bid_info.get("name", ""),
+                                        "powerScore": bid_info.get("powerScore", 0),
+                                        "level": bid_info.get("level", 0),
+                                        "class": str(bid_info.get("class", "1")),
+                                        "worldName": bid_info.get("server", ""),
+                                        "price": bid_info.get("price", 0),
+                                        "auctionEndTime": bid_info.get("auctionEndTime", 0),
+                                        "has_active_bid": True,
+                                        "from_wemixplay": True,
+                                        "basic": {
+                                            "name": bid_info.get("name", ""),
+                                            "powerScore": bid_info.get("powerScore", 0),
+                                            "level": bid_info.get("level", 0),
+                                            "class": str(bid_info.get("class", "1")),
+                                            "worldName": bid_info.get("server", "")
+                                        },
+                                        "stats": [],
+                                        "equip": [],
+                                        "spirit_list": [],
+                                        "skills_list": [],
+                                        "inven": [],
+                                        "codex": 0,
+                                        "potencial": 0,
+                                        "training": {},
+                                        "building": {"mina": 0}
+                                    }
+                                    contas_com_detalhes.append(conta_wemix)
+                                    print(f"[FILTRO] Conta {nft_id} ({bid_info.get('name', '?')}) adicionada do wemixplay")
+                            
+                            print(f"[FILTRO] Total: {len(nft_map)} do xDraco + {len(nft_ids_ainda_faltando)} do wemixplay")
                         
                         # Atualizar cache filtrado
                         contas_filtradas_cache = [c for c in contas_com_detalhes
