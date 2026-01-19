@@ -58,10 +58,10 @@ def carregar_detalhes_com_cache(conta):
     cached = read_from_cache(cache_key)
     
     # Verificar se o cache tem os campos necessários
-    # tradeType: foi adicionado depois para filtro "Com Lance"
+    # tradeType, nftID: necessários para filtro "Com Lance"
     # inven_all: precisa ter TODOS os itens com campo "trade" para busca funcionar
     cache_valido = False
-    if cached and "tradeType" in cached:
+    if cached and "tradeType" in cached and "nftID" in cached:
         inven_all = cached.get("inven_all", [])
         # Verifica se inven_all tem a nova estrutura com campo "trade"
         # e se tem mais itens que apenas os comercializáveis

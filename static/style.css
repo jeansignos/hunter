@@ -1998,36 +1998,7 @@ h2, h3, h4 {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Garantir altura mínima consistente para todas as abas */
-.tab-content[data-tab="0"],
-.tab-content[data-tab="1"],
-.tab-content[data-tab="2"],
-.tab-content[data-tab="3"],
-.tab-content[data-tab="4"],
-.tab-content[data-tab="5"],
-.tab-content[data-tab="6"] {
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-}
-
-.tab-content[data-tab="0"].active,
-.tab-content[data-tab="1"].active,
-.tab-content[data-tab="2"].active,
-.tab-content[data-tab="3"].active,
-.tab-content[data-tab="4"].active,
-.tab-content[data-tab="5"].active,
-.tab-content[data-tab="6"].active {
-    display: flex;
-}
-
-/* Grid de itens com altura mínima */
-.items-grid {
-    min-height: 100px;
-    flex-grow: 1;
-}
-
-/* Cards com altura fixa para consistência */
+/* Cards com layout flexbox para consistência */
 .nft-card {
     display: flex;
     flex-direction: column;
