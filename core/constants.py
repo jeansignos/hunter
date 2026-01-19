@@ -179,41 +179,98 @@ EXCLUIR_PALAVRAS = [
 ]
 
 # ==================== LISTA FIXA DE STATUS PARA FILTROS ====================
+# Nomes exatos da API MIR4 (languageCode=pt) - Extraídos diretamente da API
 TODOS_STATUS_FILTROS = [
-    "Aceleramento de Tempo de Mineração",
-    "Aumento de Ganho de Aço Negro",
-    "ATAQUE FÍSICO",
-    "ATAQUE de feitiço",
-    "Ataque MÁGICO",
-    "CRÍTICO",
-    "Penetração de Armadura",
-    "Aumento de PRECISÃO",
-    "EVASÃO",
-    "Aumento da Taxa de EVASÃO",
-    "Aumento de Afinidade",
-    "Aumento de EVA",
+    # === ATRIBUTOS BASE ===
     "HP",
     "MP",
-    "DEF",
-    "Resistência a Habilidades",
-    "Dano Contra BOSS",
-    "Dano Contra JOGADORES",
-    "Velocidade de ATQ",
-    "Velocidade de Movimento",
-    "Resistência a Efeitos de Interrupção",
-    "Redução de tempo de recarga da habilidade",
-    "Aumento de EXP PvE",
-    "Aumento de EXP da Técnica de Energia Interior",
-    "Aumento de EXP de Cultivo Mágico",
-    "Habilidade de Colheita",
-    "Aumento de Ganho de Cobre",
-    "Aumento de Ganho de Energia Sombria",
-    "MIRA",
-    "PRECISÃO",
-    "Redução de Dano MÁGICO",
-    "Redução de Dano FÍSICO",
-    "Absorção de DANO",
-    "Taxa de Absorção de DANO",
-    "Aumento de Dano em Ataque a Distância",
-    "Redução de Dano a Distância Recebido"
+    "Vida",
+    "REGENERAÇÃO DE % DE HP (cada 10s)",
+    "REGENERAÇÃO DE % DE MP (cada 10s)",
+    "ATAQUE FÍSICO",
+    "ATAQUE de feitiço",
+    "DEFESA FÍSICA",
+    "DEFESA contra feitiços",
+    "Precisão",
+    "EVASÃO",
+    "CRÍTICO",
+    "EVASÃO DE CRÍTICO",
+    
+    # === DANO DE ATAQUE ===
+    "Aumento do DANO DE ATAQUE CRÍTICO",
+    "Aumento do DANO DE ATAQUE de Esmagamento",
+    "Aumento do DANO DE ATAQUE em PvP",
+    "Aumento do DANO DE ATAQUE de Monstros",
+    "Aumento de DANO DE ATAQUE do Boss",
+    "Aumento de DANO DE ATAQUE de Habilidade",
+    "Aumento de Todo o DANO DE ATAQUE",
+    "Aumento do DANO DE ATAQUE Básico",
+    
+    # === REDUÇÃO DE DANO ===
+    "Redução do DANO CRÍTICO Recebido",
+    "Redução do DANO de Esmagamento Recebido",
+    "Redução do DANO em PvP Recebido",
+    "Redução do DANO Recebido de Monstros",
+    "Redução do DANO Recebido do Boss",
+    "Redução do DANO de Habilidade Recebido",
+    "Redução de Todo o DANO Recebido",
+    "Redução do DANO DE ATAQUE Básico Recebido",
+    
+    # === CC E RESISTÊNCIA ===
+    "Aumento da Probabilidade de Sucesso de Atordoar",
+    "Aumento de RESISTÊNCIA a Atordoar",
+    "Aumento da Probabilidade de Sucesso de Debilitação",
+    "Aumento de RESISTÊNCIA à Debilitação",
+    "Aumento da Probabilidade de Sucesso de Silenciar",
+    "Aumento de RESISTÊNCIA a Silenciar",
+    "Aumento da Probabilidade de Sucesso de Derrubar",
+    "Aumento de RESISTÊNCIA a Derrubar",
+    
+    # === FARM E EXP ===
+    "Aumento de EXP de Caça",
+    "Aumento de Ganho de Cobre de Caça",
+    "Aumento de Ganho de Energia",
+    "Aumento de Ganho de Aço Negro",
+    "Aumento da Probabilidade de Obtenção",
+    "Aumento da Probabilidade de Obtenção de Sorte",
+    
+    # === MINERAÇÃO E RECOLHA ===
+    "Aceleramento de Tempo de Mineração",
+    "Aceleramento do Tempo de Recolha",
+    "Aceleramento do Tempo de Recolha de Energia",
+    "Aceleramento do Tempo de Abertura de Caixa",
+    
+    # === PODER ESPECIAL ===
+    "Poder Antidemônio",
+    "Aumento de Precisão em Monstros",
+    "Aumento de EVASÃO de Monstros",
+    
+    # === COOLDOWN E CUSTO ===
+    "Redução do Cooldown de Habilidade",
+    "Redução do Custo de MP",
+    "Redução do Cooldown de Água Divina",
+    
+    # === POÇÕES E RECUPERAÇÃO ===
+    "Aumento do Efeito da Poção de HP",
+    "Aumento do Efeito da Poção de MP",
+    "Aumento de Quantidade de Recuperação de HP de Habilidade",
+    
+    # === VIGOR ===
+    "Aumento de Vigor Máximo (segundos)",
+    
+    # === TREINO ===
+    "Aumento da Probabilidade no Sucesso de Treino Ermo",
+    
+    # === APRIMORAMENTO DE EQUIPAMENTO ===
+    "Aumento da Chance de Sucesso do Aprimoramento de Equipamento (Incomum)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Equipamento (Raro)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Equipamento (Épico)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Equipamento (Lendário)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Equipamento (de Incomum até Lendário)",
+    
+    # === APRIMORAMENTO DE ARTEFATO DE DRAGÃO ===
+    "Aumento da Chance de Sucesso do Aprimoramento de Artefato de Dragão (Raro)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Artefato de Dragão (Épico)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Artefato de Dragão (Lendário)",
+    "Aumento da Chance de Sucesso do Aprimoramento de Artefato de Dragão (de Incomum até Lendário)",
 ]

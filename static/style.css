@@ -2059,7 +2059,7 @@ h2, h3, h4 {
     
     /* Garante que imagens de fundo funcionem no mobile */
     .item-circle[style*="background-image"] {
-        background-size: cover !important;
+        background-size: contain !important;
         background-position: center !important;
     }
     
@@ -2078,7 +2078,7 @@ h2, h3, h4 {
 
 /* ===== GARANTIR QUE IMAGENS CARREGUEM ===== */
 .item-circle {
-    background-size: cover !important;
+    background-size: contain !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
 }
