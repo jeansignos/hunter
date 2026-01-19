@@ -2124,3 +2124,118 @@ h2, h3, h4 {
     position: absolute;
     z-index: 5;
 }
+
+/* ===== CORREÇÕES FINAIS - 19/01/2026 ===== */
+
+/* Badge COM LANCE - menor para não cortar */
+.card-status-badge.badge-bidding {
+    font-size: 0.55rem !important;
+    padding: 2px 5px !important;
+    white-space: nowrap !important;
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #000 !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5) !important;
+}
+
+/* Itens menores para caber nos cards */
+.nft-card .items-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    padding: 8px !important;
+}
+
+.nft-card .item-circle {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+}
+
+/* Badges dos itens menores */
+.nft-card .item-circle .badge-enhance,
+.nft-card .item-circle .badge-tier {
+    font-size: 7px !important;
+    padding: 1px 3px !important;
+    min-width: 12px !important;
+}
+
+.nft-card .item-circle .badge-trade {
+    width: 16px !important;
+    height: 16px !important;
+    top: -4px !important;
+    right: -4px !important;
+}
+
+.nft-card .item-circle .badge-count {
+    font-size: 8px !important;
+    padding: 1px 3px !important;
+    bottom: -4px !important;
+}
+
+/* Tab content com altura limitada e scroll */
+.nft-card .tab-content {
+    max-height: 380px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 5px !important;
+}
+
+/* Garantir que card não estoure */
+.nft-card {
+    max-height: 600px !important;
+    overflow: hidden !important;
+}
+
+/* Card top bar - garantir que badge apareça inteiro */
+.card-top-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+}
+
+/* Timer mais compacto */
+.card-timer {
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    white-space: nowrap !important;
+}
+
+/* Preço mais compacto */
+.card-price-top {
+    font-size: 0.75rem !important;
+    white-space: nowrap !important;
+    margin-left: auto !important;
+}
+
+/* Mobile - ainda mais compacto */
+@media (max-width: 768px) {
+    .nft-card .item-circle {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+    }
+    
+    .nft-card .items-grid {
+        gap: 4px !important;
+        padding: 6px !important;
+    }
+    
+    .card-status-badge.badge-bidding {
+        font-size: 0.5rem !important;
+        padding: 2px 4px !important;
+    }
+    
+    .card-timer {
+        font-size: 0.6rem !important;
+    }
+    
+    .card-price-top {
+        font-size: 0.65rem !important;
+    }
+}
