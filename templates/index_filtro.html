@@ -3682,8 +3682,30 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 adicionarTagFiltro(container, 'espiritos', 'Espíritos', `${espiritosAtivos.size} selecionados`, () => {
                     espiritosAtivos.clear();
                     document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
+                    // Atualizar contador do botão
+                    if (typeof atualizarCountEspiritos === 'function') atualizarCountEspiritos();
                     atualizarFiltrosAtivos();
                 });
+            }
+            
+            // Verificar habilidades/skills selecionadas
+            if (typeof skillsAtivas !== 'undefined') {
+                let totalSkills = 0;
+                for (const classe in skillsAtivas) {
+                    totalSkills += Object.keys(skillsAtivas[classe]).length;
+                }
+                if (totalSkills > 0) {
+                    temFiltros = true;
+                    adicionarTagFiltro(container, 'skills', 'Habilidades', `${totalSkills} selecionadas`, () => {
+                        skillsAtivas = {};
+                        document.querySelectorAll('.skill-btn').forEach(b => {
+                            b.classList.remove('selecionado-epica', 'selecionado-lendaria');
+                        });
+                        // Atualizar contador do botão
+                        if (typeof atualizarCountSkills === 'function') atualizarCountSkills();
+                        atualizarFiltrosAtivos();
+                    });
+                }
             }
             
             // Verificar status selecionados
