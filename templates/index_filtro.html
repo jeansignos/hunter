@@ -3219,8 +3219,9 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 }
             }
             
+            const bidCountText = conta.bid_count > 0 ? ` (${conta.bid_count})` : '';
             const statusBadge = isBidding ? 
-                '<span class="card-status-badge badge-bidding">COM LANCE</span>' : 
+                `<span class="card-status-badge badge-bidding">COM LANCE${bidCountText}</span>` : 
                 '<span class="card-status-badge">LISTADO</span>';
             
             // Estrutura do Card

@@ -272,6 +272,7 @@ def create_app(config_name=None):
                             "powerScore": c.get("powerScore", 0),
                             "price": c.get("price", 0),
                             "tradeType": c.get("tradeType", 1),
+                            "nftID": c.get("nftID", ""),
                             "basic": c,
                             "sem_cache": True  # Marcador para indicar dados básicos
                         }
@@ -660,6 +661,8 @@ def create_app(config_name=None):
                 "price_brl": price_brl,
                 "tradeType": conta.get("tradeType", 1),
                 "sealedTS": conta.get("sealedTS", 0),
+                "nftID": conta.get("nftID", ""),
+                "bid_count": conta.get("bid_count", 0),
                 "equip": conta.get("equip", []),
                 "inven": conta.get("inven", []),
                 "inven_all": conta.get("inven_all", []),
@@ -762,6 +765,23 @@ def create_app(config_name=None):
         if limpar_cache_contas():
             return "Cache de contas limpo com sucesso!"
         return "Erro ao limpar cache de contas."
+
+    @app.route("/api/verificar-lance/<nft_id>")
+    def verificar_lance(nft_id):
+        """Verifica status de lance em tempo real do wemixplay"""
+        from core.api import buscar_status_lance_wemixplay
+        try:
+            status = buscar_status_lance_wemixplay(nft_id)
+            return jsonify({
+                "success": True,
+                "nftID": nft_id,
+                "status": status
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
 
     @app.route("/debug-contas-lance")
     def debug_contas_lance():

@@ -308,7 +308,9 @@ def buscar_detalhes_conta(seq, transport_id):
         "sealedTS": 0,
         "tickets": [],
         "crystals": [],
-        "fragments": []
+        "fragments": [],
+        "nftID": "",
+        "bid_count": 0
     }
     
     try:
@@ -341,6 +343,9 @@ def buscar_detalhes_conta(seq, transport_id):
                 
                 # sealedTS: timestamp de quando foi selado (para calcular tempo de leilão)
                 detalhes["sealedTS"] = data.get("sealedTS", 0)
+                
+                # nftID: ID do NFT no wemixplay (para verificar status de lance)
+                detalhes["nftID"] = data.get("nftID", "")
         
         classe = detalhes["classe"]
         
@@ -527,6 +532,17 @@ def buscar_detalhes_conta(seq, transport_id):
         except Exception as e:
             print(f"Erro ao buscar mina: {e}")
             
+        # Verificar status de lance em tempo real do wemixplay
+        if detalhes.get("nftID"):
+            try:
+                status_lance = buscar_status_lance_wemixplay(detalhes["nftID"])
+                if status_lance.get("has_bid"):
+                    detalhes["tradeType"] = 2  # Atualizar para bidding
+                    detalhes["bid_count"] = status_lance.get("bid_count", 0)
+                    print(f"[LANCE] Conta {seq} tem {detalhes['bid_count']} lance(s) ativos")
+            except Exception as e:
+                print(f"Erro ao verificar status de lance: {e}")
+        
         save_to_cache(cache_key, detalhes)
         print(f"[SUCESSO] Detalhes salvos para conta {seq}")
         
@@ -534,3 +550,126 @@ def buscar_detalhes_conta(seq, transport_id):
         print(f"Erro ao buscar detalhes da conta {seq}: {e}")
     
     return detalhes
+
+
+def buscar_status_lance_wemixplay(nft_id):
+    """
+    Busca o status de lance em tempo real do wemixplay.com
+    
+    Args:
+        nft_id: ID do NFT no wemixplay (ex: 90035)
+    
+    Returns:
+        dict com informações de lance:
+        - has_bid: True se tem lance ativo
+        - bid_count: número de lances
+        - current_price: preço atual (lance maior ou preço inicial)
+        - is_auction: True se está em leilão
+        - auction_end_time: timestamp do fim do leilão
+    """
+    import re
+    
+    contract_address = "0x1dbf9b33e59972ed753cae1423f4f23deec70cc9"
+    url = f"https://wemixplay.com/nft/detail/{contract_address}/{nft_id}"
+    
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"
+        }
+        
+        response = session.get(url, headers=headers, timeout=15, allow_redirects=True)
+        
+        if not response.ok:
+            print(f"[WEMIXPLAY] Erro HTTP {response.status_code} para NFT {nft_id}")
+            return None
+        
+        html = response.text
+        
+        # Extrair __NEXT_DATA__ JSON
+        match = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.DOTALL)
+        if not match:
+            print(f"[WEMIXPLAY] __NEXT_DATA__ não encontrado para NFT {nft_id}")
+            return None
+        
+        import json
+        data = json.loads(match.group(1))
+        
+        page_props = data.get("props", {}).get("pageProps", {})
+        nft_info = page_props.get("nftInfo", {})
+        
+        if not nft_info:
+            print(f"[WEMIXPLAY] nftInfo não encontrado para NFT {nft_id}")
+            return None
+        
+        # Extrair informações relevantes
+        order = nft_info.get("order", {})
+        current_status = nft_info.get("currentStatus", {})
+        nft_condition = nft_info.get("nftConditionStatus", {})
+        
+        # Verificar se está em leilão e tem lances
+        is_auction = current_status.get("isAuction", False) or nft_condition.get("isAuction", False)
+        is_bidding = current_status.get("isBidding", False) or nft_condition.get("isBidding", False)
+        bid_count = order.get("offerBiddingCount", 0)
+        
+        # Preço atual
+        order_price = order.get("price", {})
+        current_price_wei = order_price.get("amount", "0")
+        current_price = float(current_price_wei) / 1e18 if current_price_wei else 0
+        
+        # Tempo de fim do leilão
+        auction_end_time = nft_info.get("auctionEndTime", 0)
+        
+        # has_bid é True se está em leilão E tem pelo menos 1 lance (offerBiddingCount > 0)
+        # OU se isBidOngoing é True
+        has_bid = (is_auction and bid_count > 0) or current_status.get("isBidOngoing", False)
+        
+        result = {
+            "nft_id": nft_id,
+            "has_bid": has_bid,
+            "bid_count": bid_count,
+            "current_price": current_price,
+            "is_auction": is_auction,
+            "is_bidding": is_bidding,
+            "auction_end_time": auction_end_time,
+            "on_sale": nft_info.get("onSale", 0),
+            "strategy_type": order.get("strategyType", 0)
+        }
+        
+        print(f"[WEMIXPLAY] NFT {nft_id}: has_bid={has_bid}, bid_count={bid_count}, is_auction={is_auction}")
+        
+        return result
+        
+    except Exception as e:
+        print(f"[WEMIXPLAY] Erro ao buscar status de lance para NFT {nft_id}: {e}")
+        return None
+
+
+def buscar_status_lances_batch(nft_ids, max_concurrent=5):
+    """
+    Busca status de lances para múltiplos NFTs
+    
+    Args:
+        nft_ids: lista de IDs de NFT
+        max_concurrent: número máximo de requisições simultâneas (não implementado por simplicidade)
+    
+    Returns:
+        dict mapeando nft_id -> status de lance
+    """
+    import time
+    
+    results = {}
+    
+    for i, nft_id in enumerate(nft_ids):
+        if i > 0 and i % 10 == 0:
+            print(f"[WEMIXPLAY] Processando NFT {i+1}/{len(nft_ids)}...")
+            time.sleep(1)  # Rate limiting
+        
+        status = buscar_status_lance_wemixplay(nft_id)
+        if status:
+            results[nft_id] = status
+        
+        time.sleep(0.3)  # Pequeno delay entre requisições
+    
+    return results
