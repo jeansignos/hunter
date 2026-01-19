@@ -3796,7 +3796,9 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 temFiltros = true;
                 adicionarTagFiltro(container, 'filtro_itens', 'Itens', descricao, () => {
                     filtrosItensAtivos = {};
-                    atualizarItensSelecionados();
+                    const itensLista = document.getElementById('itens-filtro-lista');
+                    if (itensLista) itensLista.innerHTML = '';
+                    if (typeof atualizarCountItens === 'function') atualizarCountItens();
                     atualizarFiltrosAtivos();
                 });
             }
@@ -3827,22 +3829,57 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
         }
         
         function removerFiltroAtivo(campoId, tagElement) {
-            const el = document.getElementById(campoId);
-            if (el) {
-                el.value = '';
-                // Disparar evento de change para atualizar contadores
-                el.dispatchEvent(new Event('change'));
+            // Tratar casos especiais
+            if (campoId === 'classes') {
+                document.querySelectorAll('.classe-btn').forEach(b => b.classList.remove('ativa'));
+            } else if (campoId === 'espiritos') {
+                if (typeof espiritosAtivos !== 'undefined') espiritosAtivos.clear();
+                document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
+                document.querySelectorAll('.espirito-item.selected').forEach(c => c.classList.remove('selected'));
+                if (typeof atualizarCountEspiritos === 'function') atualizarCountEspiritos();
+            } else if (campoId === 'habilidades') {
+                if (typeof skillsAtivas !== 'undefined') {
+                    for (const classe in skillsAtivas) {
+                        skillsAtivas[classe] = {};
+                    }
+                }
+                document.querySelectorAll('.skill-item.selected').forEach(c => c.classList.remove('selected'));
+                if (typeof atualizarCountHabilidades === 'function') atualizarCountHabilidades();
+            } else {
+                // Campo normal - limpar input
+                const el = document.getElementById(campoId);
+                if (el) {
+                    el.value = '';
+                    // Disparar evento de change para atualizar contadores
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
+            
+            // Remover tag
             if (tagElement) tagElement.remove();
+            
+            // Atualizar área de filtros
             atualizarFiltrosAtivos();
+            
+            console.log('[FILTROS] Filtro removido:', campoId);
         }
         
         function limparTodosFiltros() {
             // Limpar todos os inputs de texto e número
             const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
             inputs.forEach(input => {
-                if (input.id && !input.id.includes('login') && !input.id.includes('register')) {
+                if (input.id && !input.id.includes('login') && !input.id.includes('register') && !input.id.includes('senha')) {
                     input.value = '';
+                    // Disparar evento de change
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+            
+            // Limpar selects
+            document.querySelectorAll('select').forEach(sel => {
+                if (sel.id && !sel.id.includes('login') && !sel.id.includes('register')) {
+                    sel.selectedIndex = 0;
+                    sel.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
             
@@ -3850,18 +3887,48 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             document.querySelectorAll('.classe-btn').forEach(b => b.classList.remove('ativa'));
             
             // Limpar espíritos
-            if (typeof espiritosAtivos !== 'undefined') espiritosAtivos.clear();
+            if (typeof espiritosAtivos !== 'undefined') {
+                espiritosAtivos.clear();
+            }
             document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
+            document.querySelectorAll('.espirito-item.selected').forEach(c => c.classList.remove('selected'));
+            
+            // Limpar habilidades/skills
+            if (typeof skillsAtivas !== 'undefined') {
+                for (const classe in skillsAtivas) {
+                    skillsAtivas[classe] = {};
+                }
+            }
+            document.querySelectorAll('.skill-item.selected').forEach(c => c.classList.remove('selected'));
             
             // Limpar status (inputs numericos)
-            document.querySelectorAll('#lista-status input[type="number"]').forEach(input => input.value = '');
+            document.querySelectorAll('#lista-status input[type="number"]').forEach(input => {
+                input.value = '';
+            });
             
-            // Atualizar contadores
+            // Limpar filtros de itens
+            if (typeof filtrosItensAtivos !== 'undefined') {
+                for (const key in filtrosItensAtivos) {
+                    delete filtrosItensAtivos[key];
+                }
+            }
+            const itensLista = document.getElementById('itens-filtro-lista');
+            if (itensLista) itensLista.innerHTML = '';
+            
+            // Atualizar todos os contadores
             if (typeof atualizarCountMineracao === 'function') atualizarCountMineracao();
             if (typeof atualizarCountTreino === 'function') atualizarCountTreino();
             if (typeof atualizarCountCombate === 'function') atualizarCountCombate();
             if (typeof atualizarCountPreco === 'function') atualizarCountPreco();
             if (typeof atualizarCountGeral === 'function') atualizarCountGeral();
+            if (typeof atualizarCountEspiritos === 'function') atualizarCountEspiritos();
+            if (typeof atualizarCountHabilidades === 'function') atualizarCountHabilidades();
+            if (typeof atualizarCountStatus === 'function') atualizarCountStatus();
+            if (typeof atualizarCountItens === 'function') atualizarCountItens();
+            
+            // Limpar container de tags
+            const tagsContainer = document.getElementById('filtros-tags');
+            if (tagsContainer) tagsContainer.innerHTML = '';
             
             // Esconder área de filtros ativos
             const area = document.getElementById('filtros-ativos-area');
@@ -3878,6 +3945,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                     btn.style.background = '';
                 }, 1500);
             }
+            
+            console.log('[FILTROS] Todos os filtros foram limpos');
         }
         
         // Fecha dropdowns ao clicar fora
