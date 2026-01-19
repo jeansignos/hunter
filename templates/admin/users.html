@@ -270,27 +270,27 @@
                             {% if user.id != current_user.id %}
                             
                             {% if not user.has_premium_access() %}
-                            <form action="{{ url_for('admin.activate_premium', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.activate_premium', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="days" value="30">
                                 <button type="submit" class="action-btn premium-btn" title="Ativar Premium por 30 dias">
                                     <i class="fas fa-crown"></i> +30 dias
                                 </button>
                             </form>
                             {% else %}
-                            <form action="{{ url_for('admin.deactivate_premium', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.deactivate_premium', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="action-btn deactivate-btn" title="Desativar Premium">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
                             {% endif %}
                             
-                            <form action="{{ url_for('admin.toggle_user_active', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.toggle_user_active', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="action-btn toggle-btn" title="{{ 'Desativar' if user.is_active else 'Ativar' }} usuário">
                                     <i class="fas fa-{{ 'ban' if user.is_active else 'check' }}"></i>
                                 </button>
                             </form>
                             
-                            <form action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="action-btn toggle-btn" title="{{ 'Remover Admin' if user.is_admin else 'Promover a Admin' }}">
                                     <i class="fas fa-shield-alt"></i>
                                 </button>

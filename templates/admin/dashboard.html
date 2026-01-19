@@ -317,14 +317,14 @@
                         <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
                             {% if not user.has_premium_access() %}
-                            <form action="{{ url_for('admin.activate_premium', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.activate_premium', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="days" value="30">
                                 <button type="submit" class="action-btn premium-btn">
                                     <i class="fas fa-crown"></i> Ativar Premium
                                 </button>
                             </form>
                             {% else %}
-                            <form action="{{ url_for('admin.deactivate_premium', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <form action="{{ url_for('admin.deactivate_premium', user_id=user.id) }}" method="POST" style="display: inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="action-btn deactivate-btn">
                                     <i class="fas fa-times"></i> Desativar
                                 </button>
