@@ -235,6 +235,24 @@ def buscar_spirit_detalhado(transport_id):
                                 "trade": False
                             })
             
+            # DEDUPLICAR: Remover pets com mesmo nome (manter o de maior tier)
+            pets_unicos = {}
+            for pet in pets:
+                nome = pet["name"]
+                if nome not in pets_unicos or pet["tier"] > pets_unicos[nome]["tier"]:
+                    pets_unicos[nome] = pet
+            
+            pets = list(pets_unicos.values())
+            
+            # DEDUPLICAR: Remover pets com mesmo nome (manter o de maior tier)
+            pets_unicos = {}
+            for pet in pets:
+                nome = pet["name"]
+                if nome not in pets_unicos or pet["tier"] > pets_unicos[nome]["tier"]:
+                    pets_unicos[nome] = pet
+            
+            pets = list(pets_unicos.values())
+            
             # Ordenar por grade decrescente
             pets.sort(key=lambda x: (-x["grade"], -x["tier"]))
             

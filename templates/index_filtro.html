@@ -688,11 +688,12 @@
         
         /* Garantir que o ribbon apareça fora do card */
         .nft-card {
-            overflow: hidden !important; /* Corrigido para nao vazar */
+            overflow: visible !important;
+            position: relative;
         }
         
         .card-top-bar {
-            overflow: hidden !important; /* Corrigido para nao vazar */
+            overflow: visible !important;
             position: relative;
         }
         
@@ -2929,12 +2930,11 @@
             }
             
 
-            // Com imagem - background da imagem com overlay da raridade
+            // Com imagem - background da imagem
             return `
             <div class="item-circle ${gradeClass}" 
-                 style="background-image: url('${item.img}');" 
+                 style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;" 
                  title="${item.name || ''}">
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: inherit; border-radius: 10px;"></div>
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
