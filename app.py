@@ -309,63 +309,88 @@ def create_app(config_name=None):
                 for bid in contas_bid_wemixplay:
                     bid_data_lookup[str(bid.get('nftID', ''))] = bid
                 
-                # NOVO: Buscar detalhes das contas com bid que não estão no cache
+                # OTIMIZADO: Criar cards básicos das contas com bid que não estão no cache
                 if filtros.get("status_lance") == "bidding":
                     # Verificar quais nftIDs com bid não estão no cache
                     nft_ids_no_cache = {str(c.get("nftID", "")) for c in contas_com_detalhes if c.get("nftID")}
                     nft_ids_faltantes = nft_ids_com_bid - nft_ids_no_cache
                     
                     if nft_ids_faltantes:
-                        print(f"[FILTRO] {len(nft_ids_faltantes)} contas com bid não estão no cache. Buscando...")
+                        print(f"[FILTRO] {len(nft_ids_faltantes)} contas com bid não estão no cache. Buscando rapidamente...")
                         
-                        # Buscar lista de contas do xDraco para encontrar seq/transportID
-                        from core.api import buscar_lista_contas, buscar_detalhes_conta
+                        from core.api import buscar_lista_contas
+                        import concurrent.futures
                         
-                        # Buscar várias páginas para encontrar as contas faltantes
-                        contas_encontradas = 0
-                        for page in range(1, 20):  # Limite de 20 páginas
-                            lista_page = buscar_lista_contas(page)
-                            if not lista_page or not lista_page.get("data", {}).get("lists"):
-                                break
-                            
-                            for conta_basica in lista_page["data"]["lists"]:
-                                nft_id = str(conta_basica.get("nftID", ""))
-                                if nft_id in nft_ids_faltantes:
-                                    # Encontrou! Buscar detalhes
-                                    seq = conta_basica.get("seq")
-                                    transport_id = conta_basica.get("transportID")
-                                    
+                        # PASSO 1: Buscar lista de contas do xDraco EM PARALELO
+                        nft_map = {}
+                        
+                        def buscar_pagina(page):
+                            return buscar_lista_contas(page)
+                        
+                        # Buscar 10 páginas em paralelo por vez
+                        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                            for batch_start in range(1, 51, 10):
+                                if len(nft_map) >= len(nft_ids_faltantes):
+                                    break
+                                
+                                pages = range(batch_start, min(batch_start + 10, 51))
+                                futures = {executor.submit(buscar_pagina, p): p for p in pages}
+                                
+                                for future in concurrent.futures.as_completed(futures):
                                     try:
-                                        detalhes = buscar_detalhes_conta(seq, transport_id)
-                                        if detalhes:
-                                            # Mesclar dados básicos
-                                            detalhes["seq"] = seq
-                                            detalhes["transportID"] = transport_id
-                                            detalhes["nftID"] = nft_id
-                                            detalhes["name"] = detalhes.get("basic", {}).get("name", conta_basica.get("characterName", ""))
-                                            detalhes["powerScore"] = detalhes.get("basic", {}).get("powerScore", conta_basica.get("powerScore", 0))
-                                            detalhes["level"] = detalhes.get("basic", {}).get("level", conta_basica.get("lv", 0))
-                                            detalhes["worldName"] = detalhes.get("basic", {}).get("worldName", "")
-                                            detalhes["class"] = str(detalhes.get("classe", conta_basica.get("class", "1")))
-                                            detalhes["from_wemixplay"] = True
-                                            
-                                            # Adicionar dados de lance do wemixplay
-                                            bid_info = bid_data_lookup.get(nft_id, {})
-                                            detalhes["price"] = bid_info.get("price", detalhes.get("price", 0))
-                                            detalhes["auctionEndTime"] = bid_info.get("auctionEndTime", 0)
-                                            detalhes["has_active_bid"] = True
-                                            
-                                            contas_com_detalhes.append(detalhes)
-                                            contas_encontradas += 1
-                                            nft_ids_faltantes.discard(nft_id)
-                                            print(f"[FILTRO] Conta {nft_id} encontrada e detalhes buscados")
+                                        lista_page = future.result()
+                                        if lista_page and lista_page.get("data", {}).get("lists"):
+                                            for conta_basica in lista_page["data"]["lists"]:
+                                                nft_id = str(conta_basica.get("nftID", ""))
+                                                if nft_id in nft_ids_faltantes:
+                                                    nft_map[nft_id] = conta_basica
                                     except Exception as e:
-                                        print(f"[FILTRO] Erro ao buscar detalhes da conta {nft_id}: {e}")
-                            
-                            if not nft_ids_faltantes:
-                                break  # Todas encontradas
+                                        print(f"[FILTRO] Erro em página: {e}")
                         
-                        print(f"[FILTRO] {contas_encontradas} contas adicionadas do wemixplay")
+                        print(f"[FILTRO] Encontradas {len(nft_map)} de {len(nft_ids_faltantes)} contas faltantes")
+                        
+                        # PASSO 2: Para cada conta encontrada, criar entrada básica (sem detalhes completos)
+                        # Isso é muito mais rápido que buscar detalhes de cada uma
+                        for nft_id, conta_basica in nft_map.items():
+                            bid_info = bid_data_lookup.get(nft_id, {})
+                            
+                            # Criar entrada básica com dados do xDraco + wemixplay
+                            conta_basica_completa = {
+                                "seq": conta_basica.get("seq"),
+                                "transportID": conta_basica.get("transportID"),
+                                "nftID": nft_id,
+                                "name": conta_basica.get("characterName", ""),
+                                "powerScore": conta_basica.get("powerScore", 0),
+                                "level": conta_basica.get("lv", 0),
+                                "class": str(conta_basica.get("class", "1")),
+                                "worldName": "",  # Não temos esse dado na listagem básica
+                                "price": bid_info.get("price", conta_basica.get("price", 0)),
+                                "auctionEndTime": bid_info.get("auctionEndTime", 0),
+                                "has_active_bid": True,
+                                "from_wemixplay": True,
+                                "basic": {
+                                    "name": conta_basica.get("characterName", ""),
+                                    "powerScore": conta_basica.get("powerScore", 0),
+                                    "level": conta_basica.get("lv", 0),
+                                    "class": str(conta_basica.get("class", "1")),
+                                    "worldName": ""
+                                },
+                                # Dados mínimos para o card funcionar
+                                "stats": [],
+                                "equip": [],
+                                "spirit_list": [],
+                                "skills_list": [],
+                                "inven": [],
+                                "codex": 0,
+                                "potencial": 0,
+                                "training": {},
+                                "building": {"mina": 0}
+                            }
+                            
+                            contas_com_detalhes.append(conta_basica_completa)
+                            print(f"[FILTRO] Conta {nft_id} ({conta_basica.get('characterName', '?')}) adicionada com dados básicos")
+                        
+                        print(f"[FILTRO] {len(nft_map)} contas adicionadas rapidamente")
                         
                         # Atualizar cache filtrado
                         contas_filtradas_cache = [c for c in contas_com_detalhes
