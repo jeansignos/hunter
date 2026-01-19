@@ -2083,37 +2083,40 @@ h2, h3, h4 {
     background-repeat: no-repeat !important;
 }
 
-/* ===== CORREÇÃO: ITENS NÃO VAZAM DO CARD ===== */
-/* Apenas o ribbon precisa de overflow visible, não o conteúdo do card */
+/* ===== CORREÇÃO FINAL: CARDS COM SCROLL E RIBBON ===== */
+/* Card principal: overflow hidden para conter conteúdo */
 .nft-card {
-    overflow: visible !important;
+    overflow: hidden !important;
     position: relative !important;
 }
 
-/* Permitir que APENAS a área do top-bar tenha overflow visible para o ribbon */
+/* APENAS o top-bar pode vazar (para o ribbon COM LANCE) */
 .nft-card .card-top-bar {
     overflow: visible !important;
     position: relative !important;
-    z-index: 10;
+    z-index: 100;
 }
 
-/* O conteúdo das abas (tabs) precisa esconder overflow */
+/* Tab content: scroll interno para não vazar */
 .nft-card .tab-content {
-    overflow: visible !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 450px !important;
 }
 
-/* Items grid - manter visible para imagens funcionarem */
+/* Items grid: contido dentro do scroll */
 .nft-card .items-grid {
-    overflow: visible !important;
+    overflow: visible;
     padding: 10px !important;
 }
 
-/* item-circle precisa de overflow visible para badges */
+/* item-circle: visible para badges funcionarem */
 .item-circle {
     overflow: visible !important;
+    position: relative !important;
 }
 
-/* Badges dos itens precisam ficar dentro do círculo */
+/* Badges posicionados corretamente */
 .item-circle .badge-enhance,
 .item-circle .badge-tier,
 .item-circle .badge-trade,

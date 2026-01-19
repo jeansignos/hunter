@@ -329,11 +329,11 @@ def create_app(config_name=None):
                         
                         # Buscar 10 páginas em paralelo por vez
                         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                            for batch_start in range(1, 51, 10):
+                            for batch_start in range(1, 101, 10):
                                 if len(nft_map) >= len(nft_ids_faltantes):
                                     break
                                 
-                                pages = range(batch_start, min(batch_start + 10, 51))
+                                pages = range(batch_start, min(batch_start + 10, 101))
                                 futures = {executor.submit(buscar_pagina, p): p for p in pages}
                                 
                                 for future in concurrent.futures.as_completed(futures):

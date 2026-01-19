@@ -686,15 +686,22 @@
             border-bottom: 3px solid transparent;
         }
         
-        /* Garantir que o ribbon apareça fora do card */
+        /* Card com scroll interno, só ribbon sai */
         .nft-card {
-            overflow: visible !important;
+            overflow: hidden !important;
             position: relative;
         }
         
         .card-top-bar {
             overflow: visible !important;
             position: relative;
+            z-index: 100;
+        }
+        
+        .tab-content {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: 450px;
         }
         
         .tempo-restante {
