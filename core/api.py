@@ -673,3 +673,88 @@ def buscar_status_lances_batch(nft_ids, max_concurrent=5):
         time.sleep(0.3)  # Pequeno delay entre requisições
     
     return results
+
+
+def buscar_contas_com_bid_wemixplay():
+    """
+    Busca contas com lances ativos diretamente da API do wemixplay.
+    Retorna lista de NFT IDs (tid) que estão com bid ativo.
+    
+    Baseado no código do cliente que descobriu o endpoint.
+    """
+    import requests
+    
+    url = "https://api.wemixplay.com/market/explore/v3/nfts"
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/plain, */*",
+        "Origin": "https://wemixplay.com",
+        "Referer": "https://wemixplay.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    
+    # Filtrar apenas leilões ativos do contrato MIR4
+    payload = {
+        "onAuction": True,
+        "addressFilter": [
+            "0x1dbf9b33e59972ed753cae1423f4f23deec70cc9"  # Contrato MIR4 Character
+        ]
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if 'data' in data and 'result' in data['data']:
+                nfts = data['data']['result']
+                
+                # Filtra apenas os com leilão ativo (isBidOngoing)
+                ongoing_bids = []
+                for nft in nfts:
+                    current_status = nft.get('currentStatus', {})
+                    if current_status.get('isBidOngoing'):
+                        tid = str(nft.get('tid', ''))
+                        nft_name = nft.get('nftName', '')
+                        
+                        # Extrair preço (dividindo por 10^18)
+                        price_amount = nft.get('order', {}).get('price', {}).get('amount', '0')
+                        try:
+                            if isinstance(price_amount, str):
+                                price_amount = price_amount.strip('"')
+                            price_wei = int(price_amount)
+                            price = price_wei / 10**18
+                        except:
+                            price = 0
+                        
+                        # Tempo do leilão
+                        auction_end_time = nft.get('auctionEndTime', 0)
+                        
+                        ongoing_bids.append({
+                            'nftID': tid,
+                            'name': nft_name,
+                            'price': price,
+                            'auctionEndTime': auction_end_time,
+                            'has_bid': True
+                        })
+                
+                print(f"[WEMIXPLAY API] Encontradas {len(ongoing_bids)} contas com bid ativo")
+                return ongoing_bids
+        
+        print(f"[WEMIXPLAY API] Erro: {response.status_code}")
+        return []
+        
+    except Exception as e:
+        print(f"[WEMIXPLAY API] Erro ao buscar: {e}")
+        return []
+
+
+def obter_nft_ids_com_bid():
+    """
+    Retorna um set com os nftIDs que têm bid ativo.
+    Útil para verificação rápida.
+    """
+    contas = buscar_contas_com_bid_wemixplay()
+    return {conta['nftID'] for conta in contas}

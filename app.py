@@ -291,6 +291,16 @@ def create_app(config_name=None):
         contas_filtradas_cache = [c for c in contas_com_detalhes 
                                    if c.get("basic", {}).get("name", c.get("name", "")) not in NOMES_BLOQUEADOS]
         
+        # Buscar nftIDs com bid ativo do wemixplay (se filtro bidding estiver ativo)
+        nft_ids_com_bid = set()
+        if filtros.get("status_lance") in ["bidding", "listado"]:
+            from core.api import obter_nft_ids_com_bid
+            try:
+                nft_ids_com_bid = obter_nft_ids_com_bid()
+                print(f"[FILTRO] {len(nft_ids_com_bid)} contas com bid ativo no wemixplay")
+            except Exception as e:
+                print(f"[FILTRO] Erro ao buscar nftIDs com bid: {e}")
+
         # Aplicar filtros
         contas_filtradas = []
         for conta in contas_filtradas_cache:
@@ -307,14 +317,18 @@ def create_app(config_name=None):
                 if nome_busca not in nome_conta:
                     continue
             
-            # Filtro por status de lance (listado = venda direta, bidding = leilão)
+            # Filtro por status de lance (usando dados em tempo real do wemixplay)
             status_lance = filtros.get("status_lance")
             if status_lance:
-                trade_type = conta.get("tradeType", 1)
-                if status_lance == "bidding" and trade_type != 2:
-                    continue
-                elif status_lance == "listado" and trade_type != 1:
-                    continue
+                nft_id = str(conta.get("nftID", ""))
+                if status_lance == "bidding":
+                    # Usar dados do wemixplay para verificar se tem bid ativo
+                    if nft_id not in nft_ids_com_bid:
+                        continue
+                elif status_lance == "listado":
+                    # Mostrar apenas contas SEM bid ativo
+                    if nft_id in nft_ids_com_bid:
+                        continue
             
             # Filtro de servidor
             world_name = conta.get("worldName", conta.get("basic", {}).get("worldName", ""))
@@ -765,6 +779,27 @@ def create_app(config_name=None):
         if limpar_cache_contas():
             return "Cache de contas limpo com sucesso!"
         return "Erro ao limpar cache de contas."
+
+    @app.route("/api/contas-com-bid")
+    def api_contas_com_bid():
+        """Retorna lista de contas com bid ativo do wemixplay"""
+        from core.api import buscar_contas_com_bid_wemixplay
+        try:
+            contas = buscar_contas_com_bid_wemixplay()
+            # Criar set de nftIDs para verificação rápida
+            nft_ids_com_bid = {c["nftID"] for c in contas}
+            return jsonify({
+                "success": True,
+                "total": len(contas),
+                "contas": contas,
+                "nftIDs": list(nft_ids_com_bid)
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
+
 
     @app.route("/api/verificar-lance/<nft_id>")
     def verificar_lance(nft_id):
