@@ -440,6 +440,8 @@ p.subtitle {
     padding: 0 12px; 
     animation: fadeIn 0.3s ease;
     min-height: 320px;  /* Altura mínima para padronizar cards */
+    max-height: 480px;  /* Altura máxima para uniformidade */
+    overflow-y: auto;   /* Scroll quando necessário */
 }
 .tab-content.active { 
     display: block; 
