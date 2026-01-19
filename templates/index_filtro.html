@@ -274,8 +274,19 @@
         .filtros-linha-principal {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
+            gap: 10px 12px;
+            align-items: flex-end;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        
+        /* Separador de filtros */
+        .filtros-separador {
+            width: 1px;
+            height: 35px;
+            background: #4a5568;
+            margin: 0 5px;
+            flex-shrink: 0;
         }
         
         /* Select compacto */
