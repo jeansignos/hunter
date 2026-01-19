@@ -191,7 +191,24 @@ def buscar_spirit_detalhado(transport_id):
             
             if isinstance(data, dict):
                 for secao in ["equip", "inven"]:
-                    for item in data.get(secao, []):
+                    secao_data = data.get(secao, {})
+                    
+                    # A API retorna dict de dicts aninhados
+                    items_to_process = []
+                    
+                    if isinstance(secao_data, list):
+                        items_to_process = secao_data
+                    elif isinstance(secao_data, dict):
+                        for slot_key, slot_val in secao_data.items():
+                            if isinstance(slot_val, dict):
+                                if "petName" in slot_val:
+                                    items_to_process.append(slot_val)
+                                else:
+                                    for pos_key, pos_val in slot_val.items():
+                                        if isinstance(pos_val, dict) and "petName" in pos_val:
+                                            items_to_process.append(pos_val)
+                    
+                    for item in items_to_process:
                         if not isinstance(item, dict):
                             continue
                         

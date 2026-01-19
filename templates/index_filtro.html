@@ -3431,7 +3431,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             
             // Filtro por status (listado/bidding)
             if (filtroStatusAtual) {
-                params.append('filtro_status', filtroStatusAtual);
+                params.append('status_lance', filtroStatusAtual);
             }
             
             // Filtros de Treino
@@ -3714,12 +3714,27 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
                 }
             }
             
-            // Verificar status selecionados
-            if (typeof statusAtivos !== 'undefined' && statusAtivos.size > 0) {
+            // Verificar status selecionados (inputs numericos em #lista-status)
+            const statusInputs = document.querySelectorAll('#lista-status input[type="number"]');
+            let statusPreenchidos = 0;
+            let statusNomes = [];
+            statusInputs.forEach(input => {
+                const val = parseFloat(input.value);
+                if (val && val > 0) {
+                    statusPreenchidos++;
+                    // Pegar o nome do status do label associado
+                    const statusItem = input.closest('.status-item');
+                    if (statusItem) {
+                        const label = statusItem.querySelector('label');
+                        if (label) statusNomes.push(label.textContent.trim());
+                    }
+                }
+            });
+            if (statusPreenchidos > 0) {
                 temFiltros = true;
-                adicionarTagFiltro(container, 'status', 'Status', `${statusAtivos.size} selecionados`, () => {
-                    statusAtivos.clear();
-                    document.querySelectorAll('.btn-status-todos.ativo').forEach(b => b.classList.remove('ativo'));
+                const descricao = statusPreenchidos <= 2 ? statusNomes.join(', ') : `${statusPreenchidos} status`;
+                adicionarTagFiltro(container, 'status_filtros', 'Status', descricao, () => {
+                    statusInputs.forEach(input => input.value = '');
                     atualizarFiltrosAtivos();
                 });
             }
@@ -3776,9 +3791,8 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             if (typeof espiritosAtivos !== 'undefined') espiritosAtivos.clear();
             document.querySelectorAll('.esp-card-mini.selecionado').forEach(c => c.classList.remove('selecionado'));
             
-            // Limpar status
-            if (typeof statusAtivos !== 'undefined') statusAtivos.clear();
-            document.querySelectorAll('.btn-status-todos.ativo').forEach(b => b.classList.remove('ativo'));
+            // Limpar status (inputs numericos)
+            document.querySelectorAll('#lista-status input[type="number"]').forEach(input => input.value = '');
             
             // Atualizar contadores
             if (typeof atualizarCountMineracao === 'function') atualizarCountMineracao();
