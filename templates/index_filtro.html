@@ -1507,7 +1507,7 @@
                             <label style="color: #f6e05e;">Ganho Aço Negro (%)</label>
                             <input type="number" id="status_aconegro" placeholder="0" onchange="atualizarCountMineracao()">
                         </div>
-                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-mineracao')">Aplicar</button>
+                        <button type="button" class="btn-aplicar" onclick="aplicarMiniDropdown('dd-mineracao')">Aplicar</button>
                     </div>
                 </div>
                 {% else %}
@@ -1551,7 +1551,7 @@
                             <input type="number" id="treino_sapo" placeholder="0" min="0" max="23" onchange="atualizarCountTreino()">
                             <span style="color:#718096;font-size:0.7rem;">/23</span>
                         </div>
-                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-treino')">Aplicar</button>
+                        <button type="button" class="btn-aplicar" onclick="aplicarMiniDropdown('dd-treino')">Aplicar</button>
                     </div>
                 </div>
                 {% else %}
@@ -1582,7 +1582,7 @@
                             <input type="number" id="itens_comercio_min" placeholder="0" min="0" max="10" onchange="atualizarCountNivel()">
                             <span style="color:#718096;font-size:0.65rem;">máx 10</span>
                         </div>
-                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-nivel')">Aplicar</button>
+                        <button type="button" class="btn-aplicar" onclick="aplicarMiniDropdown('dd-nivel')">Aplicar</button>
                     </div>
                 </div>
                 
@@ -1606,7 +1606,7 @@
                             <label style="flex:2;">Equipamentos Épicos Trade</label>
                             <input type="number" id="equip_epic_trade_min" placeholder="0" min="0" onchange="atualizarCountTrade()">
                         </div>
-                        <button type="button" class="btn-aplicar" onclick="toggleMiniDropdown('dd-trade')">Aplicar</button>
+                        <button type="button" class="btn-aplicar" onclick="aplicarMiniDropdown('dd-trade')">Aplicar</button>
                     </div>
                 </div>
                 {% else %}
@@ -2290,13 +2290,10 @@
                 }
             });
             
-            // Inputs numéricos que disparam busca automática
+            // Inputs numéricos que disparam busca automática (APENAS os da tela principal)
+            // NÃO incluir inputs de mini-dropdowns (Mineração, Treino, Codex, Trade) pois esses só buscam ao clicar Aplicar
             const inputsFiltro = [
-                'level_min', 'power_min', 'price_min', 'price_max',
-                'mina_min', 'status_aceleramento', 'status_aconegro',
-                'treino_constituicao', 'treino_muscular', 'treino_noveyin', 'treino_noveyang', 'treino_sapo',
-                'codex_min', 'potencial_min', 'itens_comercio_min',
-                'equip_lend_trade_min', 'equip_epic_trade_min'
+                'level_min', 'power_min', 'price_min', 'price_max'
             ];
             inputsFiltro.forEach(id => {
                 const el = document.getElementById(id);
@@ -2983,8 +2980,7 @@
             // Com imagem - usando <img> tag para melhor compatibilidade mobile
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img src="${item.img}" alt="${item.name || ''}" loading="lazy" 
-                     style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; border-radius: inherit;"
+                <img src="${item.img}" alt="${item.name || ''}" 
                      onerror="this.style.display='none';">
                 ${enhanceHtml}
                 ${tierHtml}
@@ -3016,8 +3012,7 @@
             // Com imagem - usando <img> tag para mobile
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img src="${item.img}" alt="${item.name || ''}" loading="lazy" 
-                     style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; border-radius: inherit;"
+                <img src="${item.img}" alt="${item.name || ''}" 
                      onerror="this.style.display='none';">
                 ${countHtml}
             </div>
@@ -3716,6 +3711,15 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             dropdown.classList.toggle('show');
         }
         
+        // Fechar dropdown e buscar (para botões Aplicar)
+        function aplicarMiniDropdown(id) {
+            const dropdown = document.getElementById(id);
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+            buscarContas(); // Buscar automaticamente ao aplicar
+        }
+        
         // ========== SISTEMA DE FILTROS ATIVOS ==========
         function atualizarFiltrosAtivos() {
             const area = document.getElementById('filtros-ativos-area');
@@ -3772,6 +3776,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                 adicionarTagFiltro(container, 'classes', 'Classes', nomes, () => {
                     document.querySelectorAll('.classe-btn').forEach(b => b.classList.remove('ativa'));
                     atualizarFiltrosAtivos();
+                    buscarContas(); // Refazer busca ao remover filtro
                 });
             }
             
@@ -3784,6 +3789,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                     // Atualizar contador do botão
                     if (typeof atualizarCountEspiritos === 'function') atualizarCountEspiritos();
                     atualizarFiltrosAtivos();
+                    buscarContas(); // Refazer busca ao remover filtro
                 });
             }
             
@@ -3803,6 +3809,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                         // Atualizar contador do botão
                         if (typeof atualizarCountSkills === 'function') atualizarCountSkills();
                         atualizarFiltrosAtivos();
+                        buscarContas(); // Refazer busca ao remover filtro
                     });
                 }
             }
@@ -3829,6 +3836,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                 adicionarTagFiltro(container, 'status_filtros', 'Status', descricao, () => {
                     statusInputs.forEach(input => input.value = '');
                     atualizarFiltrosAtivos();
+                    buscarContas(); // Refazer busca ao remover filtro
                 });
             }
             
@@ -3844,6 +3852,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                     if (itensLista) itensLista.innerHTML = '';
                     if (typeof atualizarCountItens === 'function') atualizarCountItens();
                     atualizarFiltrosAtivos();
+                    buscarContas(); // Refazer busca ao remover filtro
                 });
             }
             

@@ -2512,3 +2512,61 @@ h2, h3, h4 {
         -webkit-backface-visibility: hidden;
     }
 }
+
+/* ========== CORREÇÃO FINAL MOBILE - FORÇAR IMAGENS ========== */
+/* Corrigir conflitos de overflow e garantir que imagens apareçam */
+.item-circle {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.item-circle > img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: auto !important;
+    z-index: 1 !important;
+    border-radius: inherit !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+}
+
+/* Correção específica para Android/Chrome mobile */
+@media screen and (max-width: 768px) {
+    .item-circle {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: transform;
+    }
+    
+    .item-circle > img {
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+    
+    /* Garantir que não está escondido por media query */
+    .nft-card .item-circle > img,
+    .items-grid .item-circle > img {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Fallback: se img falhar, mostrar placeholder */
+.item-circle > img[src=""],
+.item-circle > img:not([src]) {
+    display: none !important;
+}
