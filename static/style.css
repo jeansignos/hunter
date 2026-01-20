@@ -2515,11 +2515,13 @@ h2, h3, h4 {
 
 /* ========== CORREÇÃO FINAL MOBILE - FORÇAR IMAGENS ========== */
 /* Corrigir conflitos de overflow e garantir que imagens apareçam */
+/* IMPORTANTE: overflow:visible para badges não serem cortados */
 .item-circle {
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important;
 }
 
+/* Imagem dentro do círculo - usar clip-path para cortar a imagem no círculo */
 .item-circle > img {
     display: block !important;
     visibility: visible !important;
@@ -2536,9 +2538,20 @@ h2, h3, h4 {
     bottom: 0 !important;
     margin: auto !important;
     z-index: 1 !important;
-    border-radius: inherit !important;
+    border-radius: 50% !important;
     -webkit-transform: translateZ(0) !important;
     transform: translateZ(0) !important;
+    /* Clip a imagem no círculo */
+    clip-path: circle(50% at center) !important;
+    -webkit-clip-path: circle(50% at center) !important;
+}
+
+/* Badges ficam por cima da imagem */
+.item-circle .badge-enhance,
+.item-circle .badge-tier,
+.item-circle .badge-trade,
+.item-circle .badge-count {
+    z-index: 10 !important;
 }
 
 /* Correção específica para Android/Chrome mobile */
@@ -2547,6 +2560,7 @@ h2, h3, h4 {
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
         will-change: transform;
+        overflow: visible !important;
     }
     
     .item-circle > img {
@@ -2554,12 +2568,25 @@ h2, h3, h4 {
         backface-visibility: hidden !important;
         image-rendering: -webkit-optimize-contrast;
         image-rendering: crisp-edges;
+        border-radius: 50% !important;
+        clip-path: circle(50% at center) !important;
+        -webkit-clip-path: circle(50% at center) !important;
     }
     
     /* Garantir que não está escondido por media query */
     .nft-card .item-circle > img,
     .items-grid .item-circle > img {
         display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* Badges visíveis e fora do círculo */
+    .item-circle .badge-enhance,
+    .item-circle .badge-tier,
+    .item-circle .badge-trade,
+    .item-circle .badge-count {
+        z-index: 10 !important;
         visibility: visible !important;
         opacity: 1 !important;
     }

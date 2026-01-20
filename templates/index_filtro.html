@@ -1785,7 +1785,7 @@
                 
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
                     <button type="button" class="btn-limpar-modal" onclick="limparSkills()"><i class="fas fa-times"></i> Limpar Seleção</button>
-                    <button type="button" class="btn-aplicar-modal" onclick="fecharModalHabilidades()"><i class="fas fa-check"></i> Aplicar Filtros</button>
+                    <button type="button" class="btn-aplicar-modal" onclick="aplicarModalHabilidades()"><i class="fas fa-check"></i> Aplicar Filtros</button>
                 </div>
             </div>
         </div>
@@ -1983,7 +1983,7 @@
                 
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
                     <button type="button" class="btn-limpar-modal" onclick="limparEspiritos()"><i class="fas fa-times"></i> Limpar Seleção</button>
-                    <button type="button" class="btn-aplicar-modal" onclick="fecharModalEspiritos()"><i class="fas fa-check"></i> Aplicar Filtros</button>
+                    <button type="button" class="btn-aplicar-modal" onclick="aplicarModalEspiritos()"><i class="fas fa-check"></i> Aplicar Filtros</button>
                 </div>
             </div>
         </div>
@@ -2030,7 +2030,7 @@
                             style="flex: 1; padding: 10px; background: #718096; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         <i class="fas fa-trash-alt"></i> Limpar Todos
                     </button>
-                    <button class="btn-modal btn-aplicar" onclick="fecharModalStatus()" 
+                    <button class="btn-modal btn-aplicar" onclick="aplicarModalStatus()" 
                             style="flex: 1; padding: 10px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         <i class="fas fa-check"></i> Aplicar Filtros
                     </button>
@@ -2084,7 +2084,7 @@
                             style="flex: 1; padding: 10px; background: #718096; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         <i class="fas fa-trash-alt"></i> Limpar Todos
                     </button>
-                    <button class="btn-modal btn-aplicar" onclick="fecharModalItens()" 
+                    <button class="btn-modal btn-aplicar" onclick="aplicarModalItens()" 
                             style="flex: 1; padding: 10px; background: #38a169; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         <i class="fas fa-check"></i> Aplicar Filtros
                     </button>
@@ -2353,6 +2353,11 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
+            // Não buscar aqui - só ao clicar em Aplicar
+        }
+        
+        function aplicarModalStatus() {
+            fecharModalStatus();
             // Buscar automaticamente após aplicar filtros de status
             buscarContas();
         }
@@ -2385,6 +2390,11 @@
                 modal.style.display = 'none';
             }, 300);
             atualizarCountEspiritos();
+            // Não buscar aqui - só ao clicar em Aplicar
+        }
+        
+        function aplicarModalEspiritos() {
+            fecharModalEspiritos();
             // Buscar automaticamente após aplicar filtros de espíritos
             buscarContas();
         }
@@ -2456,6 +2466,11 @@
                 modal.style.display = 'none';
             }, 300);
             atualizarCountSkills();
+            // Não buscar aqui - só ao clicar em Aplicar
+        }
+        
+        function aplicarModalHabilidades() {
+            fecharModalHabilidades();
             // Buscar automaticamente após aplicar filtros de skills
             buscarContas();
         }
@@ -2626,6 +2641,11 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
+            // Não buscar aqui - só ao clicar em Aplicar
+        }
+        
+        function aplicarModalItens() {
+            fecharModalItens();
             // Buscar automaticamente após aplicar filtros de itens
             buscarContas();
         }
@@ -2978,10 +2998,13 @@
             
 
             // Com imagem - usando <img> tag para melhor compatibilidade mobile
+            // crossorigin para evitar problemas de CORS em alguns navegadores
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img src="${item.img}" alt="${item.name || ''}" 
-                     onerror="this.style.display='none';">
+                     crossorigin="anonymous"
+                     referrerpolicy="no-referrer"
+                     onerror="this.parentElement.classList.add('img-error'); this.style.display='none';">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3013,7 +3036,9 @@
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img src="${item.img}" alt="${item.name || ''}" 
-                     onerror="this.style.display='none';">
+                     crossorigin="anonymous"
+                     referrerpolicy="no-referrer"
+                     onerror="this.parentElement.classList.add('img-error'); this.style.display='none';">
                 ${countHtml}
             </div>
             `;
