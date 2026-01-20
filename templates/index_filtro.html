@@ -2917,11 +2917,12 @@
             }
             
 
-            // Com imagem - background da imagem
+            // Com imagem - usando <img> tag para melhor compatibilidade mobile
             return `
-            <div class="item-circle ${gradeClass}" 
-                 style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;" 
-                 title="${item.name || ''}">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
+                <img src="${item.img}" alt="${item.name || ''}" loading="lazy" 
+                     style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; border-radius: inherit;"
+                     onerror="this.style.display='none';">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -2949,12 +2950,12 @@
                 `;
             }
             
-            // Com imagem
+            // Com imagem - usando <img> tag para mobile
             return `
-            <div class="item-circle ${gradeClass}" 
-                 style="background-image: url('${item.img}');" 
-                 title="${item.name || ''}">
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: inherit; border-radius: 10px;"></div>
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
+                <img src="${item.img}" alt="${item.name || ''}" loading="lazy" 
+                     style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; border-radius: inherit;"
+                     onerror="this.style.display='none';">
                 ${countHtml}
             </div>
             `;
@@ -4050,8 +4051,10 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         function selecionarCache(tipo) {
             cacheTipo = tipo;
             document.querySelectorAll('.cache-type-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`cache-${tipo}`).classList.add('active');
-            const ci2 = document.getElementById('cache-info'); if(ci2) ci2.innerText = `Modo: ${tipo === 'completas' ? 'Cache Completo' : 'Cache Teste'}`;
+            const cacheBtn = document.getElementById(`cache-${tipo}`);
+            if (cacheBtn) cacheBtn.classList.add('active');
+            const ci2 = document.getElementById('cache-info');
+            if (ci2) ci2.innerText = `Modo: ${tipo === 'completas' ? 'Cache Completo' : 'Cache Teste'}`;
         }
 
         function mudarOrdenacao() {

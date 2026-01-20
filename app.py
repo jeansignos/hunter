@@ -344,16 +344,81 @@ def create_app(config_name=None):
                 print(f"[CRUZAMENTO] {len(nomes_encontrados)} contas com bid encontradas no cache")
                 print(f"[CRUZAMENTO] {len(nomes_faltantes)} contas com bid NÃO estão no cache")
                 
-                # SIMPLIFICADO: Apenas usar contas que JÁ estão no cache
-                # Não buscar externamente - se não está no cache, não mostra
-                if filtros.get("status_lance") == "bidding":
-                    # Filtrar apenas contas que têm bid E estão no cache
-                    contas_com_bid_no_cache = [c for c in contas_com_detalhes if c.get("has_active_bid")]
-                    print(f"[CRUZAMENTO] {len(contas_com_bid_no_cache)} contas com bid disponíveis no cache")
+                # Para contas com bid que NÃO estão no cache, buscar stats básicos
+                # Isso inclui contas com status "Vendas Completas" que ainda têm leilão ativo
+                if filtros.get("status_lance") == "bidding" and nomes_faltantes:
+                    print(f"[VENDAS COMPLETAS] Buscando stats de {len(nomes_faltantes)} contas não cacheadas...")
                     
-                    # Log das contas com bid não encontradas (para referência)
-                    if nomes_faltantes:
-                        print(f"[AVISO] {len(nomes_faltantes)} contas com bid não estão no cache (ignoradas)")
+                    from core.api import buscar_detalhes_conta
+                    
+                    for nome_faltante in list(nomes_faltantes):
+                        bid_info = nomes_com_bid.get(nome_faltante, {})
+                        if bid_info:
+                            seq = bid_info.get("seq")
+                            transport_id = bid_info.get("transportID", seq)
+                            nft_id = bid_info.get("nftID", "")
+                            
+                            if seq:
+                                try:
+                                    print(f"[VENDAS COMPLETAS] Buscando stats da conta '{nome_faltante}' (seq={seq})...")
+                                    
+                                    # Buscar detalhes da API - mesmo para contas "Vendas Completas" a API retorna dados
+                                    detalhes = buscar_detalhes_conta(seq, transport_id)
+                                    
+                                    if detalhes and detalhes.get("basic", {}).get("name"):
+                                        # Conta encontrada! Adicionar dados do bid
+                                        detalhes["nftID"] = nft_id
+                                        detalhes["price"] = bid_info.get("price", detalhes.get("price", 0))
+                                        detalhes["auctionEndTime"] = bid_info.get("auctionEndTime", 0)
+                                        detalhes["has_active_bid"] = True
+                                        detalhes["from_vendas_completas"] = True  # Flag especial
+                                        
+                                        contas_com_detalhes.append(detalhes)
+                                        print(f"[VENDAS COMPLETAS] Conta '{nome_faltante}' adicionada com stats!")
+                                    else:
+                                        # Fallback: criar com dados mínimos do wemixplay
+                                        conta_basica = {
+                                            "seq": seq,
+                                            "transportID": transport_id,
+                                            "nftID": nft_id,
+                                            "name": bid_info.get("name", nome_faltante),
+                                            "powerScore": bid_info.get("powerScore", 0),
+                                            "level": bid_info.get("level", 0),
+                                            "class": str(bid_info.get("class", "1")),
+                                            "worldName": bid_info.get("server", ""),
+                                            "price": bid_info.get("price", 0),
+                                            "auctionEndTime": bid_info.get("auctionEndTime", 0),
+                                            "has_active_bid": True,
+                                            "from_vendas_completas": True,
+                                            "basic": {
+                                                "name": bid_info.get("name", nome_faltante),
+                                                "powerScore": bid_info.get("powerScore", 0),
+                                                "level": bid_info.get("level", 0),
+                                                "class": str(bid_info.get("class", "1")),
+                                                "worldName": bid_info.get("server", "")
+                                            },
+                                            "stats": [],
+                                            "equip": [],
+                                            "spirit_list": [],
+                                            "skills_list": [],
+                                            "inven": [],
+                                            "codex": 0,
+                                            "potencial": 0,
+                                            "training": {},
+                                            "building": {"mina": 0}
+                                        }
+                                        contas_com_detalhes.append(conta_basica)
+                                        print(f"[VENDAS COMPLETAS] Conta '{nome_faltante}' adicionada com dados básicos")
+                                        
+                                except Exception as e:
+                                    print(f"[VENDAS COMPLETAS] Erro ao buscar conta '{nome_faltante}': {e}")
+                    
+                    # Atualizar filtro
+                    contas_filtradas_cache = [c for c in contas_com_detalhes
+                                               if c.get("basic", {}).get("name", c.get("name", "")) not in NOMES_BLOQUEADOS]
+                    
+                    contas_com_bid_total = sum(1 for c in contas_com_detalhes if c.get("has_active_bid"))
+                    print(f"[VENDAS COMPLETAS] Total de contas com bid agora: {contas_com_bid_total}")
             except Exception as e:
                 print(f"[FILTRO] Erro ao buscar nftIDs com bid: {e}")
                 import traceback
