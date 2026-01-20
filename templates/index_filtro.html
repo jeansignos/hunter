@@ -2265,6 +2265,53 @@
                     buscarContas();
                 }, 300);
             });
+            
+            // ========== BUSCA AUTOMÁTICA AO ALTERAR FILTROS ==========
+            let buscaTimeout = null;
+            const DEBOUNCE_DELAY = 800; // ms de espera após última alteração
+            
+            function buscarComDebounce() {
+                // Cancelar busca anterior se ainda estiver pendente
+                if (buscaTimeout) {
+                    clearTimeout(buscaTimeout);
+                }
+                // Agendar nova busca
+                buscaTimeout = setTimeout(() => {
+                    buscarContas();
+                }, DEBOUNCE_DELAY);
+            }
+            
+            // Selects que disparam busca automática
+            const selectsFiltro = ['classe', 'regiao', 'servidor', 'ordenacao'];
+            selectsFiltro.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', buscarComDebounce);
+                }
+            });
+            
+            // Inputs numéricos que disparam busca automática
+            const inputsFiltro = [
+                'level_min', 'power_min', 'price_min', 'price_max',
+                'mina_min', 'status_aceleramento', 'status_aconegro',
+                'treino_constituicao', 'treino_muscular', 'treino_noveyin', 'treino_noveyang', 'treino_sapo',
+                'codex_min', 'potencial_min', 'itens_comercio_min',
+                'equip_lend_trade_min', 'equip_epic_trade_min'
+            ];
+            inputsFiltro.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    // Usar 'input' para capturar digitação em tempo real
+                    el.addEventListener('input', buscarComDebounce);
+                    el.addEventListener('change', buscarComDebounce);
+                }
+            });
+            
+            // Campo de busca por nome
+            const buscaNome = document.getElementById('busca_nome');
+            if (buscaNome) {
+                buscaNome.addEventListener('input', buscarComDebounce);
+            }
         });
 
         // --- FUNÇÕES DO MODAL PREMIUM ---
@@ -2309,6 +2356,8 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
+            // Buscar automaticamente após aplicar filtros de status
+            buscarContas();
         }
         
         // --- MODAL DE ESPÍRITOS ---
@@ -2339,6 +2388,8 @@
                 modal.style.display = 'none';
             }, 300);
             atualizarCountEspiritos();
+            // Buscar automaticamente após aplicar filtros de espíritos
+            buscarContas();
         }
         
         function toggleEspirito(el) {
@@ -2408,6 +2459,8 @@
                 modal.style.display = 'none';
             }, 300);
             atualizarCountSkills();
+            // Buscar automaticamente após aplicar filtros de skills
+            buscarContas();
         }
         
         function carregarSkillsClasse() {
@@ -2417,6 +2470,14 @@
             if (!classeId) {
                 container.innerHTML = '<p style="color: #718096; text-align: center; width: 100%;">Selecione uma classe acima para ver as habilidades</p>';
                 return;
+            }
+            
+            // ========== SINCRONIZAR CLASSE PRINCIPAL COM CLASSE SKILL ==========
+            // Quando selecionar uma classe nas habilidades, atualizar a classe principal
+            const classePrincipal = document.getElementById('classe');
+            if (classePrincipal && classePrincipal.value !== classeId) {
+                classePrincipal.value = classeId;
+                // Não chamar buscarContas aqui pois o modal ainda está aberto
             }
             
             classeSkillAtual = classeId;
@@ -2568,6 +2629,8 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
+            // Buscar automaticamente após aplicar filtros de itens
+            buscarContas();
         }
 
         function filtrarItens() {
