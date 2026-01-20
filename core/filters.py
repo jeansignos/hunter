@@ -73,7 +73,8 @@ def eh_excecao_permitida(nome_item):
         return True
     if "Pedra Mágica" in nome_item and "Pedra Mágica da Insanidade" not in nome_item:
         return True
-    if "Pedra de Aprimoramento" in nome_item:
+    # Pedra de Aprimoramento é permitida, MAS Fragmento de Pedra de Aprimoramento NÃO
+    if "Pedra de Aprimoramento" in nome_item and not nome_item.startswith("Fragmento"):
         return True
     if "Colar de Ragnos Raro" in nome_item:
         return True
@@ -104,10 +105,11 @@ def filtrar_itens_comercializaveis(inventario):
             
         # Verifica se é exceção permitida
         if not eh_excecao_permitida(item_name):
-            # Verifica exclusões por palavras
+            # Verifica exclusões por palavras (startswith OU igual OU contém)
             excluir_item = False
             for palavra in EXCLUIR_PALAVRAS:
-                if item_name.startswith(palavra):
+                # Verifica se o nome começa com a palavra OU é igual OU contém a palavra
+                if item_name.startswith(palavra) or item_name == palavra or palavra in item_name:
                     excluir_item = True
                     break
             
