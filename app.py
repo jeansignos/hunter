@@ -541,13 +541,12 @@ def create_app(config_name=None):
             if filtros.get("codex_min") and codex < filtros["codex_min"]:
                 continue
             
-            # NOVO FILTRO: Itens de comércio (2+)
+            # FILTRO: Equipamentos Lendários (APENAS grade 5, equipados)
             if filtros.get("itens_comercio_min"):
-                total_itens = conta.get("inven_total", 0)
-                # Contar itens épicos e lendários
-                itens_all = conta.get("inven_all", [])
-                itens_valiosos = [i for i in itens_all if i.get("grade", 0) >= 4]  # Grade 4+ = Épico/Lendário
-                if len(itens_valiosos) < filtros["itens_comercio_min"]:
+                # Contar APENAS equipamentos lendários (grade 5)
+                equipamentos = conta.get("equip", [])
+                equip_lendarios = [e for e in equipamentos if e.get("grade", 0) == 5]
+                if len(equip_lendarios) < filtros["itens_comercio_min"]:
                     continue
             
             # NOVO FILTRO: Equipamentos Trade (comercializáveis com balança)

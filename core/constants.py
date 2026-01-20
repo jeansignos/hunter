@@ -137,7 +137,7 @@ EXCLUIR_PALAVRAS = [
     "Selo de Dominação", "Cetro Majestoso", "Fruta Centenária", "Óleo Sagrado",
     "Vela Aromática", "Pedaço do Dragão", "Crachá de",
     "Baleia", "Seda dos", "Japamala", "Anel de Feitiço de Yullus", "Grilheta de",
-    "Talismã do", "Crachá de Invocação", "P.E de E.T", "Crachá", "Pedra do Equilíbrio",
+    "Talismã do", "Talismã da Destruição", "Crachá de Invocação", "P.E de E.T", "Crachá", "Pedra do Equilíbrio",
     "Pedra Sanguissedenta", "Pedra da Lua Amarela", "Pedra Lúcida Azul",
     "Minério de Chifre", "Pó de espaço", "Espada de Pedras",
     "Pinheiro Resistente", "Gema de Espírito", "Tintura Vermelha", "Token Infundido",
