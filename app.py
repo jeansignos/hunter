@@ -882,11 +882,12 @@ def create_app(config_name=None):
     @app.route("/status-carregamento")
     def status_carregamento():
         """Retorna status do carregamento de cache"""
-        from core.loader import cache_carregando, get_progresso
+        from core.loader import cache_carregando, get_progresso, get_status_auto_renovacao
         
         cache_completo = read_from_cache("contas_completas")
         cache_teste = read_from_cache("contas_teste")
         progresso = get_progresso()
+        auto_renovacao = get_status_auto_renovacao()
         
         return jsonify({
             "carregando": cache_carregando,
@@ -894,7 +895,8 @@ def create_app(config_name=None):
             "total_completo": len(cache_completo) if cache_completo else 0,
             "tem_cache_teste": cache_teste is not None,
             "total_teste": len(cache_teste) if cache_teste else 0,
-            "progresso": progresso
+            "progresso": progresso,
+            "auto_renovacao": auto_renovacao
         })
 
     @app.route("/limpar-cache")
@@ -1019,6 +1021,16 @@ def create_app(config_name=None):
 
 # Criar aplicação
 app = create_app()
+
+# Iniciar sistema de auto-renovação do cache (em produção)
+import os as os_check
+if os_check.environ.get('RAILWAY_ENVIRONMENT') or os_check.environ.get('FLASK_ENV') == 'production':
+    try:
+        from core.loader import iniciar_auto_renovacao
+        iniciar_auto_renovacao()
+        print("[APP] Sistema de auto-renovação de cache iniciado (3h)")
+    except Exception as e:
+        print(f"[APP] Erro ao iniciar auto-renovação: {e}")
 
 
 if __name__ == "__main__":
