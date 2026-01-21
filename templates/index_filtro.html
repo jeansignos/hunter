@@ -3397,13 +3397,13 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
 
                 <div class="card-tabs">
                     <button class="card-tab-btn active" onclick="switchCardTab(this, ${conta.seq}, 0)"><i class="fas fa-home"></i></button>
-${temEquips ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 1)"><i class="fas fa-tshirt"></i></button>' : ''}
-${temDadosCompletos ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 2)"><i class="fas fa-dumbbell"></i></button>' : ''}
-${isPremium && temInventory ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 3)"><i class="fas fa-box-open"></i></button>' : ''}
+                    ${temEquips ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 1)"><i class="fas fa-tshirt"></i></button>` : ''}
+                    ${temDadosCompletos ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 2)"><i class="fas fa-dumbbell"></i></button>` : ''}
+                    ${isPremium && temInventory ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 3)"><i class="fas fa-box-open"></i></button>` : ''}
                     <!-- NOVOS BOTÕES DAS ABAS ESPECIAIS -->
-${temDadosCompletos ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 4)"><i class="fas fa-ticket-alt"></i></button>' : ''}
-${temSpirits ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 5)"><i class="fas fa-gem"></i></button>' : ''}
-${temSkills ? '<button class="card-tab-btn" onclick="switchCardTab(this, ' + conta.seq + ', 6)"><i class="fas fa-shapes"></i></button>' : ''}
+                    ${temDadosCompletos ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 4)"><i class="fas fa-ticket-alt"></i></button>` : ''}
+                    ${temSpirits ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 5)"><i class="fas fa-gem"></i></button>` : ''}
+                    ${temSkills ? `<button class="card-tab-btn" onclick="switchCardTab(this, ${conta.seq}, 6)"><i class="fas fa-shapes"></i></button>` : ''}
                 </div>
                 <div class="tab-content active" data-tab="0">
                     ${tab0Content}
