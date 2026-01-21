@@ -882,7 +882,7 @@ def create_app(config_name=None):
     @app.route("/status-carregamento")
     def status_carregamento():
         """Retorna status do carregamento de cache"""
-        from core.loader import cache_carregando, get_progresso, get_status_auto_renovacao
+        from core.loader import is_cache_carregando, get_progresso, get_status_auto_renovacao
         
         cache_completo = read_from_cache("contas_completas")
         cache_teste = read_from_cache("contas_teste")
@@ -890,7 +890,7 @@ def create_app(config_name=None):
         auto_renovacao = get_status_auto_renovacao()
         
         return jsonify({
-            "carregando": cache_carregando,
+            "carregando": is_cache_carregando(),
             "tem_cache_completo": cache_completo is not None,
             "total_completo": len(cache_completo) if cache_completo else 0,
             "tem_cache_teste": cache_teste is not None,

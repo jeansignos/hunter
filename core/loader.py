@@ -36,6 +36,12 @@ def get_contas():
     return contas_detalhadas_global
 
 
+def is_cache_carregando():
+    """Retorna se o cache está sendo carregado"""
+    global cache_carregando
+    return cache_carregando
+
+
 def get_progresso():
     """Retorna o progresso do carregamento"""
     global progresso_carregamento, cache_carregando
