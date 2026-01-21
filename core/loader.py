@@ -72,13 +72,18 @@ def carregar_detalhes_com_cache(conta):
     # Verificar se o cache tem os campos necessários
     # tradeType, nftID: necessários para filtro "Com Lance"
     # inven_all: precisa ter TODOS os itens com campo "trade" para busca funcionar
+    # spirit: precisa ter contagem de espíritos lendários
     cache_valido = False
     if cached and "tradeType" in cached and "nftID" in cached:
         inven_all = cached.get("inven_all", [])
+        spirit = cached.get("spirit", {})
         # Verifica se inven_all tem a nova estrutura com campo "trade"
         # e se tem mais itens que apenas os comercializáveis
+        # e se spirit tem a estrutura correta
         if inven_all and len(inven_all) > 0 and isinstance(inven_all[0], dict) and "trade" in inven_all[0]:
-            cache_valido = True
+            # Verificar se spirit existe e é um dict (não apenas default vazio)
+            if isinstance(spirit, dict) and "lendarios" in spirit:
+                cache_valido = True
     
     if cache_valido:
         return {
