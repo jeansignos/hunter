@@ -594,9 +594,6 @@ p.subtitle {
     align-items: center;
     justify-content: center;
     position: relative;
-    background-size: contain; 
-    background-position: center;
-    background-repeat: no-repeat;
     /* Removemos a cor fixa daqui para usar a das classes de grade */
     border: 3px solid; 
     box-shadow: 
@@ -608,15 +605,19 @@ p.subtitle {
     filter: brightness(1.1) contrast(1.1); 
 }
 
+/* Imagem principal do item - centralizada e contida */
 .item-circle .item-img-fg {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    inset: 3px; /* Offset para não sobrepor a borda */
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
     object-fit: contain;
     border-radius: 50%;
     pointer-events: none;
     z-index: 1;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Para itens sem imagem */
@@ -2516,24 +2517,25 @@ h2, h3, h4 {
 
 /* Forçar carregamento de imagens no iOS/Safari */
 @media (max-width: 768px) {
-    .item-circle img {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
+    .item-circle .item-img-fg {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
     }
 }
 
-/* ========== CORREÇÃO MOBILE - BACKGROUND-IMAGE ========== */
-/* Usando background-image ao invés de <img> tag para melhor compatibilidade */
-
+/* ========== CORREÇÃO MOBILE - IMG TAG SIMPLIFICADA ========== */
 .item-circle {
     position: relative !important;
     overflow: visible !important;
-    /* As imagens são definidas inline via style="background-image: url(...)" */
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
+}
+
+/* Imagens forçadas a aparecer */
+.item-circle .item-img-fg {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Badges ficam por cima */
@@ -2545,16 +2547,21 @@ h2, h3, h4 {
     position: absolute !important;
 }
 
-/* Mobile - garantir que background-image funcione */
+/* Mobile - garantir que img apareça */
 @media screen and (max-width: 768px) {
     .item-circle {
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
         will-change: auto;
         overflow: visible !important;
-        background-size: contain !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
+    }
+    
+    .item-circle .item-img-fg {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
     }
     
     /* Badges visíveis */

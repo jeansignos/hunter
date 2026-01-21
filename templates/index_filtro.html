@@ -2996,10 +2996,9 @@
                 `;
             }
 
-            // Render híbrido: background-image + <img> para forçar carregamento em mobile
+            // Usar apenas IMG tag (sem background-image) para evitar conflitos mobile
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
-                 style="background-image: url('${imgUrl}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
                      onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
                 ${enhanceHtml}
@@ -3032,10 +3031,9 @@
                 `;
             }
             
-            // Render híbrido: background-image + <img>
+            // Usar apenas IMG tag (sem background-image)
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
-                 style="background-image: url('${imgUrl}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
                      onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
                 ${countHtml}
