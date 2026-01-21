@@ -60,10 +60,18 @@ def read_from_cache(key):
             return None
         
         return cache_entry["data"]
+    except json.JSONDecodeError as e:
+        print(f"[CACHE] Arquivo corrompido {key}: {e}")
+        print(f"[CACHE] Deletando cache corrompido: {cache_path}")
+        try:
+            os.remove(cache_path)
+            print(f"[CACHE] Cache {key} deletado com sucesso")
+        except Exception as del_err:
+            print(f"[CACHE] Erro ao deletar cache: {del_err}")
+        return None
     except Exception as e:
         print(f"Erro ao ler cache {key}: {e}")
         return None
-
 
 def limpar_cache_contas():
     """Limpa apenas os arquivos de cache relacionados a contas"""
