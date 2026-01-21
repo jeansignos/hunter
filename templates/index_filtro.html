@@ -3526,6 +3526,9 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
 
         // Função para carregar mais itens do inventário
         function carregarMaisInventario(cardSeq) {
+            // Lista de itens bloqueados (pets, etc)
+            const itensBloqueados = ['luna', 'vigia', 'lookout luna', 'luna, a vigia', 'santo graal', 'brilhante do sábio', 'santo graal brilhante'];
+            
             const card = document.getElementById(`card-${cardSeq}`);
             const btn = document.getElementById(`carregar-mais-btn-${cardSeq}`);
             const container = document.getElementById(`inven-items-${cardSeq}`);
