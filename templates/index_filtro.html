@@ -3335,7 +3335,7 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
             // Aba 3: Inventário - VERSÃO CORRIGIDA
             // Usar APENAS itens comercializáveis (trade=true)
             // Lista de itens bloqueados (pets, etc)
-            const itensBloqueados = ['luna', 'vigia', 'lookout luna', 'luna, a vigia'];
+            const itensBloqueados = ['luna', 'vigia', 'lookout luna', 'luna, a vigia', 'santo graal', 'brilhante do sábio', 'santo graal brilhante'];
             const itensComercializaveis = (conta.inven_all || []).filter(item => {
                 if (!item.trade) return false;
                 const nome = (item.name || item.itemName || '').toLowerCase();
