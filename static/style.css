@@ -2738,3 +2738,49 @@ h2, h3, h4 {
         overflow: visible !important;
     }
 }
+
+/* ===== SOLUÇÃO FINAL DEFINITIVA - IMG TAG ===== */
+/* Resetar TODAS as regras anteriores de item-img-fg */
+.item-circle .item-img-fg {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 70% !important;
+    height: 70% !important;
+    margin-top: -35% !important;
+    margin-left: -35% !important;
+    object-fit: contain !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    /* Remover qualquer transform */
+    transform: none !important;
+    -webkit-transform: none !important;
+}
+
+/* Garantir que o container tenha position relative */
+.item-circle {
+    position: relative !important;
+}
+
+/* Especificamente para mobile < 768px */
+@media (max-width: 767px) {
+    .item-circle .item-img-fg {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        width: 65% !important;
+        height: 65% !important;
+        margin-top: -32.5% !important;
+        margin-left: -32.5% !important;
+        object-fit: contain !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
+}
