@@ -335,10 +335,10 @@ def restaurar_do_cache():
         with open(status_path, 'r', encoding='utf-8') as f:
             status = json.load(f)
         
-        # Verificar se o cache não é muito antigo (máximo 1 hora)
+        # Verificar se o cache não é muito antigo (máximo 6 horas)
         timestamp = datetime.fromisoformat(status["timestamp"])
-        if (datetime.now() - timestamp).total_seconds() > 3600:
-            print("[CACHE] Cache muito antigo, será recarregado")
+        if (datetime.now() - timestamp).total_seconds() > 21600:  # 6 horas
+            print("[CACHE] Cache muito antigo (>6h), será recarregado")
             return False
         
         # Restaurar hash

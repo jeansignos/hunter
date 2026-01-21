@@ -1026,28 +1026,39 @@ app = create_app()
 import os as os_check
 if os_check.environ.get('RAILWAY_ENVIRONMENT') or os_check.environ.get('FLASK_ENV') == 'production':
     try:
-        from core.loader import iniciar_auto_renovacao, renovar_cache_em_background
+        from core.loader import iniciar_auto_renovacao, renovar_cache_em_background, restaurar_do_cache
         import threading
         
+        # PRIMEIRO: Tentar restaurar cache do disco (instantâneo)
+        print("[APP] Tentando restaurar cache do disco...")
+        cache_restaurado = restaurar_do_cache()
+        if cache_restaurado:
+            print("[APP] Cache restaurado do disco com sucesso!")
+        else:
+            print("[APP] Não havia cache em disco para restaurar")
+        
+        # SEGUNDO: Iniciar auto-renovação (a cada 3h)
         iniciar_auto_renovacao()
         print("[APP] Sistema de auto-renovação de cache iniciado (3h)")
         
-        # Disparar pré-carregamento em thread separada para não bloquear inicialização
-        def prewarm_cache():
-            import time
-            time.sleep(5)  # Aguardar app estar pronto
-            try:
-                renovar_cache_em_background()
-                print("[APP] Cache pré-carregado com sucesso")
-            except Exception as e:
-                print(f"[APP] Erro no pré-carregamento: {e}")
-        
-        thread_prewarm = threading.Thread(target=prewarm_cache, daemon=True)
-        thread_prewarm.start()
-        print("[APP] Thread de pré-carregamento iniciada")
+        # TERCEIRO: Se não tinha cache, carregar agora em background
+        if not cache_restaurado:
+            def prewarm_cache():
+                import time
+                time.sleep(3)  # Aguardar app estar pronto
+                try:
+                    print("[APP] Iniciando pré-carregamento do cache...")
+                    renovar_cache_em_background()
+                    print("[APP] Cache pré-carregado com sucesso")
+                except Exception as e:
+                    print(f"[APP] Erro no pré-carregamento: {e}")
+            
+            thread_prewarm = threading.Thread(target=prewarm_cache, daemon=True)
+            thread_prewarm.start()
+            print("[APP] Thread de pré-carregamento iniciada")
         
     except Exception as e:
-        print(f"[APP] Erro ao iniciar auto-renovação: {e}")
+        print(f"[APP] Erro ao iniciar sistema de cache: {e}")
 
 
 if __name__ == "__main__":
