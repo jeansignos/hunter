@@ -28,38 +28,65 @@ def get_cache_key(*args):
 def save_to_cache(key, data, expiry_minutes=CACHE_EXPIRY_MINUTES):
     """Salva dados no cache"""
     cache_path = os.path.join(CACHE_DIR, f"{key}.json")
+    
+    # Garantir que o diretório existe
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
+        print(f"[CACHE] Diretório criado: {CACHE_DIR}")
+    
     cache_entry = {
         "timestamp": datetime.now().isoformat(),
         "expiry_minutes": expiry_minutes,
         "data": data
     }
     try:
-        with open(cache_path, 'w', encoding='utf-8') as f:
-            json.dump(cache_entry, f, ensure_ascii=False, indent=2)
+        # Usar arquivo temporário para evitar corrupção
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', dir=CACHE_DIR, delete=False, encoding='utf-8') as tmp:
+            json.dump(cache_entry, tmp, ensure_ascii=False)
+            temp_path = tmp.name
+        
+        # Mover arquivo temporário para o destino final
+        import shutil
+        shutil.move(temp_path, cache_path)
+        
+        data_count = len(data) if isinstance(data, list) else 1
+        print(f"[CACHE] Salvo com sucesso: {key} ({data_count} itens)")
         return True
     except Exception as e:
-        print(f"Erro ao salvar cache {key}: {e}")
+        print(f"[CACHE] Erro ao salvar cache {key}: {e}")
+        import traceback
+        traceback.print_exc()
         return False
-
 
 def read_from_cache(key):
     """Lê dados do cache"""
     cache_path = os.path.join(CACHE_DIR, f"{key}.json")
     
     if not os.path.exists(cache_path):
+        print(f"[CACHE] Arquivo não existe: {cache_path}")
         return None
     
     try:
+        file_size = os.path.getsize(cache_path)
+        print(f"[CACHE] Lendo {key} ({file_size} bytes)...")
+        
         with open(cache_path, 'r', encoding='utf-8') as f:
             cache_entry = json.load(f)
         
         cache_time = datetime.fromisoformat(cache_entry["timestamp"])
         expiry_minutes = cache_entry.get("expiry_minutes", CACHE_EXPIRY_MINUTES)
         
+        age_minutes = (datetime.now() - cache_time).total_seconds() / 60
+        
         if datetime.now() - cache_time > timedelta(minutes=expiry_minutes):
+            print(f"[CACHE] Cache {key} expirado (idade: {age_minutes:.1f}min, expira: {expiry_minutes}min)")
             return None
         
-        return cache_entry["data"]
+        data = cache_entry["data"]
+        data_count = len(data) if isinstance(data, list) else 1
+        print(f"[CACHE] Lido com sucesso: {key} ({data_count} itens, idade: {age_minutes:.1f}min)")
+        return data
     except json.JSONDecodeError as e:
         print(f"[CACHE] Arquivo corrompido {key}: {e}")
         print(f"[CACHE] Deletando cache corrompido: {cache_path}")
@@ -70,7 +97,9 @@ def read_from_cache(key):
             print(f"[CACHE] Erro ao deletar cache: {del_err}")
         return None
     except Exception as e:
-        print(f"Erro ao ler cache {key}: {e}")
+        print(f"[CACHE] Erro ao ler cache {key}: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def limpar_cache_contas():
