@@ -3011,7 +3011,7 @@
             // Usar IMG tag com fallback para ícone
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
+                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer"
                      onerror="this.style.display='none'; var icon = document.createElement('i'); icon.className='fas fa-box'; icon.style.color='rgba(255,255,255,0.8)'; this.parentElement.appendChild(icon); this.parentElement.classList.add('no-img');">
                 ${enhanceHtml}
                 ${tierHtml}
@@ -3059,7 +3059,7 @@
             // Usar IMG tag com fallback
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
+                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer"
                      onerror="this.style.display='none'; var icon = document.createElement('i'); icon.className='fas fa-box'; icon.style.color='rgba(255,255,255,0.8)'; this.parentElement.appendChild(icon); this.parentElement.classList.add('no-img');">
                 ${countHtml}
             </div>
