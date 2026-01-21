@@ -3983,6 +3983,9 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             atualizarFiltrosAtivos();
             
             console.log('[FILTROS] Filtro removido:', campoId);
+            
+            // Refazer busca automaticamente ao remover filtro
+            buscarContas();
         }
         
         function limparTodosFiltros() {
@@ -4068,6 +4071,9 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             }
             
             console.log('[FILTROS] Todos os filtros foram limpos');
+            
+            // Refazer busca automaticamente ao limpar filtros
+            buscarContas();
         }
         
         // Fecha dropdowns ao clicar fora
