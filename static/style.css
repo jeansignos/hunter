@@ -777,7 +777,7 @@ p.subtitle {
     z-index: 15;
     
     animation: orangePulse 2s infinite ease-in-out;
-    backface-visibility: hidden; 
+     
 }
 
 /* Quantidade - canto inferior esquerdo */
@@ -2266,9 +2266,9 @@ h2, h3, h4 {
     
     /* Força o display de background-image no iOS */
     .item-circle[style*="background-image"] {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-        will-change: background-image;
+        
+        
+        
     }
 }
 
@@ -2359,12 +2359,12 @@ h2, h3, h4 {
         background-position: center center !important;
         background-repeat: no-repeat !important;
         -webkit-background-size: 75% 75% !important;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        perspective: 1000;
-        -webkit-perspective: 1000;
+        
+        
+        
+        
+        
+        -webkit-
     }
 
     /* Grid de itens mais compacto */
@@ -2524,10 +2524,10 @@ h2, h3, h4 {
     user-select: none !important;
     
     /* GPU acceleration para mobile */
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
+    
+    
+    
+    
 }
 
 /* Badges ficam por cima da imagem */
@@ -2572,10 +2572,10 @@ h2, h3, h4 {
     
     /* Forçar GPU rendering para imagens */
     .item-circle {
-        -webkit-transform: translate3d(0,0,0) !important;
-        transform: translate3d(0,0,0) !important;
-        -webkit-backface-visibility: hidden !important;
-        backface-visibility: hidden !important;
+        
+        
+        
+        
     }
     
     /* Badges ainda menores */
@@ -2620,5 +2620,41 @@ h2, h3, h4 {
 .item-circle[data-img] {
     background-size: 80% 80% !important;
     background-position: center center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* ===== SOLUÇÃO DEFINITIVA MOBILE - SEM TRANSFORMAÇÕES 3D ===== */
+@media (max-width: 768px) {
+    /* REMOVER qualquer transformação 3D que causa bug */
+    .item-circle,
+    .item-circle.has-img,
+    .item-circle[data-img],
+    .item-circle[style*="background-image"] {
+        transform: none !important;
+        -webkit-transform: none !important;
+        perspective: none !important;
+        -webkit-perspective: none !important;
+        backface-visibility: visible !important;
+        -webkit-backface-visibility: visible !important;
+        will-change: auto !important;
+    }
+    
+    /* Garantir que background-image funcione */
+    .item-circle[style*="background-image"],
+    .item-circle.has-img,
+    .item-circle[data-img] {
+        background-size: 75% !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
+/* ===== REGRA FINAL - MÁXIMA PRIORIDADE ===== */
+.item-circle[style*="background-image"] {
+    background-size: 75% !important;
+    background-position: center !important;
     background-repeat: no-repeat !important;
 }
