@@ -57,6 +57,15 @@ def set_carregamento_status(status):
     cache_carregando = status
 
 
+def limpar_memoria_global():
+    """Limpa a variável global de contas em memória"""
+    global contas_detalhadas_global, ultimo_hash_contas, progresso_carregamento
+    contas_detalhadas_global = []
+    ultimo_hash_contas = None
+    progresso_carregamento = {"atual": 0, "total": 0, "percentual": 0}
+    print("[LOADER] Memória global limpa")
+
+
 def carregar_detalhes_com_cache(conta):
     """Carrega detalhes de uma conta com cache"""
     seq = conta.get("seq")

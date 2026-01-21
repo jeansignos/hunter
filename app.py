@@ -916,12 +916,15 @@ def create_app(config_name=None):
     @app.route("/reset-cache")
     def reset_cache():
         """Reset completo do cache - limpa tudo e reseta estado"""
-        from core.loader import set_carregamento_status
+        from core.loader import set_carregamento_status, limpar_memoria_global
         
         # Resetar flag de carregamento
         set_carregamento_status(False)
         
-        # Limpar todo cache
+        # Limpar variável global em memória
+        limpar_memoria_global()
+        
+        # Limpar todo cache (arquivos)
         limpar_todo_cache()
         
         return "Cache resetado! Agora clique em Carregar Cache novamente."
