@@ -244,17 +244,13 @@ def buscar_spirit_detalhado(transport_id):
             
             pets = list(pets_unicos.values())
             
-            # DEDUPLICAR: Remover pets com mesmo nome (manter o de maior tier)
-            pets_unicos = {}
-            for pet in pets:
-                nome = pet["name"]
-                if nome not in pets_unicos or pet["tier"] > pets_unicos[nome]["tier"]:
-                    pets_unicos[nome] = pet
-            
-            pets = list(pets_unicos.values())
-            
             # Ordenar por grade decrescente
             pets.sort(key=lambda x: (-x["grade"], -x["tier"]))
+            
+            # Recontar após deduplicação para ter contagem correta
+            cont_epico = sum(1 for p in pets if p["grade"] == 4)
+            cont_lendario = sum(1 for p in pets if p["grade"] == 5)
+            cont_grade6 = sum(1 for p in pets if p["grade"] == 6)
             
             return pets, cont_epico, cont_lendario, cont_grade6
             
