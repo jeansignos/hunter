@@ -3026,8 +3026,6 @@
             }
 
             // Usar background-image para melhor compatibilidade mobile
-            // Escapar aspas simples na URL para evitar quebrar o style
-            const safeImgUrl = imgUrl.replace(/'/g, "\\'" );
             return `
             <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
                  style="background-image: url('${safeImgUrl}'); background-size: 75%; background-position: center; background-repeat: no-repeat;">
