@@ -913,6 +913,19 @@ def create_app(config_name=None):
             return "Cache de contas limpo com sucesso!"
         return "Erro ao limpar cache de contas."
 
+    @app.route("/reset-cache")
+    def reset_cache():
+        """Reset completo do cache - limpa tudo e reseta estado"""
+        from core.loader import set_carregamento_status
+        
+        # Resetar flag de carregamento
+        set_carregamento_status(False)
+        
+        # Limpar todo cache
+        limpar_todo_cache()
+        
+        return "Cache resetado! Agora clique em Carregar Cache novamente."
+
     @app.route("/api/contas-com-bid")
     def api_contas_com_bid():
         """Retorna lista de contas com bid ativo do wemixplay (com cache de 20 min)"""
