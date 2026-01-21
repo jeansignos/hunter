@@ -2960,6 +2960,22 @@
             return num.toFixed(1) + "%";
         }
 
+        // --- FUNÇÃO PARA APLICAR BACKGROUND-IMAGES APÓS RENDERIZAÇÃO ---
+        function aplicarBackgroundImages() {
+            // Buscar todos os itens que têm data-img
+            const itens = document.querySelectorAll('.item-circle[data-img]');
+            itens.forEach(item => {
+                const imgUrl = item.getAttribute('data-img');
+                if (imgUrl) {
+                    // Aplicar background-image diretamente via JavaScript
+                    item.style.backgroundImage = `url('${imgUrl}')`;
+                    item.style.backgroundSize = '85%';
+                    item.style.backgroundPosition = 'center';
+                    item.style.backgroundRepeat = 'no-repeat';
+                }
+            });
+        }
+
         // --- FUNÇÃO AUXILIAR PARA RENDERIZAR ITENS ---
         function renderItemIcon(item) {
             if (!item) {
@@ -3009,9 +3025,11 @@
             }
 
             // Usar background-image para melhor compatibilidade mobile
+            // Escapar aspas simples na URL para evitar quebrar o style
+            const safeImgUrl = imgUrl.replace(/'/g, "\\'" );
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
-                 style="background-image: url('${imgUrl}'); background-size: 85%; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
+                 data-img="${imgUrl}">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3057,8 +3075,8 @@
             
             // Usar background-image para melhor compatibilidade mobile
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
-                 style="background-image: url('${imgUrl}'); background-size: 85%; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
+                 data-img="${imgUrl}">
                 ${countHtml}
             </div>
             `;
@@ -3526,6 +3544,9 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                 const novosItensHtml = proximosItens.map(item => renderItemIcon(item)).join('');
                 container.insertAdjacentHTML('beforeend', novosItensHtml);
                 
+                // Aplicar background-images nos novos itens
+                aplicarBackgroundImages();
+                
                 // Atualizar o botão
                 const novosTotal = itensJaMostrados + proximosItens.length;
                 const restantes = todosItens.length - novosTotal;
@@ -3728,6 +3749,9 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             }
 
             resultados.innerHTML = contas.map(conta => criarCardConta(conta)).join('');
+            
+            // Aplicar background-images nos itens após renderização
+            aplicarBackgroundImages();
             
             if (contas.length < totalContasFiltradas) {
                 pagContainer.style.display = 'flex';
