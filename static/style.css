@@ -2658,3 +2658,32 @@ h2, h3, h4 {
     background-position: center !important;
     background-repeat: no-repeat !important;
 }
+
+/* ===== SOLUÇÃO DEFINITIVA: IMG TAG PARA MOBILE ===== */
+.item-circle .item-img-fg {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 75% !important;
+    height: 75% !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+    border-radius: 50% !important;
+    z-index: 1 !important;
+}
+
+/* Mobile: garantir que img apareça */
+@media (max-width: 768px) {
+    .item-circle .item-img-fg {
+        width: 70% !important;
+        height: 70% !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    .item-circle.has-img {
+        overflow: visible !important;
+    }
+}

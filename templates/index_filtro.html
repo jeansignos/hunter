@@ -3025,10 +3025,10 @@
                 `;
             }
 
-            // Usar background-image para melhor compatibilidade mobile
+            // Usar <img> tag para garantir compatibilidade mobile
             return `
-            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
-                 style="background-image: url('${safeImgUrl}'); background-size: 75%; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}">
+                <img src="${safeImgUrl}" alt="" class="item-img-fg" loading="lazy" onerror="this.style.display='none'">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3073,15 +3073,14 @@
                 `;
             }
             
-            // Usar background-image para melhor compatibilidade mobile
+            // Usar <img> tag para garantir compatibilidade mobile
             return `
-            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
-                 style="background-image: url('${safeImgUrl}'); background-size: 75%; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}">
+                <img src="${safeImgUrl}" alt="" class="item-img-fg" loading="lazy" onerror="this.style.display='none'">
                 ${countHtml}
             </div>
             `;
         }
-
         // Função para ordenar itens especiais por raridade (Épico > Raro > Incomum) e depois por nome
         function ordenarItensEspeciais(itens) {
             if (!itens || itens.length === 0) {
