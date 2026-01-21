@@ -2687,3 +2687,54 @@ h2, h3, h4 {
         overflow: visible !important;
     }
 }
+
+/* ===== FORÇA BRUTA MOBILE - ÚLTIMA TENTATIVA ===== */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    /* Resetar qualquer transform que possa estar causando problema */
+    .item-circle,
+    .item-circle *,
+    .item-circle .item-img-fg,
+    .items-grid,
+    .items-grid * {
+        transform: none !important;
+        -webkit-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+    }
+    
+    /* Forçar imagem a aparecer */
+    .item-circle .item-img-fg {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: absolute !important;
+        top: 10% !important;
+        left: 10% !important;
+        width: 80% !important;
+        height: 80% !important;
+        object-fit: contain !important;
+        z-index: 5 !important;
+    }
+    
+    /* Container precisa ter position relative */
+    .item-circle {
+        position: relative !important;
+        overflow: visible !important;
+    }
+    
+    /* Tab content visível */
+    .tab-content.active {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+    }
+    
+    /* Items grid visível */
+    .items-grid {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+    }
+}
