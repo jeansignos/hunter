@@ -4691,5 +4691,154 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         </div>
     </div>
 </div>
+
+<!-- ===== OVERLAY PARA GIRAR CELULAR ===== -->
+<div id="rotate-overlay" class="rotate-overlay">
+    <div class="rotate-content">
+        <div class="rotate-icon">
+            <i class="fas fa-mobile-alt"></i>
+            <i class="fas fa-sync-alt rotate-arrow"></i>
+        </div>
+        <h2>Gire seu celular</h2>
+        <p>Para uma melhor experiência, visualize em modo paisagem</p>
+        <button onclick="fecharRotateOverlay()" class="btn-entendi">
+            <i class="fas fa-check"></i> Entendi, continuar assim
+        </button>
+    </div>
+</div>
+
+<style>
+/* Overlay de rotação */
+.rotate-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.rotate-content {
+    text-align: center;
+    color: white;
+    padding: 30px;
+    max-width: 320px;
+}
+
+.rotate-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #f6e05e;
+    position: relative;
+    display: inline-block;
+}
+
+.rotate-icon .fa-mobile-alt {
+    animation: tiltPhone 2s ease-in-out infinite;
+}
+
+.rotate-icon .rotate-arrow {
+    position: absolute;
+    font-size: 1.5rem;
+    top: -10px;
+    right: -20px;
+    color: #48bb78;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes tiltPhone {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.rotate-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #f6e05e;
+}
+
+.rotate-content p {
+    font-size: 0.95rem;
+    color: #a0aec0;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.btn-entendi {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    color: white;
+    border: 1px solid #718096;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-entendi:hover {
+    background: linear-gradient(135deg, #718096, #4a5568);
+    transform: translateY(-2px);
+}
+
+/* Mostrar overlay apenas em portrait mobile */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    .rotate-overlay.show {
+        display: flex;
+    }
+}
+
+/* Esconder em landscape */
+@media screen and (orientation: landscape) {
+    .rotate-overlay {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+// Verificar se já foi mostrado nesta sessão
+function verificarOrientacao() {
+    const jaViu = sessionStorage.getItem('rotateOverlayClosed');
+    const overlay = document.getElementById('rotate-overlay');
+    
+    if (!jaViu && window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
+        overlay.classList.add('show');
+    } else {
+        overlay.classList.remove('show');
+    }
+}
+
+function fecharRotateOverlay() {
+    const overlay = document.getElementById('rotate-overlay');
+    overlay.classList.remove('show');
+    sessionStorage.setItem('rotateOverlayClosed', 'true');
+}
+
+// Verificar ao carregar e ao mudar orientação
+window.addEventListener('load', verificarOrientacao);
+window.addEventListener('resize', function() {
+    // Se girou para landscape, esconder
+    if (window.innerWidth > window.innerHeight) {
+        document.getElementById('rotate-overlay').classList.remove('show');
+    }
+});
+window.addEventListener('orientationchange', function() {
+    setTimeout(verificarOrientacao, 100);
+});
+</script>
+
 </body>
 </html>
