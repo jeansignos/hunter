@@ -2513,75 +2513,40 @@ h2, h3, h4 {
     }
 }
 
-/* ========== CORREÇÃO FINAL MOBILE - FORÇAR IMAGENS ========== */
-/* Corrigir conflitos de overflow e garantir que imagens apareçam */
-/* IMPORTANTE: overflow:visible para badges não serem cortados */
+/* ========== CORREÇÃO MOBILE - BACKGROUND-IMAGE ========== */
+/* Usando background-image ao invés de <img> tag para melhor compatibilidade */
+
 .item-circle {
     position: relative !important;
     overflow: visible !important;
+    /* As imagens são definidas inline via style="background-image: url(...)" */
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
-/* Imagem dentro do círculo - usar clip-path para cortar a imagem no círculo */
-.item-circle > img {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    margin: auto !important;
-    z-index: 1 !important;
-    border-radius: 50% !important;
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    /* Clip a imagem no círculo */
-    clip-path: circle(50% at center) !important;
-    -webkit-clip-path: circle(50% at center) !important;
-}
-
-/* Badges ficam por cima da imagem */
+/* Badges ficam por cima */
 .item-circle .badge-enhance,
 .item-circle .badge-tier,
 .item-circle .badge-trade,
 .item-circle .badge-count {
     z-index: 10 !important;
+    position: absolute !important;
 }
 
-/* Correção específica para Android/Chrome mobile */
+/* Mobile - garantir que background-image funcione */
 @media screen and (max-width: 768px) {
     .item-circle {
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
-        will-change: transform;
+        will-change: auto;
         overflow: visible !important;
+        background-size: contain !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
     }
     
-    .item-circle > img {
-        -webkit-backface-visibility: hidden !important;
-        backface-visibility: hidden !important;
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-        border-radius: 50% !important;
-        clip-path: circle(50% at center) !important;
-        -webkit-clip-path: circle(50% at center) !important;
-    }
-    
-    /* Garantir que não está escondido por media query */
-    .nft-card .item-circle > img,
-    .items-grid .item-circle > img {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
-    /* Badges visíveis e fora do círculo */
+    /* Badges visíveis */
     .item-circle .badge-enhance,
     .item-circle .badge-tier,
     .item-circle .badge-trade,
@@ -2590,10 +2555,4 @@ h2, h3, h4 {
         visibility: visible !important;
         opacity: 1 !important;
     }
-}
-
-/* Fallback: se img falhar, mostrar placeholder */
-.item-circle > img[src=""],
-.item-circle > img:not([src]) {
-    display: none !important;
 }

@@ -611,50 +611,41 @@
         .legenda-cor.epica { background: #e53e3e; }
         .legenda-cor.lendaria { background: #f6e05e; }
         
-        /* Badge Bidding */
+        /* Badge Bidding - agora como badge inline, não ribbon */
         .badge-bidding {
-            position: absolute;
-            top: 6px;
-            left: -28px;
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            color: white;
-            padding: 3px 28px;
-            font-size: 0.55rem;
-            font-weight: bold;
-            transform: rotate(-45deg);
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+            color: white !important;
+            padding: 4px 10px !important;
+            font-size: 0.65rem !important;
+            font-weight: bold !important;
+            transform: none !important;
+            z-index: 10 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.3) !important;
+            border-radius: 4px !important;
+            display: inline-block !important;
+            animation: pulse-badge 2s infinite !important;
         }
         
-        /* Ribbon effect - sombra inferior */
-        .badge-bidding::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -3px;
-            border-left: 3px solid transparent;
-            border-right: 3px solid #c2410c;
-            border-top: 3px solid #c2410c;
-            border-bottom: 3px solid transparent;
+        @keyframes pulse-badge {
+            0%, 100% { box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3); }
+            50% { box-shadow: 0 2px 12px rgba(249, 115, 22, 0.6); }
         }
         
+        /* Remove pseudo elements do badge */
+        .badge-bidding::before,
         .badge-bidding::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            bottom: -3px;
-            border-left: 3px solid #c2410c;
-            border-right: 3px solid transparent;
-            border-top: 3px solid #c2410c;
-            border-bottom: 3px solid transparent;
+            display: none !important;
         }
         
-        /* Card com scroll interno, só ribbon sai */
+        /* Card sem overflow hidden para badges dos itens */
         .nft-card {
-            overflow: hidden !important;
+            overflow: visible !important;
             position: relative;
         }
         
@@ -1699,6 +1690,11 @@
         <div class="contador-resultados">
             <div class="numero" id="total-nfts">0</div>
             <div class="texto">Total de NFTs (atualiza ao buscar)</div>
+        </div>
+        
+        <div class="aviso-carregamento" style="background: rgba(249, 115, 22, 0.15); border: 1px solid #f97316; border-radius: 8px; padding: 8px 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-info-circle" style="color: #f97316; font-size: 1rem;"></i>
+            <span style="color: #fed7aa; font-size: 0.85rem;">O carregamento das contas pode demorar alguns segundos dependendo da quantidade de filtros aplicados.</span>
         </div>
         
         <div class="tabs-status">
@@ -2997,14 +2993,9 @@
             }
             
 
-            // Com imagem - usando <img> tag para melhor compatibilidade mobile
-            // crossorigin para evitar problemas de CORS em alguns navegadores
+            // Com imagem - usando background-image para melhor compatibilidade mobile
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img src="${item.img}" alt="${item.name || ''}" 
-                     crossorigin="anonymous"
-                     referrerpolicy="no-referrer"
-                     onerror="this.parentElement.classList.add('img-error'); this.style.display='none';">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}" style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3032,13 +3023,9 @@
                 `;
             }
             
-            // Com imagem - usando <img> tag para mobile
+            // Com imagem - usando background-image para mobile
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}">
-                <img src="${item.img}" alt="${item.name || ''}" 
-                     crossorigin="anonymous"
-                     referrerpolicy="no-referrer"
-                     onerror="this.parentElement.classList.add('img-error'); this.style.display='none';">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}" style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
                 ${countHtml}
             </div>
             `;
