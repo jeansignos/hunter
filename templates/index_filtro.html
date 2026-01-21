@@ -2979,8 +2979,20 @@
             // Quantidade
             const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
 
-            const rawImg = (item.img || '').toString().trim();
-            const imgUrl = rawImg.startsWith('http://') ? rawImg.replace('http://', 'https://') : rawImg;
+            // Processar URL da imagem
+            let rawImg = (item.img || '').toString().trim();
+            
+            // Se for caminho relativo sem http, converter para https se necessário
+            if (rawImg.startsWith('http://')) {
+                rawImg = rawImg.replace('http://', 'https://');
+            }
+            
+            // Verificar se é um caminho da API do MIR4 que precisa do domínio completo
+            if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/static')) {
+                rawImg = 'https://file.mir4global.com' + rawImg;
+            }
+            
+            const imgUrl = rawImg;
             const hasImg = imgUrl !== '';
 
             // Se não tiver imagem, usar ícone com fundo da raridade
@@ -2996,11 +3008,11 @@
                 `;
             }
 
-            // Usar apenas IMG tag (sem background-image) para evitar conflitos mobile
+            // Usar IMG tag com fallback para ícone
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
-                     onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
+                     onerror="this.style.display='none'; var icon = document.createElement('i'); icon.className='fas fa-box'; icon.style.color='rgba(255,255,255,0.8)'; this.parentElement.appendChild(icon); this.parentElement.classList.add('no-img');">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3010,6 +3022,7 @@
         }
 
         // --- FUNÇÃO PARA RENDERIZAR ITENS ESPECIAIS (BILHETES, CRISTAIS, FRAGMENTOS) ---
+        // --- FUNÇÃO PARA RENDERIZAR ITENS ESPECIAIS (BILHETES, CRISTAIS, FRAGMENTOS) ---
         function renderSpecialItem(item) {
             if (!item) {
                 return '<div class="item-circle" style="border-style: dashed; border-color: #444; background: rgba(0,0,0,0.3);"><i class="fas fa-question"></i></div>';
@@ -3017,8 +3030,20 @@
             
             const gradeClass = `grade-${item.grade || 1}`;
             const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
-            const rawImg = (item.img || '').toString().trim();
-            const imgUrl = rawImg.startsWith('http://') ? rawImg.replace('http://', 'https://') : rawImg;
+            
+            // Processar URL da imagem
+            let rawImg = (item.img || '').toString().trim();
+            
+            if (rawImg.startsWith('http://')) {
+                rawImg = rawImg.replace('http://', 'https://');
+            }
+            
+            // Verificar se é um caminho da API do MIR4 que precisa do domínio completo
+            if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/static')) {
+                rawImg = 'https://file.mir4global.com' + rawImg;
+            }
+            
+            const imgUrl = rawImg;
             const hasImg = imgUrl !== '';
             
             // Se não tiver imagem, usar ícone com fundo da raridade
@@ -3031,11 +3056,11 @@
                 `;
             }
             
-            // Usar apenas IMG tag (sem background-image)
+            // Usar IMG tag com fallback
             return `
             <div class="item-circle ${gradeClass}" title="${item.name || ''}">
                 <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
-                     onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
+                     onerror="this.style.display='none'; var icon = document.createElement('i'); icon.className='fas fa-box'; icon.style.color='rgba(255,255,255,0.8)'; this.parentElement.appendChild(icon); this.parentElement.classList.add('no-img');">
                 ${countHtml}
             </div>
             `;
