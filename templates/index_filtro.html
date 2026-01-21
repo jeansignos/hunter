@@ -3010,6 +3010,7 @@
             
             const imgUrl = rawImg;
             const hasImg = imgUrl !== '';
+            const safeImgUrl = imgUrl.replace(/'/g, "\\'" );
 
             // Se não tiver imagem, usar ícone com fundo da raridade
             if (!hasImg) {
@@ -3029,7 +3030,7 @@
             const safeImgUrl = imgUrl.replace(/'/g, "\\'" );
             return `
             <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
-                 data-img="${imgUrl}">
+                 style="background-image: url('${safeImgUrl}'); background-size: 75%; background-position: center; background-repeat: no-repeat;">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3062,6 +3063,7 @@
             
             const imgUrl = rawImg;
             const hasImg = imgUrl !== '';
+            const safeImgUrl = imgUrl.replace(/'/g, "\\'" );
             
             // Se não tiver imagem, usar ícone com fundo da raridade
             if (!hasImg) {
@@ -3076,7 +3078,7 @@
             // Usar background-image para melhor compatibilidade mobile
             return `
             <div class="item-circle ${gradeClass} has-img" title="${item.name || ''}" 
-                 data-img="${imgUrl}">
+                 style="background-image: url('${safeImgUrl}'); background-size: 75%; background-position: center; background-repeat: no-repeat;">
                 ${countHtml}
             </div>
             `;
