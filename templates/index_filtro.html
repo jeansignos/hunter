@@ -2492,6 +2492,10 @@
                 return;
             }
             
+            // ========== LIMPAR SKILLS DE OUTRAS CLASSES AO TROCAR ==========
+            // Quando muda de classe, limpa as seleções anteriores
+            skillsAtivas = {};
+            
             // ========== SINCRONIZAR CLASSE PRINCIPAL COM CLASSE SKILL ==========
             // Quando selecionar uma classe nas habilidades, atualizar a classe principal
             const classePrincipal = document.getElementById('classe');
@@ -2503,10 +2507,8 @@
             classeSkillAtual = classeId;
             const pasta = CLASSE_PARA_PASTA[classeId];
             
-            // Inicializar se não existir
-            if (!skillsAtivas[classeId]) {
-                skillsAtivas[classeId] = {};
-            }
+            // Inicializar a classe atual
+            skillsAtivas[classeId] = {};
             
             let html = '';
             for (let i = 1; i <= 13; i++) {
