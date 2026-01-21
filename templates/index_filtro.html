@@ -2979,8 +2979,12 @@
             // Quantidade
             const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
 
+            const rawImg = (item.img || '').toString().trim();
+            const imgUrl = rawImg.startsWith('http://') ? rawImg.replace('http://', 'https://') : rawImg;
+            const hasImg = imgUrl !== '';
+
             // Se não tiver imagem, usar ícone com fundo da raridade
-            if (!item.img || item.img === '') {
+            if (!hasImg) {
                 return `
                 <div class="item-circle ${gradeClass} no-img" title="${item.name || ''}">
                     <i class="fas fa-box" style="color: rgba(255,255,255,0.8);"></i>
@@ -2991,11 +2995,13 @@
                 </div>
                 `;
             }
-            
 
-            // Com imagem - usando background-image para melhor compatibilidade mobile
+            // Render híbrido: background-image + <img> para forçar carregamento em mobile
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
+                 style="background-image: url('${imgUrl}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
+                     onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
                 ${enhanceHtml}
                 ${tierHtml}
                 ${tradeHtml}
@@ -3012,9 +3018,12 @@
             
             const gradeClass = `grade-${item.grade || 1}`;
             const countHtml = item.count > 1 ? `<div class="badge-count">${item.count}</div>` : '';
+            const rawImg = (item.img || '').toString().trim();
+            const imgUrl = rawImg.startsWith('http://') ? rawImg.replace('http://', 'https://') : rawImg;
+            const hasImg = imgUrl !== '';
             
             // Se não tiver imagem, usar ícone com fundo da raridade
-            if (!item.img || item.img === '') {
+            if (!hasImg) {
                 return `
                 <div class="item-circle ${gradeClass} no-img" title="${item.name || ''}">
                     <i class="fas fa-box" style="color: rgba(255,255,255,0.8);"></i>
@@ -3023,9 +3032,12 @@
                 `;
             }
             
-            // Com imagem - usando background-image para mobile
+            // Render híbrido: background-image + <img>
             return `
-            <div class="item-circle ${gradeClass}" title="${item.name || ''}" style="background-image: url('${item.img}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <div class="item-circle ${gradeClass}" title="${item.name || ''}" 
+                 style="background-image: url('${imgUrl}'); background-size: contain; background-position: center; background-repeat: no-repeat;">
+                <img class="item-img-fg" src="${imgUrl}" alt="${item.name || ''}" loading="lazy" 
+                     onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
                 ${countHtml}
             </div>
             `;

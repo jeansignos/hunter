@@ -1026,9 +1026,15 @@ app = create_app()
 import os as os_check
 if os_check.environ.get('RAILWAY_ENVIRONMENT') or os_check.environ.get('FLASK_ENV') == 'production':
     try:
-        from core.loader import iniciar_auto_renovacao
+        from core.loader import iniciar_auto_renovacao, renovar_cache_em_background
         iniciar_auto_renovacao()
         print("[APP] Sistema de auto-renovação de cache iniciado (3h)")
+        # Disparar um pré-carregamento imediato para evitar esperar a primeira busca
+        try:
+            renovar_cache_em_background()
+            print("[APP] Cache pré-carregado na inicialização")
+        except Exception as e_pre:
+            print(f"[APP] Falha ao pré-carregar cache na inicialização: {e_pre}")
     except Exception as e:
         print(f"[APP] Erro ao iniciar auto-renovação: {e}")
 

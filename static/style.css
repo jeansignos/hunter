@@ -608,6 +608,17 @@ p.subtitle {
     filter: brightness(1.1) contrast(1.1); 
 }
 
+.item-circle .item-img-fg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
 /* Para itens sem imagem */
 .item-circle.no-img {
     background-color: rgba(0,0,0,0.5);
