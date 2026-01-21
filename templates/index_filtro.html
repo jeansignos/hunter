@@ -2326,6 +2326,10 @@
 
         // --- FUNÇÕES DO MODAL ---
         function abrirModalStatus(event) {
+            if (!isPremium) {
+                abrirModalPremium();
+                return;
+            }
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -2368,6 +2372,10 @@
         }
         
         function abrirModalEspiritos(event) {
+            if (!isPremium) {
+                abrirModalPremium();
+                return;
+            }
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -2444,6 +2452,10 @@
         };
         
         function abrirModalHabilidades(event) {
+            if (!isPremium) {
+                abrirModalPremium();
+                return;
+            }
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -2611,6 +2623,10 @@
 
         // --- FUNÇÕES DO MODAL DE ITENS ---
         function abrirModalItens(event) {
+            if (!isPremium) {
+                abrirModalPremium();
+                return;
+            }
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
