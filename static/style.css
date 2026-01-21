@@ -2496,81 +2496,47 @@ h2, h3, h4 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* ===== IMAGENS NOS ITENS - CORREÇÃO MOBILE ===== */
-.item-circle {
-    position: relative;
-    overflow: hidden;
-}
+/* ===== CORREÇÃO FINAL: IMAGENS NOS ITENS (MOBILE E DESKTOP) ===== */
+/* Esta seção consolida todas as regras de .item-circle para evitar conflitos */
 
-.item-circle img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    border-radius: inherit !important;
-    pointer-events: none;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-/* Forçar carregamento de imagens no iOS/Safari */
-@media (max-width: 768px) {
-    .item-circle .item-img-fg {
-        -webkit-transform: translateZ(0) !important;
-        transform: translateZ(0) !important;
-        backface-visibility: hidden !important;
-        -webkit-backface-visibility: hidden !important;
-    }
-}
-
-/* ========== CORREÇÃO MOBILE - IMG TAG SIMPLIFICADA ========== */
-.item-circle {
-    position: relative !important;
-    overflow: visible !important;
-}
-
-/* Imagens forçadas a aparecer */
 .item-circle .item-img-fg {
+    /* Posicionamento absoluto dentro do círculo */
+    position: absolute !important;
+    top: 3px !important;
+    left: 3px !important;
+    right: 3px !important;
+    bottom: 3px !important;
+    width: calc(100% - 6px) !important;
+    height: calc(100% - 6px) !important;
+    
+    /* Exibição garantida */
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    
+    /* Conteúdo da imagem */
+    object-fit: contain !important;
+    border-radius: 50% !important;
+    
+    /* Prevenir interação */
+    pointer-events: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    
+    /* GPU acceleration para mobile */
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
 }
 
-/* Badges ficam por cima */
+/* Badges ficam por cima da imagem */
 .item-circle .badge-enhance,
 .item-circle .badge-tier,
 .item-circle .badge-trade,
 .item-circle .badge-count {
     z-index: 10 !important;
     position: absolute !important;
-}
-
-/* Mobile - garantir que img apareça */
-@media screen and (max-width: 768px) {
-    .item-circle {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-        will-change: auto;
-        overflow: visible !important;
-    }
-    
-    .item-circle .item-img-fg {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        -webkit-transform: translateZ(0) !important;
-        transform: translateZ(0) !important;
-    }
-    
-    /* Badges visíveis */
-    .item-circle .badge-enhance,
-    .item-circle .badge-tier,
-    .item-circle .badge-trade,
-    .item-circle .badge-count {
-        z-index: 10 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
+    visibility: visible !important;
+    opacity: 1 !important;
 }
