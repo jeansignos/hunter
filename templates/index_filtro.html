@@ -4592,6 +4592,17 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             }
         }
         
+        // Reaplicar imagens ao mudar orientação/tamanho da tela
+        window.addEventListener("orientationchange", function() {
+            setTimeout(aplicarBackgroundImages, 300);
+        });
+        window.addEventListener("resize", function() {
+            aplicarBackgroundImages();
+        });
+        // Aplicar imagens ao carregar página
+        window.addEventListener("load", function() {
+            setTimeout(aplicarBackgroundImages, 500);
+        });
         // Iniciar atualização a cada segundo
         setInterval(atualizarTimersLeilao, 1000);
 

@@ -2540,3 +2540,85 @@ h2, h3, h4 {
     visibility: visible !important;
     opacity: 1 !important;
 }
+
+/* ===== CORREÇÃO MOBILE PORTRAIT (TELAS MUITO ESTREITAS) ===== */
+@media (max-width: 500px) {
+    /* Garantir que o grid mostre 4 colunas com itens menores */
+    .items-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 4px !important;
+        padding: 6px !important;
+    }
+    
+    /* Itens menores para caber em 4 colunas */
+    .item-circle {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        border-width: 2px !important;
+    }
+    
+    /* Background-image DEVE funcionar */
+    .item-circle[data-img],
+    .item-circle.has-img,
+    .item-circle[style*="background-image"] {
+        background-size: 75% 75% !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        -webkit-background-size: 75% 75% !important;
+    }
+    
+    /* Forçar GPU rendering para imagens */
+    .item-circle {
+        -webkit-transform: translate3d(0,0,0) !important;
+        transform: translate3d(0,0,0) !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+    }
+    
+    /* Badges ainda menores */
+    .badge-enhance, .badge-tier {
+        font-size: 7px !important;
+        padding: 1px 2px !important;
+        min-width: 12px !important;
+    }
+    
+    .badge-trade {
+        width: 14px !important;
+        height: 14px !important;
+        top: -3px !important;
+        right: -3px !important;
+    }
+    
+    .badge-count {
+        font-size: 8px !important;
+        padding: 1px 3px !important;
+    }
+    
+    /* Section titles */
+    .section-title {
+        font-size: 0.75rem !important;
+        margin: 6px 0 !important;
+    }
+    
+    /* Tab content */
+    .tab-content {
+        padding: 8px !important;
+    }
+}
+
+/* ===== FORÇAR VISIBILIDADE DE IMAGENS EM QUALQUER DISPOSITIVO ===== */
+.item-circle.has-img {
+    background-size: 80% 80% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Garantir que elementos com data-img tenham imagem visível */
+.item-circle[data-img] {
+    background-size: 80% 80% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+}
