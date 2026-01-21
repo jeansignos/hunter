@@ -72,18 +72,18 @@ def create_app(config_name=None):
         db.create_all()
         
         # Criar admin padrão se não existir
-        admin = User.query.filter_by(email='admin@mir4market.com').first()
+        admin = User.query.filter_by(email='jeannunes7879587').first()
         if not admin:
             admin = User(
                 username='admin',
-                email='admin@mir4market.com',
+                email='jeannunes7879587',
                 is_admin=True,
                 is_premium=True
             )
-            admin.set_password('admin123')  # MUDAR EM PRODUÇÃO!
+            admin.set_password('G4@45&*)#1294!@@@$')  # MUDAR EM PRODUÇÃO!
             db.session.add(admin)
             db.session.commit()
-            print("[SETUP] Admin padrão criado: admin@mir4market.com / admin123")
+            print("[SETUP] Admin padrão criado: jeannunes7879587 / (senha protegida)")
     
     # ==================== VARIÁVEIS GLOBAIS ====================
     cache_carregando = False

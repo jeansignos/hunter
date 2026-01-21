@@ -3334,7 +3334,16 @@ const darksteelBoost = formatarNumero(conta.aumento_aconegro) + '%';
 
             // Aba 3: Inventário - VERSÃO CORRIGIDA
             // Usar APENAS itens comercializáveis (trade=true)
-            const itensComercializaveis = (conta.inven_all || []).filter(item => item.trade === true);
+            // Lista de itens bloqueados (pets, etc)
+            const itensBloqueados = ['luna', 'vigia', 'lookout luna', 'luna, a vigia'];
+            const itensComercializaveis = (conta.inven_all || []).filter(item => {
+                if (!item.trade) return false;
+                const nome = (item.name || item.itemName || '').toLowerCase();
+                // Bloquear pets e itens da lista
+                if (itensBloqueados.some(blocked => nome.includes(blocked))) return false;
+                if (nome.includes('pet_')) return false;
+                return true;
+            });
             const invenInicial = itensComercializaveis.slice(0, 12); // Primeiros 12 itens comercializáveis
             // IMPORTANTE: invenTotal deve vir do backend se disponível
             const invenTotal = itensComercializaveis.length;
@@ -3533,7 +3542,13 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
             }
             
             // Usar inven_all que tem TODOS os itens
-            const todosItens = (conta.inven_all || []).filter(item => item.trade === true);
+            const todosItens = (conta.inven_all || []).filter(item => {
+                if (!item.trade) return false;
+                const nome = (item.name || item.itemName || '').toLowerCase();
+                if (itensBloqueados.some(blocked => nome.includes(blocked))) return false;
+                if (nome.includes('pet_')) return false;
+                return true;
+            });
             const itensJaMostrados = container.querySelectorAll('.item-circle').length;
             
             if (itensJaMostrados >= todosItens.length) {
