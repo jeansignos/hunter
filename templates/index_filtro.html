@@ -1564,11 +1564,11 @@
                     <label>Preço (WEMIX)</label>
                     <button type="button" class="btn-preco-filtro" onclick="abrirModalPreco()">
                         <i class="fas fa-coins"></i>
-                        <span class="preco-range" id="preco-range-label">0 - 150000</span>
+                        <span class="preco-range" id="preco-range-label">0 - 300000</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <input type="hidden" id="price_min" value="0">
-                    <input type="hidden" id="price_max" value="150000">
+                    <input type="hidden" id="price_max" value="300000">
                 </div>
                 
                 <!-- Ordenação -->
@@ -1790,9 +1790,8 @@
                 <button type="button" class="btn-acao-compacto" onclick="carregarCacheCompleto()">
                     <i class="fas fa-database"></i> Cache Full
                 </button>
-                {% endif %}
                 
-                <!-- Log de Cache (visível para todos) -->
+                <!-- Log de Cache (só admin) -->
                 <div class="cache-log-container" id="cache-log-container" style="margin-top: 10px; max-width: 300px;">
                     <div class="cache-log-header" onclick="toggleCacheLog()">
                         <h4><i class="fas fa-terminal"></i> Log do Cache</h4>
@@ -1803,6 +1802,7 @@
                         <div class="log-line"><span class="log-info">Aguardando ações...</span></div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
         <!-- Contador e tabs Listado/Com Lance -->
@@ -4571,7 +4571,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         function abrirModalPreco() {
             // Carregar valores atuais nos inputs do modal
             const minAtual = document.getElementById('price_min').value || '0';
-            const maxAtual = document.getElementById('price_max').value || '150000';
+            const maxAtual = document.getElementById('price_max').value || '300000';
             
             document.getElementById('modal-price-min').value = minAtual;
             document.getElementById('modal-price-max').value = maxAtual;
@@ -4594,7 +4594,7 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         
         function aplicarFiltroPreco() {
             const minVal = document.getElementById('modal-price-min').value || '0';
-            const maxVal = document.getElementById('modal-price-max').value || '150000';
+            const maxVal = document.getElementById('modal-price-max').value || '300000';
             
             // Atualizar os inputs hidden
             document.getElementById('price_min').value = minVal;
@@ -4847,22 +4847,22 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         </div>
         <div class="modal-body">
             <div class="preco-slider-container">
-                <label>Preço Máximo: <span id="slider-value">150000</span> WEMIX</label>
-                <input type="range" id="preco-slider" class="preco-slider" min="0" max="150000" value="150000" step="100" oninput="atualizarSliderPreco(this.value)">
+                <label>Preço Máximo: <span id="slider-value">300000</span> WEMIX</label>
+                <input type="range" id="preco-slider" class="preco-slider" min="0" max="300000" value="300000" step="100" oninput="atualizarSliderPreco(this.value)">
                 <div style="display: flex; justify-content: space-between; color: #718096; font-size: 12px; margin-top: 5px;">
                     <span>0</span>
-                    <span>150000</span>
+                    <span>300000</span>
                 </div>
             </div>
             
             <div class="preco-inputs-row">
                 <div class="preco-input-group">
                     <label>Mínimo</label>
-                    <input type="number" id="modal-price-min" value="0" min="0" max="150000" placeholder="0">
+                    <input type="number" id="modal-price-min" value="0" min="0" max="300000" placeholder="0">
                 </div>
                 <div class="preco-input-group">
                     <label>Máximo</label>
-                    <input type="number" id="modal-price-max" value="150000" min="0" max="150000" placeholder="150000">
+                    <input type="number" id="modal-price-max" value="300000" min="0" max="300000" placeholder="300000">
                 </div>
             </div>
             
