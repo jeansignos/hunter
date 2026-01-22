@@ -4517,10 +4517,19 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
 
         // Atualize a função verificarStatusCache
         function verificarStatusCache(buscarAposCarregar = false) {
+            console.log('[Cache] Verificando status...');
             return fetch('/status-carregamento')
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
                 .then(data => {
-                    const info = document.getElementById('cache-info'); if(!info) return;
+                    console.log('[Cache] Dados recebidos:', data);
+                    const info = document.getElementById('cache-info');
+                    if(!info) {
+                        console.log('[Cache] Elemento cache-info não encontrado!');
+                        return data;
+                    }
                     
                     if (data.carregando) {
                         // Mostrar progresso detalhado
@@ -4552,8 +4561,10 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                     }
                     return data;
                 })
-                .catch(() => {
-                    const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
+                .catch((err) => {
+                    console.error('[Cache] Erro:', err);
+                    const ci = document.getElementById('cache-info'); 
+                    if(ci) ci.innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
                 });
         }
         // ===== FUNÇÕES DO MODAL DE PREÇO =====
