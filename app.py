@@ -42,10 +42,16 @@ def create_app(config_name=None):
     """Factory function para criar a aplicação Flask"""
     
     if config_name is None:
-        config_name = os.environ.get('FLASK_ENV', 'development')
+        # Detectar Railway automaticamente
+        if os.environ.get('RAILWAY_ENVIRONMENT'):
+            config_name = 'production'
+        else:
+            config_name = os.environ.get('FLASK_ENV', 'development')
     
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+    print(f'[CONFIG] Usando configuração: {config_name}')
+    print(f'[CONFIG] DATABASE_URL definida: {bool(os.environ.get("DATABASE_URL"))}')
     
     # Inicializar extensões
     db.init_app(app)
