@@ -1037,11 +1037,129 @@
 .modal-footer-links a:hover {
     text-decoration: underline;
 }
+/* Modal de Preço */
+.modal-preco {
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-preco .modal-body {
+    padding: 25px;
+}
+
+.preco-slider-container {
+    margin: 20px 0;
+}
+
+.preco-slider-container label {
+    display: block;
+    color: #a0aec0;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.preco-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #2d3748;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
+.preco-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.5);
+}
+
+.preco-inputs-row {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.preco-input-group {
+    flex: 1;
+}
+
+.preco-input-group label {
+    display: block;
+    color: #718096;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.preco-input-group input {
+    width: 100%;
+    padding: 12px;
+    background: #1a202c;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+}
+
+.preco-input-group input:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+.btn-aplicar-preco {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-aplicar-preco:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-preco-filtro {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.btn-preco-filtro:hover {
+    border-color: #667eea;
+    background: #374151;
+}
+
+.btn-preco-filtro .preco-range {
+    color: #f6e05e;
+    font-weight: 500;
+}
+
 
 .modal-auth {
     max-width: 420px;
     width: 95%;
-
+}
 .form-group-modal {
     margin-bottom: 18px;
 }
@@ -1441,15 +1559,16 @@
                     <input type="number" id="power_min" class="input-compacto" placeholder="0">
                 </div>
                 
-                <!-- Preço -->
+                <!-- Preço (Modal) -->
                 <div class="filtro-grupo-inline">
-                    <label>Preço Mín.</label>
-                    <input type="number" id="price_min" class="input-compacto" placeholder="0">
-                </div>
-                
-                <div class="filtro-grupo-inline">
-                    <label>Preço Máx.</label>
-                    <input type="number" id="price_max" class="input-compacto" placeholder="10000">
+                    <label>Preço (WEMIX)</label>
+                    <button type="button" class="btn-preco-filtro" onclick="abrirModalPreco()">
+                        <i class="fas fa-coins"></i>
+                        <span class="preco-range" id="preco-range-label">0 - 150000</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <input type="hidden" id="price_min" value="0">
+                    <input type="hidden" id="price_max" value="150000">
                 </div>
                 
                 <!-- Ordenação -->
@@ -2289,7 +2408,7 @@
             // Inputs numéricos que disparam busca automática (APENAS os da tela principal)
             // NÃO incluir inputs de mini-dropdowns (Mineração, Treino, Codex, Trade) pois esses só buscam ao clicar Aplicar
             const inputsFiltro = [
-                'level_min', 'power_min', 'price_min', 'price_max'
+                'level_min', 'power_min'
             ];
             inputsFiltro.forEach(id => {
                 const el = document.getElementById(id);
@@ -4437,6 +4556,58 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
                     const ci = document.getElementById('cache-info'); if(ci) ci.innerHTML = "Status: <span style='color: #f56565'>❌ Erro ao verificar</span>";
                 });
         }
+        // ===== FUNÇÕES DO MODAL DE PREÇO =====
+        function abrirModalPreco() {
+            // Carregar valores atuais nos inputs do modal
+            const minAtual = document.getElementById('price_min').value || '0';
+            const maxAtual = document.getElementById('price_max').value || '150000';
+            
+            document.getElementById('modal-price-min').value = minAtual;
+            document.getElementById('modal-price-max').value = maxAtual;
+            document.getElementById('preco-slider').value = maxAtual;
+            document.getElementById('slider-value').textContent = parseInt(maxAtual).toLocaleString();
+            
+            document.getElementById('modal-preco').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function fecharModalPreco() {
+            document.getElementById('modal-preco').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        function atualizarSliderPreco(valor) {
+            document.getElementById('slider-value').textContent = parseInt(valor).toLocaleString();
+            document.getElementById('modal-price-max').value = valor;
+        }
+        
+        function aplicarFiltroPreco() {
+            const minVal = document.getElementById('modal-price-min').value || '0';
+            const maxVal = document.getElementById('modal-price-max').value || '150000';
+            
+            // Atualizar os inputs hidden
+            document.getElementById('price_min').value = minVal;
+            document.getElementById('price_max').value = maxVal;
+            
+            // Atualizar o label do botão
+            const minFormatado = parseInt(minVal).toLocaleString();
+            const maxFormatado = parseInt(maxVal).toLocaleString();
+            document.getElementById('preco-range-label').textContent = `${minFormatado} - ${maxFormatado}`;
+            
+            // Fechar modal
+            fecharModalPreco();
+            
+            // Executar busca
+            buscarContas();
+        }
+        
+        // Fechar modal ao clicar fora
+        document.getElementById('modal-preco').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModalPreco();
+            }
+        });
+
         // ===== FUNÇÕES DOS MODAIS DE AUTENTICAÇÃO =====
         function abrirModalLogin() {
             document.getElementById('modal-login').style.display = 'flex';
@@ -4654,6 +4825,42 @@ ${isPremium ? '<div class="tab-content" data-tab="3">' + tab3Content + '</div>' 
         setInterval(atualizarTimersLeilao, 1000);
 
     </script>
+
+
+<!-- ===== MODAL DE PREÇO ===== -->
+<div id="modal-preco" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-preco">
+        <div class="modal-header">
+            <h2><i class="fas fa-coins"></i> Intervalo de Preço</h2>
+            <button class="modal-close" onclick="fecharModalPreco()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="preco-slider-container">
+                <label>Preço Máximo: <span id="slider-value">150000</span> WEMIX</label>
+                <input type="range" id="preco-slider" class="preco-slider" min="0" max="150000" value="150000" step="100" oninput="atualizarSliderPreco(this.value)">
+                <div style="display: flex; justify-content: space-between; color: #718096; font-size: 12px; margin-top: 5px;">
+                    <span>0</span>
+                    <span>150000</span>
+                </div>
+            </div>
+            
+            <div class="preco-inputs-row">
+                <div class="preco-input-group">
+                    <label>Mínimo</label>
+                    <input type="number" id="modal-price-min" value="0" min="0" max="150000" placeholder="0">
+                </div>
+                <div class="preco-input-group">
+                    <label>Máximo</label>
+                    <input type="number" id="modal-price-max" value="150000" min="0" max="150000" placeholder="150000">
+                </div>
+            </div>
+            
+            <button type="button" class="btn-aplicar-preco" onclick="aplicarFiltroPreco()">
+                <i class="fas fa-check"></i> Aplicar
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- ===== MODAL DE LOGIN ===== -->
 <div id="modal-login" class="modal-overlay" style="display: none;">
