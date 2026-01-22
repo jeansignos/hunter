@@ -1,6 +1,35 @@
 import os
 from datetime import timedelta
 
+def get_database_url():
+    """Constrói a URL do banco de dados para Railway"""
+    # Tenta usar DATABASE_URL primeiro
+    database_url = os.environ.get('DATABASE_URL')
+    
+    if database_url:
+        # Corrige formato postgres:// para postgresql://
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        print(f"[DB] Usando DATABASE_URL do ambiente")
+        return database_url
+    
+    # Railway: tenta construir a URL a partir das variáveis individuais
+    pg_user = os.environ.get('PGUSER') or os.environ.get('POSTGRES_USER')
+    pg_pass = os.environ.get('PGPASSWORD') or os.environ.get('POSTGRES_PASSWORD')
+    pg_host = os.environ.get('PGHOST') or os.environ.get('RAILWAY_TCP_PROXY_DOMAIN')
+    pg_port = os.environ.get('PGPORT', '5432')
+    pg_db = os.environ.get('PGDATABASE') or os.environ.get('POSTGRES_DB')
+    
+    if all([pg_user, pg_pass, pg_host, pg_db]):
+        url = f"postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}"
+        print(f"[DB] Construindo URL do Postgres a partir das variáveis PG*")
+        return url
+    
+    # Fallback para SQLite (não recomendado em produção)
+    print("[DB] AVISO: Usando SQLite - dados serão perdidos a cada deploy!")
+    return 'sqlite:///mir4_market.db'
+
+
 class Config:
     """Configuração base"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
@@ -32,16 +61,8 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Configuração de produção"""
     DEBUG = False
-    
-    # Railway fornece DATABASE_URL automaticamente para PostgreSQL
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url and database_url.startswith('postgres://'):
-        database_url = database_url.replace('postgres://', 'postgresql://', 1)
-    
-    SQLALCHEMY_DATABASE_URI = database_url or 'sqlite:///mir4_market.db'
-    
-    # Força HTTPS
     PREFERRED_URL_SCHEME = 'https'
+    SQLALCHEMY_DATABASE_URI = get_database_url()
 
 
 class TestingConfig(Config):
