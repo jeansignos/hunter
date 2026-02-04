@@ -1,0 +1,29 @@
+# Arquivos de cache local
+xdraco_cache/
+xdraco_cache_completo/
+xdraco_cache_itens/
+xdraco_cache_status/
+mir4_filter_cache/
+conteudo_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Ambiente virtual
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Outros
+.DS_Store
+.env.example
+img_cliente/
+instance/*.db
+*.log
